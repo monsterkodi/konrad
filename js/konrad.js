@@ -7,17 +7,8 @@
 000   000   0000000   000   000  000   000  000   000  0000000
  */
 
-
-/*
-000   000  00000000  000      000       0000000 
-000   000  000       000      000      000   000
-000000000  0000000   000      000      000   000
-000   000  000       000      000      000   000
-000   000  00000000  0000000  0000000   0000000
- */
-
 (function() {
-  var _, args, chalk, choki, coffee, colors, error, fs, log, noon, notify, opt, path, watch, write,
+  var _, args, chalk, choki, coffee, colors, error, fs, log, noon, notify, opt, path, stylus, watch, write,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   fs = require('fs');
@@ -27,6 +18,8 @@
   noon = require('noon');
 
   write = require('write-file-atomic');
+
+  stylus = require('stylus');
 
   colors = require('colors');
 
@@ -46,7 +39,7 @@
 
   args = require('karg')("konrad\n    directory  . ? the directory to watch . * . = .\n    verbose    . ? log more . = false\n    quiet      . ? log nothing . = false\n    version    . - V . = " + (require(__dirname + "/../package.json").version));
 
-  opt = noon.parse("coffee  . ext js . replace .. /coffee/ /js/\nnoon    . ext json\njson    . ext noon");
+  opt = noon.parse("coffee  . ext js . replace .. /coffee/ /js/\nnoon    . ext json\njson    . ext noon . filter .. package.json$\nstyl    . ext css");
 
 
   /*
@@ -99,8 +92,16 @@
   };
 
   watch(opt, function(sourceFile) {
+
+    /*
+    00000000   00000000   0000000   0000000  
+    000   000  000       000   000  000   000
+    0000000    0000000   000000000  000   000
+    000   000  000       000   000  000   000
+    000   000  00000000  000   000  0000000
+     */
     return fs.readFile(sourceFile, 'utf8', function(err, data) {
-      var compiled, e, error1, ext, f, k, ref, v;
+      var compiled, e, error1, ext, f, i, k, len, matches, r, ref, ref1, v;
       if (err) {
         log("can't read " + sourceFile);
         return;
@@ -117,11 +118,32 @@
           f = f.replace(k, v);
         }
       }
+      if (opt[ext].filter != null) {
+        matches = false;
+        ref1 = opt[ext].filter;
+        for (i = 0, len = ref1.length; i < len; i++) {
+          r = ref1[i];
+          if (new RegExp(r).test(sourceFile)) {
+            matches = true;
+          }
+        }
+        if (!matches) {
+          return;
+        }
+      }
       f = path.join(path.dirname(f), path.basename(f, path.extname(f)) + '.' + opt[ext].ext);
       if (args.verbose) {
         log("target file".gray, f);
       }
       try {
+
+        /*
+         0000000   0000000   00     00  00000000   000  000      00000000
+        000       000   000  000   000  000   000  000  000      000     
+        000       000   000  000000000  00000000   000  000      0000000 
+        000       000   000  000 0 000  000        000  000      000     
+         0000000   0000000   000   000  000        000  0000000  00000000
+         */
         compiled = (function() {
           switch (ext) {
             case 'coffee':
@@ -131,7 +153,9 @@
             case 'json':
               return noon.stringify(JSON.parse(data));
             case 'noon':
-              return JSON.stringify(noon.parse(data), null, '    ');
+              return JSON.stringify(noon.parse(data), null, '  ');
+            case 'styl':
+              return stylus.render(data);
           }
         })();
       } catch (error1) {
@@ -140,11 +164,15 @@
         return;
       }
       return fs.readFile(f, 'utf8', function(err, targetData) {
-        if (err) {
-          log("can't read " + f);
-          return;
-        }
         if (compiled !== targetData) {
+
+          /*
+          000   000  00000000   000  000000000  00000000
+          000 0 000  000   000  000     000     000     
+          000000000  0000000    000     000     0000000 
+          000   000  000   000  000     000     000     
+          00     00  000   000  000     000     00000000
+           */
           return write(f, compiled, function(err) {
             if (err) {
               log("can't write " + f);

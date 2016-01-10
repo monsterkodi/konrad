@@ -10,6 +10,7 @@ fs     = require 'fs'
 path   = require 'path'
 noon   = require 'noon'
 write  = require 'write-file-atomic'
+stylus = require 'stylus'
 colors = require 'colors'
 chalk  = require 'chalk'
 coffee = require 'coffee-script'
@@ -30,7 +31,8 @@ konrad
 opt = noon.parse """
 coffee  . ext js . replace .. /coffee/ /js/
 noon    . ext json
-json    . ext noon
+json    . ext noon . filter .. package.json$
+styl    . ext css
 """
 
 ###
@@ -96,6 +98,12 @@ watch opt, (sourceFile) ->
         if opt[ext].replace?
             for k,v of opt[ext].replace
                 f = f.replace k, v
+        if opt[ext].filter?
+            matches = false
+            for r in opt[ext].filter
+                if new RegExp(r).test(sourceFile)
+                    matches = true
+            if not matches then return        
             
         f = path.join path.dirname(f), path.basename(f, path.extname(f)) + '.' + opt[ext].ext
         
@@ -116,15 +124,15 @@ watch opt, (sourceFile) ->
                 when 'json'
                     noon.stringify JSON.parse data
                 when 'noon'
-                    JSON.stringify noon.parse(data), null, '    '
+                    JSON.stringify noon.parse(data), null, '  '
+                when 'styl'
+                    stylus.render(data)
         catch e
             error e
             return
 
         fs.readFile f, 'utf8', (err, targetData) ->  
-            if err 
-                log "can't read #{f}"
-                return
+            
             if compiled != targetData
                 ###
                 000   000  00000000   000  000000000  00000000
