@@ -42,7 +42,7 @@ json    . ext noon
 ###
 
 error = (e) ->
-    notify chalk.stripColor(String(e).replace '\n', '<br>'), 
+    notify chalk.stripColor(String(e)), 
         title: 'ERROR'
         sticky: true
     log String(e)
@@ -76,6 +76,13 @@ watch = (opt, cb) ->
 
 watch opt, (sourceFile) ->
     
+    ###
+    00000000   00000000   0000000   0000000  
+    000   000  000       000   000  000   000
+    0000000    0000000   000000000  000   000
+    000   000  000       000   000  000   000
+    000   000  00000000  000   000  0000000  
+    ###
     fs.readFile sourceFile, 'utf8', (err, data) -> 
         if err 
             log "can't read #{sourceFile}"
@@ -95,6 +102,13 @@ watch opt, (sourceFile) ->
         if args.verbose then log "target file".gray, f
         
         try
+            ###
+             0000000   0000000   00     00  00000000   000  000      00000000
+            000       000   000  000   000  000   000  000  000      000     
+            000       000   000  000000000  00000000   000  000      0000000 
+            000       000   000  000 0 000  000        000  000      000     
+             0000000   0000000   000   000  000        000  0000000  00000000
+            ###
             compiled = switch ext
                 when 'coffee'
                     coffee.compile data, 
@@ -112,6 +126,13 @@ watch opt, (sourceFile) ->
                 log "can't read #{f}"
                 return
             if compiled != targetData
+                ###
+                000   000  00000000   000  000000000  00000000
+                000 0 000  000   000  000     000     000     
+                000000000  0000000    000     000     0000000 
+                000   000  000   000  000     000     000     
+                00     00  000   000  000     000     00000000
+                ###
                 write f, compiled, (err) ->
                     if err 
                         log "can't write #{f}"

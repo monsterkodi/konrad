@@ -7,6 +7,15 @@
 000   000   0000000   000   000  000   000  000   000  0000000
  */
 
+
+/*
+000   000  00000000  000      000       0000000 
+000   000  000       000      000      000   000
+000000000  0000000   000      000      000   000
+000   000  000       000      000      000   000
+000   000  00000000  0000000  0000000   0000000
+ */
+
 (function() {
   var _, args, chalk, choki, coffee, colors, error, fs, log, noon, notify, opt, path, watch, write,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -49,7 +58,7 @@
    */
 
   error = function(e) {
-    notify(chalk.stripColor(String(e).replace('\n', '<br>')), {
+    notify(chalk.stripColor(String(e)), {
       title: 'ERROR',
       sticky: true
     });
