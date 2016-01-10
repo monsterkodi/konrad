@@ -4,15 +4,15 @@ description     personal development tool
 main            js/konrad.js
 repository      
                 type    git
-                url     git+https://github.com/monsterkodi/kodrad.git
+                url     git+https://github.com/monsterkodi/konrad.git
 keywords        
                 development
                 tool
 author          monsterkodi
 license         Unlicense
 bugs            
-                url     https://github.com/monsterkodi/kodrad/issues
-homepage        https://github.com/monsterkodi/kodrad
+                url     https://github.com/monsterkodi/konrad/issues
+homepage        https://github.com/monsterkodi/konrad
 dependencies    
                 growl               ^1.8.1
                 chalk               ^1.1.1
