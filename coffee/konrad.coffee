@@ -8,11 +8,12 @@
 
 fs     = require 'fs'
 path   = require 'path'
+sds    = require 'sds'
 noon   = require 'noon'
 write  = require 'write-file-atomic'
+jade   = require 'jade'
 stylus = require 'stylus'
 colors = require 'colors'
-chalk  = require 'chalk'
 coffee = require 'coffee-script'
 choki  = require 'chokidar'
 notify = require 'growl'
@@ -23,18 +24,48 @@ log    = console.log
 args = require('karg') """
 konrad
     directory  . ? the directory to watch . * . = .
-    verbose    . ? log more . = false
-    quiet      . ? log nothing . = false
-    version    . - V . = #{require("#{__dirname}/../package.json").version}
+    verbose    . ? log more                   . = false
+    quiet      . ? log nothing                . = false
+version  #{require("#{__dirname}/../package.json").version}
 """
 
+###
+00000000   00000000   0000000   0000000   000      000   000  00000000
+000   000  000       000       000   000  000      000   000  000     
+0000000    0000000   0000000   000   000  000       000 000   0000000 
+000   000  000            000  000   000  000         000     000     
+000   000  00000000  0000000    0000000   0000000      0      00000000
+###
+
+resolve = (unresolved) ->
+    p = unresolved.replace /\~/, process.env.HOME
+    p = path.resolve p
+    p = path.normalize p
+    p
+
+###
+ 0000000   0000000   000   000  00000000  000   0000000 
+000       000   000  0000  000  000       000  000      
+000       000   000  000 0 000  000000    000  000  0000
+000       000   000  000  0000  000       000  000   000
+ 0000000   0000000   000   000  000       000   0000000 
+###
+
 opt = noon.parse """
-coffee  . ext js . replace .. /coffee/ /js/
+coffee  . ext js  . replace .. /coffee/ /js/
 noon    . ext json
 json    . ext noon . filter .. package.json$
 styl    . ext css
+jade    . ext html
 """
 
+config = (p) ->
+    while path.dirname(p).length and path.dirname(p) != '.'
+        p = path.dirname p
+        if fs.existsSync path.join p, '.konrad.noon'
+            return _.defaultsDeep sds.load(path.join p, '.konrad.noon'), opt
+    opt
+    
 ###
 00000000  00000000   00000000    0000000   00000000 
 000       000   000  000   000  000   000  000   000
@@ -44,7 +75,7 @@ styl    . ext css
 ###
 
 error = (e) ->
-    notify chalk.stripColor(String(e)), 
+    notify String(e).strip, 
         title: 'ERROR'
         sticky: true
     log String(e)
@@ -68,7 +99,7 @@ watch = (opt, cb) ->
     
     pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
     
-    watcher = choki.watch opt.dir ? '.', 
+    watcher = choki.watch args.directory ? '.', 
         ignored: ignore
         ignoreInitial: true
         
@@ -77,6 +108,10 @@ watch = (opt, cb) ->
         .on 'change', (p) -> if pass p then cb p
 
 watch opt, (sourceFile) ->
+    
+    o = config sourceFile
+
+    return if 'ignore' in _.keys o
     
     ###
     00000000   00000000   0000000   0000000  
@@ -91,21 +126,25 @@ watch opt, (sourceFile) ->
             return
 
         if args.verbose then log "source file".gray, sourceFile
-        
+                
         ext = path.extname(sourceFile).substr(1)
         
         f = sourceFile
-        if opt[ext].replace?
-            for k,v of opt[ext].replace
+        
+        if o[ext].replace?
+            for k,v of o[ext].replace
                 f = f.replace k, v
-        if opt[ext].filter?
+                
+        if o[ext].filter?
             matches = false
-            for r in opt[ext].filter
+            for r in o[ext].filter
                 if new RegExp(r).test(sourceFile)
                     matches = true
             if not matches then return        
             
-        f = path.join path.dirname(f), path.basename(f, path.extname(f)) + '.' + opt[ext].ext
+        return if not o[ext].ext?
+            
+        f = path.join path.dirname(f), path.basename(f, path.extname(f)) + '.' + o[ext].ext
         
         if args.verbose then log "target file".gray, f
         
@@ -121,12 +160,14 @@ watch opt, (sourceFile) ->
                 when 'coffee'
                     coffee.compile data, 
                         filename: sourceFile
-                when 'json'
-                    noon.stringify JSON.parse data
-                when 'noon'
-                    JSON.stringify noon.parse(data), null, '  '
                 when 'styl'
-                    stylus.render(data)
+                    stylus.render data
+                when 'jade'
+                    jade.render data, pretty: true
+                when 'json'
+                    sds.stringify JSON.parse data, ext: '.'+o[ext].ext, indent: '  '
+                when 'noon'
+                    sds.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
         catch e
             error e
             return

@@ -1,0 +1,1 @@
+![konrad](img/konrad.png)

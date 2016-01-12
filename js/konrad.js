@@ -8,16 +8,20 @@
  */
 
 (function() {
-  var _, args, chalk, choki, coffee, colors, error, fs, log, noon, notify, opt, path, stylus, watch, write,
+  var _, args, chalk, choki, coffee, colors, config, error, fs, jade, log, noon, notify, opt, path, resolve, sds, stylus, watch, write,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   fs = require('fs');
 
   path = require('path');
 
+  sds = require('sds');
+
   noon = require('noon');
 
   write = require('write-file-atomic');
+
+  jade = require('jade');
 
   stylus = require('stylus');
 
@@ -37,9 +41,45 @@
 
   log = console.log;
 
-  args = require('karg')("konrad\n    directory  . ? the directory to watch . * . = .\n    verbose    . ? log more . = false\n    quiet      . ? log nothing . = false\n    version    . - V . = " + (require(__dirname + "/../package.json").version));
+  args = require('karg')("konrad\n    directory  . ? the directory to watch . * . = .\n    verbose    . ? log more . = false\n    quiet      . ? log nothing . = false\nversion  " + (require(__dirname + "/../package.json").version));
 
-  opt = noon.parse("coffee  . ext js . replace .. /coffee/ /js/\nnoon    . ext json\njson    . ext noon . filter .. package.json$\nstyl    . ext css");
+
+  /*
+  00000000   00000000   0000000   0000000   000      000   000  00000000
+  000   000  000       000       000   000  000      000   000  000     
+  0000000    0000000   0000000   000   000  000       000 000   0000000 
+  000   000  000            000  000   000  000         000     000     
+  000   000  00000000  0000000    0000000   0000000      0      00000000
+   */
+
+  resolve = function(unresolved) {
+    var p;
+    p = unresolved.replace(/\~/, process.env.HOME);
+    p = path.resolve(p);
+    p = path.normalize(p);
+    return p;
+  };
+
+
+  /*
+   0000000   0000000   000   000  00000000  000   0000000 
+  000       000   000  0000  000  000       000  000      
+  000       000   000  000 0 000  000000    000  000  0000
+  000       000   000  000  0000  000       000  000   000
+   0000000   0000000   000   000  000       000   0000000
+   */
+
+  opt = noon.parse("coffee  . ext js  . replace .. /coffee/ /js/\nnoon    . ext json\njson    . ext noon . filter .. package.json$\nstyl    . ext css\njade    . ext html");
+
+  config = function(p) {
+    while (path.dirname(p).length && path.dirname(p) !== '.') {
+      p = path.dirname(p);
+      if (fs.existsSync(path.join(p, '.konrad.noon'))) {
+        return _.defaultsDeep(sds.load(path.join(p, '.konrad.noon')), opt);
+      }
+    }
+    return opt;
+  };
 
 
   /*
@@ -51,7 +91,7 @@
    */
 
   error = function(e) {
-    notify(chalk.stripColor(String(e)), {
+    notify(String(e).strip, {
       title: 'ERROR',
       sticky: true
     });
@@ -76,7 +116,7 @@
         return true;
       }
     };
-    watcher = choki.watch((ref = opt.dir) != null ? ref : '.', {
+    watcher = choki.watch((ref = args.directory) != null ? ref : '.', {
       ignored: ignore,
       ignoreInitial: true
     });
@@ -92,6 +132,11 @@
   };
 
   watch(opt, function(sourceFile) {
+    var o;
+    o = config(sourceFile);
+    if (indexOf.call(_.keys(o), 'ignore') >= 0) {
+      return;
+    }
 
     /*
     00000000   00000000   0000000   0000000  
@@ -111,16 +156,16 @@
       }
       ext = path.extname(sourceFile).substr(1);
       f = sourceFile;
-      if (opt[ext].replace != null) {
-        ref = opt[ext].replace;
+      if (o[ext].replace != null) {
+        ref = o[ext].replace;
         for (k in ref) {
           v = ref[k];
           f = f.replace(k, v);
         }
       }
-      if (opt[ext].filter != null) {
+      if (o[ext].filter != null) {
         matches = false;
-        ref1 = opt[ext].filter;
+        ref1 = o[ext].filter;
         for (i = 0, len = ref1.length; i < len; i++) {
           r = ref1[i];
           if (new RegExp(r).test(sourceFile)) {
@@ -131,7 +176,10 @@
           return;
         }
       }
-      f = path.join(path.dirname(f), path.basename(f, path.extname(f)) + '.' + opt[ext].ext);
+      if (o[ext].ext == null) {
+        return;
+      }
+      f = path.join(path.dirname(f), path.basename(f, path.extname(f)) + '.' + o[ext].ext);
       if (args.verbose) {
         log("target file".gray, f);
       }
@@ -150,12 +198,22 @@
               return coffee.compile(data, {
                 filename: sourceFile
               });
-            case 'json':
-              return noon.stringify(JSON.parse(data));
-            case 'noon':
-              return JSON.stringify(noon.parse(data), null, '  ');
             case 'styl':
               return stylus.render(data);
+            case 'jade':
+              return jade.render(data, {
+                pretty: true
+              });
+            case 'json':
+              return sds.stringify(JSON.parse(data, {
+                ext: '.' + o[ext].ext,
+                indent: '  '
+              }));
+            case 'noon':
+              return sds.stringify(noon.parse(data), {
+                ext: '.' + o[ext].ext,
+                indent: '  '
+              });
           }
         })();
       } catch (error1) {
