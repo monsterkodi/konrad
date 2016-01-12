@@ -8,7 +8,7 @@
  */
 
 (function() {
-  var _, args, choki, coffee, colors, config, error, fs, jade, log, noon, notify, opt, path, resolve, sds, stylus, watch, write,
+  var _, args, childp, choki, coffee, colors, config, error, fs, jade, log, noon, notify, opt, path, resolve, sds, stylus, watch, write,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   fs = require('fs');
@@ -23,9 +23,11 @@
 
   jade = require('jade');
 
-  stylus = require('stylus');
+  childp = require('child_process');
 
   colors = require('colors');
+
+  stylus = require('stylus');
 
   coffee = require('coffee-script');
 
