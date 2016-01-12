@@ -29,6 +29,7 @@ args = require('karg') """
 konrad
     directory  . ? the directory to watch . * . = .
     publish    . ? bump, commit and publish   . = false
+    bump       . ? bump                       . = false
     verbose    . ? log more                   . = false
     quiet      . ? log nothing                . = false
 version  #{require("#{__dirname}/../package.json").version}
@@ -112,12 +113,21 @@ restart = ->
 ###
 
 if args.publish
-    log 'publish', process.cwd()
+    log 'publish', process.cwd() if args.verbose
     childp.execSync "#{__dirname}/../bin/publish",
         cwd: process.cwd()
         encoding: 'utf8'
         stdio: 'inherit'
-    log 'done'
+    log 'done' if args.verbose
+    process.exit 0
+
+if args.bump
+    log 'bump', process.cwd() if args.verbose
+    childp.execSync "#{__dirname}/../bin/bump",
+        cwd: process.cwd()
+        encoding: 'utf8'
+        stdio: 'inherit'
+    log 'done' if args.verbose
     process.exit 0
 
 ###
@@ -231,8 +241,6 @@ watch opt, (sourceFile) ->
                     
                     if path.resolve(f) == __filename
                         restart()
-                    else
-                        log path.resolve(f), __filename
             else
                 log 'unchanged'.green, path.resolve(f) if args.verbose
                         

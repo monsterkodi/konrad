@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.0.5
+version         0.0.6
 main            js/konrad.js
 repository      
                 type    git
@@ -14,13 +14,15 @@ bugs
                 url     https://github.com/monsterkodi/konrad/issues
 homepage        https://github.com/monsterkodi/konrad
 dependencies    
-                growl               ^1.8.1
-                stylus              ^0.53.0
-                colors              ^1.1.2
                 chokidar            ^1.4.2
                 coffee-script       ^1.10.0
+                colors              ^1.1.2
+                growl               ^1.8.1
+                jade                ^1.11.0
+                karg                >=0.1.11
+                noon                >=0.6.11
+                semver              ^5.1.0
+                stylus              ^0.53.0
                 write-file-atomic   ^1.1.4
-                karg                >=0.1.5
-                noon                >=0.6.4
 konrad          
                 publish     true

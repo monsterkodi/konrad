@@ -1,0 +1,32 @@
+#!/usr/bin/env coffee
+fs     = require 'fs'
+path   = require 'path'
+colors = require 'colors'
+noon   = require 'noon'
+semver = require 'semver'
+args   = require('karg') """
+
+bump
+    semver     . ? use this version instead of incrementing . *
+    increment  . ? increment type: major, minor or . = patch
+"""
+
+if args.semver? and not semver.valid args.semver
+    console.log "not a semver version: #{args.semver.yellow}".red
+    process.exit 1
+
+file         = path.join process.cwd(), 'package.json'
+pack         = require file
+oldversion   = pack.version
+pack.version = args.semver ? semver.inc oldversion, args.increment
+
+console.log path.basename(path.dirname file).green, oldversion.bold.gray, '►'.gray, pack.version.bold.yellow
+
+# write package.json
+fs.writeFileSync file, JSON.stringify(pack, null, '  '), encoding: 'utf8'
+
+# write package.noon if it exists
+noonFile = path.join process.cwd(), 'package.noon'
+if fs.existsSync noonFile
+    fs.writeFileSync noonFile, noon.stringify(pack), encoding: 'utf8'
+    
