@@ -97,7 +97,7 @@ error = (e) ->
 
 restart = ->
     watcher.close()
-    log 'restart'.yellow.bold
+    log '🔧 restart'.bold.gray
     childp.execSync "/usr/bin/env node #{__filename}",
         cwd:      process.cwd()
         encoding: 'utf8'
@@ -263,7 +263,7 @@ watch opt, (sourceFile) ->
                     if err 
                         log "can't write #{f}"
                         return
-                    if not args.quiet then log "->".gray, f.yellow
+                    if not args.quiet then log "👍 ".gray, f.yellow
                     
                     if path.resolve(f) == __filename
                         restart()
