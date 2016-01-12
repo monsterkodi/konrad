@@ -23,7 +23,7 @@ dependencies
                 jade                ^1.11.0
                 karg                >=0.1.17
                 mkpath              ^1.0.0
-                noon                >=0.6.11
+                noon                >=0.6.14
                 semver              ^5.1.0
                 stylus              ^0.53.0
                 write-file-atomic   ^1.1.4
