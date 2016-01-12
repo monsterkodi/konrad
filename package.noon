@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.0.4
+version         0.0.5
 main            js/konrad.js
 repository      
                 type    git
