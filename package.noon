@@ -19,7 +19,7 @@ dependencies
                 colors              ^1.1.2
                 growl               ^1.8.1
                 jade                ^1.11.0
-                karg                >=0.1.11
+                karg                >=0.1.16
                 noon                >=0.6.11
                 semver              ^5.1.0
                 stylus              ^0.53.0

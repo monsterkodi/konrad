@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+ncu -a
+npm update
+npm ls -s --depth 0

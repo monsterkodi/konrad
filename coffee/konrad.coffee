@@ -29,7 +29,8 @@ args = require('karg') """
 konrad
     directory  . ? the directory to watch . * . = .
     publish    . ? bump, commit and publish   . = false
-    bump       . ? bump                       . = false
+    bump       . ? bump package.* version     . = false
+    update     . ? update npm packages        . = false
     verbose    . ? log more                   . = false
     quiet      . ? log nothing                . = false
 version  #{require("#{__dirname}/../package.json").version}
@@ -104,23 +105,31 @@ restart = ->
     log 'exit'.yellow.bold
     process.exit 0
 
-###
-00000000   000   000  0000000    000      000   0000000  000   000
-000   000  000   000  000   000  000      000  000       000   000
-00000000   000   000  0000000    000      000  0000000   000000000
-000        000   000  000   000  000      000       000  000   000
-000         0000000   0000000    0000000  000  0000000   000   000
-###
+dowatch = true
 
-if args.publish
-    log 'publish', process.cwd() if args.verbose
-    childp.execSync "#{__dirname}/../bin/publish",
+###
+000   000  00000000   0000000     0000000   000000000  00000000
+000   000  000   000  000   000  000   000     000     000     
+000   000  00000000   000   000  000000000     000     0000000 
+000   000  000        000   000  000   000     000     000     
+ 0000000   000        0000000    000   000     000     00000000
+###
+if args.update
+    log 'update', process.cwd() if args.verbose
+    childp.execSync "#{__dirname}/../bin/update",
         cwd: process.cwd()
         encoding: 'utf8'
         stdio: 'inherit'
     log 'done' if args.verbose
-    process.exit 0
+    dowatch = false    
 
+###
+0000000    000   000  00     00  00000000 
+000   000  000   000  000   000  000   000
+0000000    000   000  000000000  00000000 
+000   000  000   000  000 0 000  000      
+0000000     0000000   000   000  000      
+###
 if args.bump
     log 'bump', process.cwd() if args.verbose
     childp.execSync "#{__dirname}/../bin/bump",
@@ -128,8 +137,25 @@ if args.bump
         encoding: 'utf8'
         stdio: 'inherit'
     log 'done' if args.verbose
-    process.exit 0
+    dowatch = false
 
+###
+00000000   000   000  0000000    000      000   0000000  000   000
+000   000  000   000  000   000  000      000  000       000   000
+00000000   000   000  0000000    000      000  0000000   000000000
+000        000   000  000   000  000      000       000  000   000
+000         0000000   0000000    0000000  000  0000000   000   000
+###
+if args.publish
+    log 'publish', process.cwd() if args.verbose
+    childp.execSync "#{__dirname}/../bin/publish",
+        cwd: process.cwd()
+        encoding: 'utf8'
+        stdio: 'inherit'
+    log 'done' if args.verbose
+    dowatch = false
+
+if not dowatch then process.exit 0
 ###
 000   000   0000000   000000000   0000000  000   000
 000 0 000  000   000     000     000       000   000

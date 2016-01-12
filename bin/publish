@@ -4,5 +4,8 @@ git push
 git add .
 git commit -m "v`sds -rp version`" 
 git push
-# npm publish
-# npm install -g `sds -rp name`
+npm publish
+if [ -e `npm -g bin`/`sds -rp name` ]; then
+    echo 'installing global'
+    npm install -g `sds -rp name`
+fi
