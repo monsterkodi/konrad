@@ -26,6 +26,7 @@ log    = console.log
 watcher = null
 
 args = require('karg') """
+
 konrad
     directory  . ? the directory to watch . * . = .
     publish    . ? bump, commit and publish   . = false
@@ -33,6 +34,7 @@ konrad
     update     . ? update npm packages        . = false
     verbose    . ? log more                   . = false
     quiet      . ? log nothing                . = false
+    
 version  #{require("#{__dirname}/../package.json").version}
 """
 
@@ -97,7 +99,7 @@ error = (e) ->
 
 restart = ->
     watcher.close()
-    log '🔧 restart'.bold.gray
+    log '🔧  restart'.bold.gray
     childp.execSync "/usr/bin/env node #{__filename}",
         cwd:      process.cwd()
         encoding: 'utf8'
@@ -108,54 +110,26 @@ restart = ->
 dowatch = true
 
 ###
-000   000  00000000   0000000     0000000   000000000  00000000
-000   000  000   000  000   000  000   000     000     000     
-000   000  00000000   000   000  000000000     000     0000000 
-000   000  000        000   000  000   000     000     000     
- 0000000   000        0000000    000   000     000     00000000
+ 0000000  00     00  0000000  
+000       000   000  000   000
+000       000000000  000   000
+000       000 0 000  000   000
+ 0000000  000   000  0000000  
 ###
-if args.update
-    log 'update', process.cwd() if args.verbose
-    childp.execSync "#{__dirname}/../bin/update",
-        cwd: process.cwd()
-        encoding: 'utf8'
-        stdio: 'inherit'
-    log 'done' if args.verbose
-    dowatch = false    
 
-###
-0000000    000   000  00     00  00000000 
-000   000  000   000  000   000  000   000
-0000000    000   000  000000000  00000000 
-000   000  000   000  000 0 000  000      
-0000000     0000000   000   000  000      
-###
-if args.bump
-    log 'bump', process.cwd() if args.verbose
-    childp.execSync "#{__dirname}/../bin/bump",
-        cwd: process.cwd()
-        encoding: 'utf8'
-        stdio: 'inherit'
-    log 'done' if args.verbose
-    dowatch = false
-
-###
-00000000   000   000  0000000    000      000   0000000  000   000
-000   000  000   000  000   000  000      000  000       000   000
-00000000   000   000  0000000    000      000  0000000   000000000
-000        000   000  000   000  000      000       000  000   000
-000         0000000   0000000    0000000  000  0000000   000   000
-###
-if args.publish
-    log 'publish', process.cwd() if args.verbose
-    childp.execSync "#{__dirname}/../bin/publish",
-        cwd: process.cwd()
-        encoding: 'utf8'
-        stdio: 'inherit'
-    log 'done' if args.verbose
-    dowatch = false
+for cmd in ['update', 'bump', 'publish']
+    
+    if args[cmd]
+        log cmd.gray, process.cwd().bold.yellow if args.verbose
+        childp.execSync "#{__dirname}/../bin/#{cmd}",
+            cwd: process.cwd()
+            encoding: 'utf8'
+            stdio: 'inherit'
+        log 'done'.gray if args.verbose
+        dowatch = false    
 
 if not dowatch then process.exit 0
+
 ###
 000   000   0000000   000000000   0000000  000   000
 000 0 000  000   000     000     000       000   000
@@ -263,7 +237,7 @@ watch opt, (sourceFile) ->
                     if err 
                         log "can't write #{f}"
                         return
-                    if not args.quiet then log "👍 ".gray, f.yellow
+                    if not args.quiet then log "👍 ", f.yellow
                     
                     if path.resolve(f) == __filename
                         restart()
