@@ -1,7 +1,9 @@
 name            konrad
 description     builds my stuff
-version         0.0.9
+version         0.0.1
 main            js/konrad.js
+bin             
+                konrad  ./bin/konrad
 repository      
                 type    git
                 url     git+https://github.com/monsterkodi/konrad.git
@@ -24,5 +26,3 @@ dependencies
                 semver              ^5.1.0
                 stylus              ^0.53.0
                 write-file-atomic   ^1.1.4
-konrad          
-                publish     true
