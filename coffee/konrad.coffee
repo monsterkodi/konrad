@@ -24,6 +24,7 @@ log    = console.log
 args = require('karg') """
 konrad
     directory  . ? the directory to watch . * . = .
+    publish    . ? bump, commit and publish   . = false
     verbose    . ? log more                   . = false
     quiet      . ? log nothing                . = false
 version  #{require("#{__dirname}/../package.json").version}
@@ -79,6 +80,23 @@ error = (e) ->
         title: 'ERROR'
         sticky: true
     log String(e)
+
+###
+00000000   000   000  0000000    000      000   0000000  000   000
+000   000  000   000  000   000  000      000  000       000   000
+00000000   000   000  0000000    000      000  0000000   000000000
+000        000   000  000   000  000      000       000  000   000
+000         0000000   0000000    0000000  000  0000000   000   000
+###
+
+if args.publish
+    log 'publish', process.cwd()
+    childp.execSync "#{__dirname}/../bin/publish",
+        cwd: process.cwd()
+        encoding: 'utf8'
+        stdio: 'inherit'
+    log 'done'
+    process.exit 0
 
 ###
 000   000   0000000   000000000   0000000  000   000

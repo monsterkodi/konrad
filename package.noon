@@ -1,12 +1,12 @@
 name            konrad
-version         0.0.2
-description     personal development tool
+description     builds my stuff
+version         0.0.0
 main            js/konrad.js
 repository      
                 type    git
                 url     git+https://github.com/monsterkodi/konrad.git
 keywords        
-                development
+                build
                 tool
 author          monsterkodi
 license         Unlicense
@@ -22,3 +22,5 @@ dependencies
                 write-file-atomic   ^1.1.4
                 karg                >=0.1.5
                 noon                >=0.6.4
+konrad          
+                publish     true

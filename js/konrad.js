@@ -8,7 +8,7 @@
  */
 
 (function() {
-  var _, args, chalk, choki, coffee, colors, config, error, fs, jade, log, noon, notify, opt, path, resolve, sds, stylus, watch, write,
+  var _, args, choki, coffee, colors, config, error, fs, jade, log, noon, notify, opt, path, resolve, sds, stylus, watch, write,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   fs = require('fs');
@@ -27,8 +27,6 @@
 
   colors = require('colors');
 
-  chalk = require('chalk');
-
   coffee = require('coffee-script');
 
   choki = require('chokidar');
@@ -41,7 +39,7 @@
 
   log = console.log;
 
-  args = require('karg')("konrad\n    directory  . ? the directory to watch . * . = .\n    verbose    . ? log more . = false\n    quiet      . ? log nothing . = false\nversion  " + (require(__dirname + "/../package.json").version));
+  args = require('karg')("konrad\n    directory  . ? the directory to watch . * . = .\n    publish    . ? bump, commit and publish   . = false\n    verbose    . ? log more                   . = false\n    quiet      . ? log nothing                . = false\nversion  " + (require(__dirname + "/../package.json").version));
 
 
   /*
@@ -97,6 +95,26 @@
     });
     return log(String(e));
   };
+
+
+  /*
+  00000000   000   000  0000000    000      000   0000000  000   000
+  000   000  000   000  000   000  000      000  000       000   000
+  00000000   000   000  0000000    000      000  0000000   000000000
+  000        000   000  000   000  000      000       000  000   000
+  000         0000000   0000000    0000000  000  0000000   000   000
+   */
+
+  if (args.publish) {
+    log('publish', process.cwd());
+    childp.execSync(__dirname + "/../bin/publish", {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'inherit'
+    });
+    log('done');
+    process.exit(0);
+  }
 
 
   /*
