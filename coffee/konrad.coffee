@@ -13,6 +13,7 @@ noon   = require 'noon'
 jade   = require 'jade'
 colors = require 'colors'
 stylus = require 'stylus'
+mkpath = require 'mkpath'
 childp = require 'child_process'
 write  = require 'write-file-atomic'
 coffee = require 'coffee-script'
@@ -20,7 +21,9 @@ choki  = require 'chokidar'
 notify = require 'growl'
 path   = require 'path'
 _      = require 'lodash'
+
 log    = console.log
+watcher = null
 
 args = require('karg') """
 konrad
@@ -81,6 +84,24 @@ error = (e) ->
         title: 'ERROR'
         sticky: true
     log String(e)
+
+###
+00000000   00000000   0000000  000000000   0000000   00000000   000000000
+000   000  000       000          000     000   000  000   000     000   
+0000000    0000000   0000000      000     000000000  0000000       000   
+000   000  000            000     000     000   000  000   000     000   
+000   000  00000000  0000000      000     000   000  000   000     000   
+###
+
+restart = ->
+    watcher.close()
+    log 'restart'.yellow.bold
+    childp.execSync "/usr/bin/env node #{__filename}",
+        cwd:      process.cwd()
+        encoding: 'utf8'
+        stdio:    'inherit'
+    log 'exit'.yellow.bold
+    process.exit 0
 
 ###
 00000000   000   000  0000000    000      000   0000000  000   000
@@ -201,6 +222,7 @@ watch opt, (sourceFile) ->
                 000   000  000   000  000     000     000     
                 00     00  000   000  000     000     00000000
                 ###
+                mkpath.sync path.dirname f
                 write f, compiled, (err) ->
                     if err 
                         log "can't write #{f}"
@@ -208,8 +230,9 @@ watch opt, (sourceFile) ->
                     if not args.quiet then log "->".gray, f.yellow
                     
                     if path.resolve(f) == __filename
-                        log 'exit'.yellow
-                        process.exit 0
+                        restart()
+                    else
+                        log path.resolve(f), __filename
             else
                 log 'unchanged'.green, path.resolve(f) if args.verbose
                         
