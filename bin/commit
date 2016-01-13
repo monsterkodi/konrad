@@ -3,7 +3,7 @@ if [ $# -eq 0 ]; then
     echo '[ERROR] no commit message!' | lolcat -p 0.3
     exit 1
 fi
-git push -q
 git add .
 git status -sb
 git commit -m "$*"
+git push -q
