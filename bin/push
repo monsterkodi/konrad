@@ -8,7 +8,7 @@ git status -sb
 git add .
 git status -sb
 echo "committing '$*'"
-git commit -m "\"$*\""
+git commit -m "$*"
 # git push
 # npm publish
 # if [ -e `npm -g bin`/`sds -rp name` ]; then
