@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-git push
+if [ $# -eq 0 ]; then
+    git push
+else
+    `dirname $0`/commit "$*"
+fi
 `dirname $0`/bump
 VERSION=`sds -rp version`
 `dirname $0`/commit "v$VERSION"
 git tag -f -a -m "v$VERSION" $VERSION
-git push --tags
+git push --tags -q
 npm publish
 if [ -e `npm -g bin`/`sds -rp name` ]; then
     echo "installing `sds -rp name` globally"

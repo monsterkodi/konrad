@@ -40,8 +40,9 @@ konrad
     
 arguments
     no option  directory to watch
-    commit     message
-    bump       version
+    commit     commit message
+    publish    commit message
+    bump       semver version
     
 version  #{pkg.version}
 """
