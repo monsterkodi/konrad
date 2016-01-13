@@ -4,9 +4,8 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 git push -q
-git status -sb
 git add .
-git status -s
+git status -sb
 git commit -m "$*"
 # git push
 # npm publish
