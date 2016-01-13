@@ -3,13 +3,12 @@ if [ $# -eq 0 ]; then
     echo '[ERROR] no commit message!' | lolcat -p 0.3
     exit 1
 fi
-echo $*
-git push
-git status -s
+git push -q
+git status -sb
 git add .
-git status -s
+git status -sb
 echo "committing '$@'"
-git commit -m "$@"
+git commit -m '"$@"'
 # git push
 # npm publish
 # if [ -e `npm -g bin`/`sds -rp name` ]; then
