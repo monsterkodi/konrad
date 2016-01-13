@@ -29,14 +29,19 @@ watcher = null
 args = require('karg') """
 
 konrad
-    directory  . ? the directory to watch . * . = .
-    commit     . ? commit with message        . = #{pkg.name}
-    publish    . ? bump, commit and publish   . = false
-    bump       . ? bump package.* version     . = false
-    update     . ? update npm packages        . = false
-    verbose    . ? log more                   . = false
-    quiet      . ? log nothing                . = false
-    time       . ? log with time              . = true
+    arguments  . ? see arguments                   . ** .
+    bump       . ? bump package.* version          . = false
+    commit     . ? commit with message             . = false
+    publish    . ? bump, commit and publish to npm . = false
+    update     . ? update npm packages             . = false
+    verbose    . ? log more                        . = false
+    quiet      . ? log nothing                     . = false
+    time       . ? log with time                   . = true
+    
+arguments
+    no option  directory to watch
+    commit     message
+    bump       version
     
 version  #{pkg.version}
 """
@@ -93,19 +98,22 @@ error = (e) ->
         sticky: true
     
 ###
-000000000  000  00     00  00000000
-   000     000  000   000  000     
-   000     000  000000000  0000000 
-   000     000  000 0 000  000     
-   000     000  000   000  00000000
+00000000   00000000   00000000  000000000  000000000  000   000
+000   000  000   000  000          000        000      000 000 
+00000000   0000000    0000000      000        000       00000  
+000        000   000  000          000        000        000   
+000        000   000  00000000     000        000        000   
 ###
 
-timeString = () ->
+prettyPath = (p, c=colors.yellow) ->
+    p.split(path.sep).map((n) -> c(n).bold).join c(path.sep).dim
+
+prettyTime = () ->
     if args.time
         d = new Date()
         ["#{_.padStart(String(d.getHours()),   2, '0').bold}:"
          "#{_.padStart(String(d.getMinutes()), 2, '0').bold}:"
-         "#{_.padStart(String(d.getSeconds()), 2, '0').bold}"].join('').gray
+         "#{_.padStart(String(d.getSeconds()), 2, '0').bold}"].join('').blue
     else
         ''
 
@@ -119,7 +127,7 @@ timeString = () ->
 
 restart = ->
     watcher.close()
-    log timeString(), '🔧  restart'.bold.gray
+    log prettyTime(), '🔧  restart'.bold.gray
     childp.execSync "/usr/bin/env node #{__filename}",
         cwd:      process.cwd()
         encoding: 'utf8'
@@ -137,19 +145,29 @@ dowatch = true
  0000000  000   000  0000000  
 ###
 
+# log noon.stringify args, colors:true
+
 for cmd in ['update', 'bump', 'commit', 'publish']
     
-    if args[cmd] == true
-        log cmd.gray, process.cwd().bold.yellow if args.verbose
+    if args[cmd]
+        dowatch = false
         try
-            childp.execSync "#{__dirname}/../bin/#{cmd}",
+            cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
+            cmdargs = args.arguments.join ' '
+            command = "#{cmdpath} #{cmdargs}"
+            if args.verbose
+                log cmd.gray.reset, prettyPath(cmdpath), cmdargs.green
+            childp.execSync command,
                 cwd: process.cwd()
                 encoding: 'utf8'
                 stdio: 'inherit'
         catch e
             error "command #{cmd.bold.yellow} #{'failed!'.red}"
+            break
         log 'done'.gray if args.verbose
-        dowatch = false    
+        
+        if args.arguments and cmd in ['commit', 'bump']
+            break
 
 if not dowatch then process.exit 0
 
@@ -172,7 +190,10 @@ watch = (opt, cb) ->
     
     pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
     
-    watcher = choki.watch args.directory ? '.', 
+    d = args.arguments[0] ? '.'
+    
+    log prettyTime(), "🔧  watching #{prettyPath resolve(d), colors.blue}".bold.gray
+    watcher = choki.watch d, 
         ignored: ignore
         ignoreInitial: true
         
@@ -261,7 +282,7 @@ watch opt, (sourceFile) ->
                         log "can't write #{f.bold.yellow}".bold.red
                         return
                     if not args.quiet 
-                        log timeString(), "👍  #{path.dirname f}/#{path.basename(f, path.extname(f)).bold}#{path.extname(f)}".yellow
+                        log prettyTime(), "👍  #{path.dirname f}/#{path.basename(f, path.extname(f)).bold}#{path.extname(f)}".yellow
                     
                     if path.resolve(f) == __filename
                         restart()
