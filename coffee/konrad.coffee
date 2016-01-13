@@ -34,6 +34,7 @@ konrad
     update     . ? update npm packages        . = false
     verbose    . ? log more                   . = false
     quiet      . ? log nothing                . = false
+    time       . ? log with time              . = true
     
 version  #{require("#{__dirname}/../package.json").version}
 """
@@ -87,7 +88,24 @@ error = (e) ->
     notify String(e).strip, 
         title: 'ERROR'
         sticky: true
-    log String(e)
+    log String e
+    
+###
+000000000  000  00     00  00000000
+   000     000  000   000  000     
+   000     000  000000000  0000000 
+   000     000  000 0 000  000     
+   000     000  000   000  00000000
+###
+
+timeString = () ->
+    if args.time
+        d = new Date()
+        ["#{_.padLeft(String(d.getHours()),   2, '0').bold}:"
+         "#{_.padLeft(String(d.getMinutes()), 2, '0').bold}:"
+         "#{_.padLeft(String(d.getSeconds()), 2, '0').bold}"].join('').gray
+    else
+        ''
 
 ###
 00000000   00000000   0000000  000000000   0000000   00000000   000000000
@@ -99,7 +117,7 @@ error = (e) ->
 
 restart = ->
     watcher.close()
-    log '🔧  restart'.bold.gray
+    log timeString(), '🔧  restart'.bold.gray
     childp.execSync "/usr/bin/env node #{__filename}",
         cwd:      process.cwd()
         encoding: 'utf8'
@@ -235,9 +253,10 @@ watch opt, (sourceFile) ->
                 mkpath.sync path.dirname f
                 write f, compiled, (err) ->
                     if err 
-                        log "can't write #{f}"
+                        log "can't write #{f.bold.yellow}".bold.red
                         return
-                    if not args.quiet then log "👍 ", f.yellow
+                    if not args.quiet 
+                        log timeString(), "👍 ", f.yellow
                     
                     if path.resolve(f) == __filename
                         restart()
