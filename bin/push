@@ -6,8 +6,7 @@ fi
 git push -q
 git status -sb
 git add .
-git status -sb
-echo "committing '$*'"
+git status -s
 git commit -m "$*"
 # git push
 # npm publish
