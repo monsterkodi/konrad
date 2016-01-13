@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+if [ $# -eq 0 ]; then
+    echo '[ERROR] no commit message!' | lolcat -p 0.3
+    exit 1
+fi
+echo $*
+git push
+git status -s
+git add .
+git status -s
+echo "committing '$@'"
+git commit -m "$@"
+# git push
+# npm publish
+# if [ -e `npm -g bin`/`sds -rp name` ]; then
+#     echo "installing `sds -rp name` globally"
+#     npm install -g `sds -rp name`
+# fi

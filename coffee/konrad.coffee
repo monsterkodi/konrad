@@ -101,9 +101,9 @@ error = (e) ->
 timeString = () ->
     if args.time
         d = new Date()
-        ["#{_.padLeft(String(d.getHours()),   2, '0').bold}:"
-         "#{_.padLeft(String(d.getMinutes()), 2, '0').bold}:"
-         "#{_.padLeft(String(d.getSeconds()), 2, '0').bold}"].join('').gray
+        ["#{_.padStart(String(d.getHours()),   2, '0').bold}:"
+         "#{_.padStart(String(d.getMinutes()), 2, '0').bold}:"
+         "#{_.padStart(String(d.getSeconds()), 2, '0').bold}"].join('').gray
     else
         ''
 
