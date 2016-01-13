@@ -6,4 +6,5 @@ fi
 git add .
 git status -sb
 git commit -m "$*"
+echo 'pushing'
 git push -q
