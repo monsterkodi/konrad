@@ -256,7 +256,7 @@ watch opt, (sourceFile) ->
                         log "can't write #{f.bold.yellow}".bold.red
                         return
                     if not args.quiet 
-                        log timeString(), "👍 ", f.yellow
+                        log timeString(), "👍  #{path.dirname f}/#{path.basename(f, path.extname(f)).bold}#{path.extname(f)}".yellow
                     
                     if path.resolve(f) == __filename
                         restart()
