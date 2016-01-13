@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 git push
 `dirname $0`/bump
-git add .
-git commit -m "v`sds -rp version`" 
-git push
+`dirname $0`/commit "v`sds -rp version`"
 npm publish
 if [ -e `npm -g bin`/`sds -rp name` ]; then
     echo "installing `sds -rp name` globally"
