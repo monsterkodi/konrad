@@ -106,28 +106,37 @@ error = (e) ->
 ###
 
 prettyPath = (p, c=colors.yellow) ->
-    p.split(path.sep).map((n) -> c(n).bold).join c(path.sep).dim
+    p.split(path.sep).map((n) -> c(n)).join c(path.sep).dim
+    
+prettyFilePath = (p, c=colors.yellow) ->
+    "#{prettyPath path.dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
+
+prettyFile = (f, c=colors.yellow) ->
+    "#{c(path.basename(f, path.extname(f))).bold}#{prettyExt path.extname(f), c}"
+
+prettyExt = (e, c=colors.yellow) ->
+    if e.length then c('.').dim + c(e.substr 1) else ''
 
 prettyTime = () ->
     if args.time
         d = new Date()
-        ["#{_.padStart(String(d.getHours()),   2, '0').bold}:"
-         "#{_.padStart(String(d.getMinutes()), 2, '0').bold}:"
-         "#{_.padStart(String(d.getSeconds()), 2, '0').bold}"].join('').blue
+        ["#{_.padStart(String(d.getHours()),   2, '0').gray}#{':'.dim.gray}"
+         "#{_.padStart(String(d.getMinutes()), 2, '0').gray}#{':'.dim.gray}"
+         "#{_.padStart(String(d.getSeconds()), 2, '0').gray}"].join('')
     else
         ''
 
 ###
-00000000   00000000   0000000  000000000   0000000   00000000   000000000
-000   000  000       000          000     000   000  000   000     000   
-0000000    0000000   0000000      000     000000000  0000000       000   
-000   000  000            000     000     000   000  000   000     000   
-000   000  00000000  0000000      000     000   000  000   000     000   
+00000000   00000000  000       0000000    0000000   0000000  
+000   000  000       000      000   000  000   000  000   000
+0000000    0000000   000      000   000  000000000  000   000
+000   000  000       000      000   000  000   000  000   000
+000   000  00000000  0000000   0000000   000   000  0000000  
 ###
 
-restart = ->
+reload = ->
     watcher.close()
-    log prettyTime(), '🔧  restart'.bold.gray
+    log prettyTime(), '🔧  reload'.gray
     childp.execSync "/usr/bin/env node #{__filename}",
         cwd:      process.cwd()
         encoding: 'utf8'
@@ -192,7 +201,7 @@ watch = (opt, cb) ->
     
     d = args.arguments[0] ? '.'
     
-    log prettyTime(), "🔧  watching #{prettyPath resolve(d), colors.blue}".bold.gray
+    log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}".gray
     watcher = choki.watch d, 
         ignored: ignore
         ignoreInitial: true
@@ -282,10 +291,10 @@ watch opt, (sourceFile) ->
                         log "can't write #{f.bold.yellow}".bold.red
                         return
                     if not args.quiet 
-                        log prettyTime(), "👍  #{path.dirname f}/#{path.basename(f, path.extname(f)).bold}#{path.extname(f)}".yellow
+                        log prettyTime(), "👍  #{prettyFilePath f}"
                     
                     if path.resolve(f) == __filename
-                        restart()
+                        reload()
             else
                 log 'unchanged'.green, path.resolve(f) if args.verbose
                         
