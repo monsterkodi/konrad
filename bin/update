@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+if [ ! -e package.json ]; then
+    echo "[ERROR] no package.json!" | lolcat -p 0.3
+    exit 1
+fi
 ncu -a
 npm update
 npm update

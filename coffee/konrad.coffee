@@ -22,13 +22,15 @@ notify = require 'growl'
 path   = require 'path'
 _      = require 'lodash'
 
-log    = console.log
+pkg     = require "#{__dirname}/../package"
+log     = console.log
 watcher = null
 
 args = require('karg') """
 
 konrad
     directory  . ? the directory to watch . * . = .
+    commit     . ? commit with message        . = #{pkg.name}
     publish    . ? bump, commit and publish   . = false
     bump       . ? bump package.* version     . = false
     update     . ? update npm packages        . = false
@@ -36,7 +38,7 @@ konrad
     quiet      . ? log nothing                . = false
     time       . ? log with time              . = true
     
-version  #{require("#{__dirname}/../package.json").version}
+version  #{pkg.version}
 """
 
 ###
@@ -85,10 +87,10 @@ config = (p) ->
 ###
 
 error = (e) ->
+    log "#{'[ERROR]'.bold.red} #{e.red}"
     notify String(e).strip, 
         title: 'ERROR'
         sticky: true
-    log String e
     
 ###
 000000000  000  00     00  00000000
@@ -135,14 +137,17 @@ dowatch = true
  0000000  000   000  0000000  
 ###
 
-for cmd in ['update', 'bump', 'publish']
+for cmd in ['update', 'bump', 'commit', 'publish']
     
-    if args[cmd]
+    if args[cmd] == true
         log cmd.gray, process.cwd().bold.yellow if args.verbose
-        childp.execSync "#{__dirname}/../bin/#{cmd}",
-            cwd: process.cwd()
-            encoding: 'utf8'
-            stdio: 'inherit'
+        try
+            childp.execSync "#{__dirname}/../bin/#{cmd}",
+                cwd: process.cwd()
+                encoding: 'utf8'
+                stdio: 'inherit'
+        catch e
+            error "command #{cmd.bold.yellow} #{'failed!'.red}"
         log 'done'.gray if args.verbose
         dowatch = false    
 
