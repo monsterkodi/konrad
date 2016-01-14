@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
+TEST=`sds -rp scripts.test`
+if [ -n "$TEST" ] ; then
+    if ! npm test ; then
+        echo '[ERROR] test failed!' | lolcat -p 0.3
+        exit 1
+    fi
+fi
+
 if [ $# -eq 0 ]; then
     git push
 else
     `dirname $0`/commit "$*"
 fi
+
 `dirname $0`/bump
 VERSION=`sds -rp version`
 `dirname $0`/commit "v$VERSION"
