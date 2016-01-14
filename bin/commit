@@ -8,3 +8,4 @@ git status -sb
 git commit -m "$*"
 echo 'pushing'
 git push -q
+git status -sb
