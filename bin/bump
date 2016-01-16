@@ -12,14 +12,19 @@ bump
 """
 
 if args.semver? and not semver.valid args.semver
-    console.log "not a semver version: #{args.semver.yellow}".red
-    process.exit 1
+    if args.semver in ['major', 'minor', 'patch']
+        args.increment = args.semver
+        delete args.semver
+        console.log args
+    else
+        console.log "not a semver version: #{args.semver.yellow}".red
+        process.exit 1
 
 file         = path.join process.cwd(), 'package.json'
 pack         = require file
 oldversion   = pack.version
+oldversion   = "0.0.0" if not semver.valid oldversion
 pack.version = args.semver ? semver.inc oldversion, args.increment
-
 console.log path.basename(path.dirname file).green, oldversion.bold.gray, '►'.gray, pack.version.bold.yellow
 
 # write package.json

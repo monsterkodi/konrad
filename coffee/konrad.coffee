@@ -25,19 +25,25 @@ konrad
     arguments  . ? see arguments                   . ** .
     bump       . ? bump package.* version          . = false
     commit     . ? commit with message             . = false
-    publish    . ? bump, commit and publish to npm . = false
+    publish    . ? bump, commit & publish to npm   . = false
     update     . ? update npm packages             . = false
     test       . ? run tests                       . = false
+    run        . ? build dirty or missing targets  . = false
+    rebuild    . ? rebuild all targets             . = false . - R
     info       . ? show info                       . = false
     verbose    . ? log more                        . = false
     quiet      . ? log nothing                     . = false
+    debug      . ? log debug                       . = false
     logtime    . ? log with time                   . = true
     
 arguments
-    no option  directory to watch
+    no option  directory to watch             #{'.'.magenta}
+    info       directory to inspect           #{'.'.magenta}
+    run        directory to build             #{'.'.magenta}
+    rebuild    directory to rebuild           #{'.'.magenta}
     commit     commit message
     publish    commit message
-    bump       semver version
+    bump       semver version                 #{'patch'.magenta}
     
 version  #{pkg.version}
 """
@@ -122,7 +128,7 @@ ignore = [
 
 sticky = false
 error = (e) ->
-    log "#{'[ERROR]'.bold.red} #{e.red}"
+    log "#{'[ERROR]'.bold.red} #{String(e).red}"
     require('growl') String(e).strip, 
         title: 'ERROR'
         sticky: sticky
@@ -190,7 +196,6 @@ dowatch = true
 target = (sourceFile) ->
     ext = path.extname(sourceFile).substr(1)
     o = config sourceFile
-    
     return if 'ignore' in _.keys o
     
     if o[ext].filter?
@@ -198,9 +203,11 @@ target = (sourceFile) ->
         for r in o[ext].filter
             if new RegExp(r).test(sourceFile)
                 matches = true
-        if not matches then return       
+        if not matches 
+            log prettyFilePath relative(sourceFile), colors.blue if args.verbose
+            return       
     
-    targetFile = sourceFile
+    targetFile = _.clone sourceFile
             
     if o[ext].replace?
         for k,v of o[ext].replace
@@ -219,105 +226,20 @@ target = (sourceFile) ->
 ###
 
 dirty = (sourceFile, targetFile) ->
+    if not fs.existsSync targetFile then return true
     ss = fs.statSync sourceFile
     ts = fs.statSync targetFile
     ss.mtime > ts.mtime    
 
 ###
-000  000   000  00000000   0000000 
-000  0000  000  000       000   000
-000  000 0 000  000000    000   000
-000  000  0000  000       000   000
-000  000   000  000        0000000 
+00000000   000   000  000   000
+000   000  000   000  0000  000
+0000000    000   000  000 0 000
+000   000  000   000  000  0000
+000   000   0000000   000   000
 ###
-
-if args.info
-    dowatch = false
-    log '○● info'.gray
-    walk = require 'walkdir'
-    d = args.arguments[0] ? '.'
-    walk.sync d, (p) ->
-        for i in ignore
-            if i.test p
-                log prettyFilePath relative(p), colors.red if args.verbose
-                @ignore p
-                return
-                
-        if path.extname(p).substr(1) in _.keys(opt)
-            targetFile = target p
-            if targetFile
-                if dirty p, targetFile
-                    log prettyFilePath(_.padEnd(relative(p), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red) 
-                else
-                    log prettyFilePath(_.padEnd(relative(p), 40)), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
-            else if args.verbose
-                log prettyFilePath relative(p), colors.blue
-        else if args.verbose
-            log prettyFilePath relative(p), colors.gray
-
-###
- 0000000  00     00  0000000  
-000       000   000  000   000
-000       000000000  000   000
-000       000 0 000  000   000
- 0000000  000   000  0000000  
-###
-
-# log noon.stringify args, colors:true
-
-for cmd in ['update', 'bump', 'commit', 'publish', 'test']
     
-    if args[cmd]
-        dowatch = false
-        try
-            cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
-            cmdargs = args.arguments.join ' '
-            command = "#{cmdpath} #{cmdargs}"
-            if args.verbose
-                log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
-            childp.execSync command,
-                cwd: process.cwd()
-                encoding: 'utf8'
-                stdio: 'inherit'
-        catch e
-            error "command #{cmd.bold.yellow} #{'failed!'.red}"
-            break
-        log '🔧  done'.gray if args.verbose
-        
-        if args.arguments and cmd in ['commit', 'bump']
-            break
-
-if not dowatch then process.exit 0
-sticky = true
-
-###
-000   000   0000000   000000000   0000000  000   000
-000 0 000  000   000     000     000       000   000
-000000000  000000000     000     000       000000000
-000   000  000   000     000     000       000   000
-00     00  000   000     000      0000000  000   000
-###
-
-watch = (opt, cb) ->
-    
-    pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
-    
-    d = args.arguments[0] ? '.'
-    
-    log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}".gray
-    watcher = require('chokidar').watch d, 
-        ignored: ignore
-        ignoreInitial: true
-        
-    watcher
-        .on 'add',    (p) -> if pass p then cb p
-        .on 'change', (p) -> if pass p then cb p
-
-watch opt, (sourceFile) ->
-    
-    o = config sourceFile
-
-    return if 'ignore' in _.keys o
+run = (sourceFile) ->
     
     ###
     00000000   00000000   0000000   0000000  
@@ -327,6 +249,7 @@ watch opt, (sourceFile) ->
     000   000  00000000  000   000  0000000  
     ###
     fs.readFile sourceFile, 'utf8', (err, data) -> 
+        
         if err 
             log "can't read #{sourceFile}"
             return
@@ -338,6 +261,8 @@ watch opt, (sourceFile) ->
         targetFile = target sourceFile
         
         if args.verbose then log "target file".gray, targetFile
+        
+        o = config sourceFile
         
         try
             ###
@@ -359,7 +284,7 @@ watch opt, (sourceFile) ->
                     jade = require 'jade'
                     jade.render data, pretty: true
                 when 'json'
-                    sds.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  '
+                    sds.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
                 when 'noon'
                     sds.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
         catch e
@@ -388,6 +313,135 @@ watch opt, (sourceFile) ->
                         reload()
             else
                 log 'unchanged'.green, path.resolve(targetFile) if args.verbose
-                        
+
+###
+000   000   0000000   000      000   000
+000 0 000  000   000  000      000  000 
+000000000  000000000  000      0000000  
+000   000  000   000  000      000  000 
+00     00  000   000  0000000  000   000
+###
+
+walk = (f) ->
+    
+    walkdir = require 'walkdir'
+    d = args.arguments[0] ? '.'
+    try
+        walkdir.sync d, (p) ->    
+            for i in ignore
+                if i.test p
+                    log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
+                    @ignore p
+                    return
+            if path.extname(p).substr(1) in _.keys(opt)
+                f p, target p
+            else if args.debug
+                log prettyFilePath(relative(p), colors.gray)
+    catch e
+        error e
+
+###
+                000  000   000  00000000   0000000 
+                000  0000  000  000       000   000
+000000  000000  000  000 0 000  000000    000   000
+                000  000  0000  000       000   000
+                000  000   000  000        0000000 
+###
+
+if args.info
+    dowatch = false
+    log '○● info'.gray
+
+    walk (sourceFile, targetFile) ->
+        if targetFile
+            if dirty sourceFile, targetFile
+                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red) 
+            else
+                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
+
+###
+                00000000   000   000  000   000
+                000   000  000   000  0000  000
+000000  000000  0000000    000   000  000 0 000
+                000   000  000   000  000  0000
+                000   000   0000000   000   000
+###
+
+if args.run
+    dowatch = false
+    log '🔧🔧 run'.gray
+
+    walk (sourceFile, targetFile) ->
+        if targetFile
+            if dirty sourceFile, targetFile
+                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), "🔧  ", prettyFilePath(relative(targetFile), colors.green) 
+                run sourceFile
+
+###
+                 0000000  00     00  0000000  
+                000       000   000  000   000
+000000  000000  000       000000000  000   000
+                000       000 0 000  000   000
+                 0000000  000   000  0000000  
+###
+
+# log noon.stringify args, colors:true
+
+for cmd in ['update', 'bump', 'commit', 'publish', 'test']
+    
+    if args[cmd]
+        dowatch = false
+        try
+            cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
+            cmdargs = args.arguments.join ' '
+            command = "#{cmdpath} #{cmdargs}"
+            if args.verbose
+                log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
+            childp.execSync command,
+                cwd: process.cwd()
+                encoding: 'utf8'
+                stdio: 'inherit'
+        catch e
+            error "command #{cmd.bold.yellow} #{'failed!'.red}"
+            break
+        log '🔧  done'.gray if args.verbose
+        
+        if args.arguments and cmd in ['commit', 'bump']
+            break
+
+if dowatch
+    sticky = true
+
+    ###
+    000   000   0000000   000000000   0000000  000   000
+    000 0 000  000   000     000     000       000   000
+    000000000  000000000     000     000       000000000
+    000   000  000   000     000     000       000   000
+    00     00  000   000     000      0000000  000   000
+    ###
+
+    watch = (opt, cb) ->
+        
+        pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
+        
+        d = args.arguments[0] ? '.'
+        
+        log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}".gray
+        watcher = require('chokidar').watch d, 
+            ignored: ignore
+            ignoreInitial: true
             
+        watcher
+            .on 'add',    (p) -> if pass p then cb p
+            .on 'change', (p) -> if pass p then cb p
+
+    watch opt, (sourceFile) ->
+        
+        o = config sourceFile
+
+        return if 'ignore' in _.keys o
+        
+        run sourceFile
+    
+
         
