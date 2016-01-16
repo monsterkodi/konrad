@@ -7,7 +7,7 @@ semver = require 'semver'
 args   = require('karg') """
 
 bump
-    semver     . ? use this version instead of incrementing . *
+    semver     . ? semver or increment type . *
     increment  . ? increment type: major, minor or . = patch
 """
 
