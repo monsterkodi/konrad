@@ -11,13 +11,10 @@ path   = require 'path'
 sds    = require 'sds'
 noon   = require 'noon'
 colors = require 'colors'
-mkpath = require 'mkpath'
-childp = require 'child_process'
 _      = require 'lodash'
 
 pkg     = require "#{__dirname}/../package"
 log     = console.log
-watcher = null
 
 args = require('karg') """
 
@@ -47,20 +44,6 @@ arguments
     
 version  #{pkg.version}
 """
-
-###
-00000000   00000000   0000000   0000000   000      000   000  00000000
-000   000  000       000       000   000  000      000   000  000     
-0000000    0000000   0000000   000   000  000       000 000   0000000 
-000   000  000            000  000   000  000         000     000     
-000   000  00000000  0000000    0000000   0000000      0      00000000
-###
-
-resolve = (unresolved) ->
-    p = unresolved.replace /\~/, process.env.HOME
-    p = path.resolve p
-    p = path.normalize p
-    p
     
 ###
  0000000   0000000   000   000  00000000  000   0000000 
@@ -84,18 +67,6 @@ config = (p) ->
         if fs.existsSync path.join p, '.konrad.noon'
             return _.defaultsDeep sds.load(path.join p, '.konrad.noon'), opt
     opt
-
-###
-00000000   00000000  000       0000000   000000000  000  000   000  00000000
-000   000  000       000      000   000     000     000  000   000  000     
-0000000    0000000   000      000000000     000     000   000 000   0000000 
-000   000  000       000      000   000     000     000     000     000     
-000   000  00000000  0000000  000   000     000     000      0      00000000
-###
-
-relative = (absolute) ->
-    d = args.arguments[0] ? '.'
-    r = path.relative d, absolute
     
 ###
 000   0000000   000   000   0000000   00000000   00000000
@@ -117,22 +88,7 @@ ignore = [
     /\.app$/
     /_misc/
 ]
-    
-###
-00000000  00000000   00000000    0000000   00000000 
-000       000   000  000   000  000   000  000   000
-0000000   0000000    0000000    000   000  0000000  
-000       000   000  000   000  000   000  000   000
-00000000  000   000  000   000   0000000   000   000
-###
-
-sticky = false
-error = (e) ->
-    log "#{'[ERROR]'.bold.red} #{String(e).red}"
-    require('growl') String(e).strip, 
-        title: 'ERROR'
-        sticky: sticky
-    
+        
 ###
 00000000   00000000   00000000  000000000  000000000  000   000
 000   000  000   000  000          000        000      000 000 
@@ -166,25 +122,31 @@ prettyTime = () ->
         ''
 
 ###
-00000000   00000000  000       0000000    0000000   0000000  
-000   000  000       000      000   000  000   000  000   000
-0000000    0000000   000      000   000  000000000  000   000
-000   000  000       000      000   000  000   000  000   000
-000   000  00000000  0000000   0000000   000   000  0000000  
+00000000   00000000   0000000   0000000   000      000   000  00000000
+000   000  000       000       000   000  000      000   000  000     
+0000000    0000000   0000000   000   000  000       000 000   0000000 
+000   000  000            000  000   000  000         000     000     
+000   000  00000000  0000000    0000000   0000000      0      00000000
 ###
 
-reload = ->
-    watcher.close()
-    log prettyTime(), '🔧  reload'.gray
-    childp.execSync "/usr/bin/env node #{__filename}",
-        cwd:      process.cwd()
-        encoding: 'utf8'
-        stdio:    'inherit'
-    log 'exit'.yellow.bold
-    process.exit 0
+resolve = (unresolved) ->
+    p = unresolved.replace /\~/, process.env.HOME
+    p = path.resolve p
+    p = path.normalize p
+    p
+    
+###
+00000000   00000000  000       0000000   000000000  000  000   000  00000000
+000   000  000       000      000   000     000     000  000   000  000     
+0000000    0000000   000      000000000     000     000   000 000   0000000 
+000   000  000       000      000   000     000     000     000     000     
+000   000  00000000  0000000  000   000     000     000      0      00000000
+###
 
-dowatch = true
-
+relative = (absolute) ->
+    d = args.arguments[0] ? '.'
+    r = path.relative d, absolute
+        
 ###
 000000000   0000000   00000000    0000000   00000000  000000000
    000     000   000  000   000  000        000          000   
@@ -230,6 +192,21 @@ dirty = (sourceFile, targetFile) ->
     ss = fs.statSync sourceFile
     ts = fs.statSync targetFile
     ss.mtime > ts.mtime    
+
+###
+00000000  00000000   00000000    0000000   00000000 
+000       000   000  000   000  000   000  000   000
+0000000   0000000    0000000    000   000  0000000  
+000       000   000  000   000  000   000  000   000
+00000000  000   000  000   000   0000000   000   000
+###
+
+sticky = false
+error = (e) ->
+    log "#{'[ERROR]'.bold.red} #{String(e).red}"
+    require('growl') String(e).strip, 
+        title: 'ERROR'
+        sticky: sticky
 
 ###
 00000000   000   000  000   000
@@ -301,7 +278,7 @@ run = (sourceFile) ->
                 000   000  000   000  000     000     000     
                 00     00  000   000  000     000     00000000
                 ###
-                mkpath.sync path.dirname targetFile
+                require('mkpath').sync path.dirname targetFile
                 require('write-file-atomic') targetFile, compiled, (err) ->
                     if err 
                         log "can't write #{targetFile.bold.yellow}".bold.red
@@ -339,6 +316,8 @@ walk = (f) ->
                 log prettyFilePath(relative(p), colors.gray)
     catch e
         error e
+
+dowatch = true
 
 ###
                 000  000   000  00000000   0000000 
@@ -397,7 +376,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
             command = "#{cmdpath} #{cmdargs}"
             if args.verbose
                 log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
-            childp.execSync command,
+            require('child_process').execSync command,
                 cwd: process.cwd()
                 encoding: 'utf8'
                 stdio: 'inherit'
@@ -409,6 +388,26 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
         if args.arguments and cmd in ['commit', 'bump']
             break
 
+###
+00000000   00000000  000       0000000    0000000   0000000  
+000   000  000       000      000   000  000   000  000   000
+0000000    0000000   000      000   000  000000000  000   000
+000   000  000       000      000   000  000   000  000   000
+000   000  00000000  0000000   0000000   000   000  0000000  
+###
+
+watcher = null
+
+reload = ->
+    watcher.close()
+    log prettyTime(), '🔧  reload'.gray
+    require('child_process').execSync "/usr/bin/env node #{__filename}",
+        cwd:      process.cwd()
+        encoding: 'utf8'
+        stdio:    'inherit'
+    log 'exit'.yellow.bold
+    process.exit 0
+    
 if dowatch
     sticky = true
 
