@@ -34,9 +34,10 @@ konrad
     commit     . ? commit with message             . = false
     publish    . ? bump, commit and publish to npm . = false
     update     . ? update npm packages             . = false
+    test       . ? run tests                       . = false
     verbose    . ? log more                        . = false
     quiet      . ? log nothing                     . = false
-    time       . ? log with time                   . = true
+    logtime    . ? log with time                   . = true
     
 arguments
     no option  directory to watch
@@ -157,7 +158,7 @@ dowatch = true
 
 # log noon.stringify args, colors:true
 
-for cmd in ['update', 'bump', 'commit', 'publish']
+for cmd in ['update', 'bump', 'commit', 'publish', 'test']
     
     if args[cmd]
         dowatch = false
@@ -166,7 +167,7 @@ for cmd in ['update', 'bump', 'commit', 'publish']
             cmdargs = args.arguments.join ' '
             command = "#{cmdpath} #{cmdargs}"
             if args.verbose
-                log cmd.gray.reset, prettyPath(cmdpath), cmdargs.green
+                log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
             childp.execSync command,
                 cwd: process.cwd()
                 encoding: 'utf8'
@@ -174,7 +175,7 @@ for cmd in ['update', 'bump', 'commit', 'publish']
         catch e
             error "command #{cmd.bold.yellow} #{'failed!'.red}"
             break
-        log 'done'.gray if args.verbose
+        log '🔧  done'.gray if args.verbose
         
         if args.arguments and cmd in ['commit', 'bump']
             break

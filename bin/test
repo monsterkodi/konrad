@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+BIN=`npm bin`
+$BIN/mocha --compilers coffee:coffee-script/register
