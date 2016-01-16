@@ -37,13 +37,13 @@ konrad
     logtime    . ? log with time                   . = true
     
 arguments
-    no option  directory to watch             #{'.'.magenta}
-    info       directory to inspect           #{'.'.magenta}
-    run        directory to build             #{'.'.magenta}
-    rebuild    directory to rebuild           #{'.'.magenta}
-    commit     commit message
-    publish    commit message
-    bump       semver version                 #{'patch'.magenta}
+    [no option]  directory to watch         #{'.'.magenta}
+    info         directory to inspect       #{'.'.magenta}
+    run          directory to build         #{'.'.magenta}
+    rebuild      directory to rebuild       #{'.'.magenta}
+    bump         semver version             #{'patch'.magenta}
+    commit       commit message
+    publish      commit message
     
 version  #{pkg.version}
 """
