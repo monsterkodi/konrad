@@ -10,16 +10,9 @@ fs     = require 'fs'
 path   = require 'path'
 sds    = require 'sds'
 noon   = require 'noon'
-jade   = require 'jade'
 colors = require 'colors'
-stylus = require 'stylus'
 mkpath = require 'mkpath'
 childp = require 'child_process'
-write  = require 'write-file-atomic'
-coffee = require 'coffee-script'
-choki  = require 'chokidar'
-notify = require 'growl'
-path   = require 'path'
 _      = require 'lodash'
 
 pkg     = require "#{__dirname}/../package"
@@ -35,6 +28,7 @@ konrad
     publish    . ? bump, commit and publish to npm . = false
     update     . ? update npm packages             . = false
     test       . ? run tests                       . = false
+    info       . ? show info                       . = false
     verbose    . ? log more                        . = false
     quiet      . ? log nothing                     . = false
     logtime    . ? log with time                   . = true
@@ -84,6 +78,22 @@ config = (p) ->
         if fs.existsSync path.join p, '.konrad.noon'
             return _.defaultsDeep sds.load(path.join p, '.konrad.noon'), opt
     opt
+
+###
+000   0000000   000   000   0000000   00000000   00000000
+000  000        0000  000  000   000  000   000  000     
+000  000  0000  000 0 000  000   000  0000000    0000000 
+000  000   000  000  0000  000   000  000   000  000     
+000   0000000   000   000   0000000   000   000  00000000
+###
+
+ignore = [
+    /node_modules/
+    /\/\..+$/
+    /\.git$/
+    /\.app$/
+    /_misc/
+]
     
 ###
 00000000  00000000   00000000    0000000   00000000 
@@ -93,11 +103,12 @@ config = (p) ->
 00000000  000   000  000   000   0000000   000   000
 ###
 
+sticky = false
 error = (e) ->
     log "#{'[ERROR]'.bold.red} #{e.red}"
-    notify String(e).strip, 
+    require('growl') String(e).strip, 
         title: 'ERROR'
-        sticky: true
+        sticky: sticky
     
 ###
 00000000   00000000   00000000  000000000  000000000  000   000
@@ -149,6 +160,27 @@ reload = ->
 dowatch = true
 
 ###
+000  000   000  00000000   0000000 
+000  0000  000  000       000   000
+000  000 0 000  000000    000   000
+000  000  0000  000       000   000
+000  000   000  000        0000000 
+###
+if args.info
+    dowatch = false
+    log '○● info'.gray
+    walk = require 'walkdir'
+    d = args.arguments[0] ? '.'
+    walk.sync d, (p) ->
+        for i in ignore
+            if i.test p
+                log prettyFilePath p, colors.red if args.verbose
+                @ignore p
+                return
+        if path.extname(p).substr(1) in _.keys(opt)
+            log prettyFilePath path.relative d, p
+
+###
  0000000  00     00  0000000  
 000       000   000  000   000
 000       000000000  000   000
@@ -181,6 +213,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
             break
 
 if not dowatch then process.exit 0
+sticky = true
 
 ###
 000   000   0000000   000000000   0000000  000   000
@@ -191,20 +224,13 @@ if not dowatch then process.exit 0
 ###
 
 watch = (opt, cb) ->
-
-    ignore = [
-        /node_modules/
-        /\/\..+$/
-        /\.git$/
-        /\.app$/
-    ]
     
     pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
     
     d = args.arguments[0] ? '.'
     
     log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}".gray
-    watcher = choki.watch d, 
+    watcher = require('chokidar').watch d, 
         ignored: ignore
         ignoreInitial: true
         
@@ -263,14 +289,17 @@ watch opt, (sourceFile) ->
             ###
             compiled = switch ext
                 when 'coffee'
+                    coffee = require 'coffee-script'
                     coffee.compile data, 
                         filename: sourceFile
                 when 'styl'
+                    stylus = require 'stylus'
                     stylus.render data
                 when 'jade'
+                    jade = require 'jade'
                     jade.render data, pretty: true
                 when 'json'
-                    sds.stringify JSON.parse data, ext: '.'+o[ext].ext, indent: '  '
+                    sds.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  '
                 when 'noon'
                     sds.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
         catch e
@@ -288,7 +317,7 @@ watch opt, (sourceFile) ->
                 00     00  000   000  000     000     00000000
                 ###
                 mkpath.sync path.dirname f
-                write f, compiled, (err) ->
+                require('write-file-atomic') f, compiled, (err) ->
                     if err 
                         log "can't write #{f.bold.yellow}".bold.red
                         return
