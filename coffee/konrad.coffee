@@ -231,13 +231,13 @@ run = (sourceFile) ->
             log "can't read #{sourceFile}"
             return
 
-        if args.verbose then log "source file".gray, sourceFile
+        if args.debug then log "source file".gray, sourceFile
                 
         ext = path.extname(sourceFile).substr(1)
         
         targetFile = target sourceFile
         
-        if args.verbose then log "target file".gray, targetFile
+        if args.debug then log "target file".gray, targetFile
         
         o = config sourceFile
         
@@ -290,6 +290,8 @@ run = (sourceFile) ->
                         reload()
             else
                 log 'unchanged'.green, path.resolve(targetFile) if args.verbose
+                stat = fs.statSync sourceFile
+                fs.utimesSync path.resolve(targetFile), stat.atime, stat.mtime
 
 ###
 000   000   0000000   000      000   000
@@ -346,14 +348,17 @@ if args.info
                 000   000   0000000   000   000
 ###
 
-if args.run
+if args.run or args.rebuild
     dowatch = false
     log '🔧🔧 run'.gray
 
     walk (sourceFile, targetFile) ->
         if targetFile
-            if dirty sourceFile, targetFile
-                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), "🔧  ", prettyFilePath(relative(targetFile), colors.green) 
+            isDirty = dirty sourceFile, targetFile 
+            if args.rebuild or isDirty
+                src = prettyFilePath(_.padEnd(relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
+                tgt = prettyFilePath(relative(targetFile), colors.green) 
+                log src, "🔧  ", tgt
                 run sourceFile
 
 ###
@@ -399,6 +404,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 watcher = null
 
 reload = ->
+    return if not watcher?
     watcher.close()
     log prettyTime(), '🔧  reload'.gray
     require('child_process').execSync "/usr/bin/env node #{__filename}",
