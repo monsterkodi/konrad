@@ -211,6 +211,19 @@ target = (sourceFile) ->
     targetFile = path.join path.dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
 
 ###
+0000000    000  00000000   000000000  000   000
+000   000  000  000   000     000      000 000 
+000   000  000  0000000       000       00000  
+000   000  000  000   000     000        000   
+0000000    000  000   000     000        000   
+###
+
+dirty = (sourceFile, targetFile) ->
+    ss = fs.statSync sourceFile
+    ts = fs.statSync targetFile
+    ss.mtime > ts.mtime    
+
+###
 000  000   000  00000000   0000000 
 000  0000  000  000       000   000
 000  000 0 000  000000    000   000
@@ -233,8 +246,11 @@ if args.info
         if path.extname(p).substr(1) in _.keys(opt)
             targetFile = target p
             if targetFile
-                log prettyFilePath(_.padEnd relative(p), 40), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
-            else
+                if dirty p, targetFile
+                    log prettyFilePath(_.padEnd(relative(p), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red) 
+                else
+                    log prettyFilePath(_.padEnd(relative(p), 40)), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
+            else if args.verbose
                 log prettyFilePath relative(p), colors.blue
         else if args.verbose
             log prettyFilePath relative(p), colors.gray
