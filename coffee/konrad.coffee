@@ -289,9 +289,12 @@ run = (sourceFile) ->
                     if path.resolve(targetFile) == __filename
                         reload()
             else
-                log 'unchanged'.green, path.resolve(targetFile) if args.verbose
+                log 'unchanged'.green.dim, prettyFilePath(relative(targetFile), colors.gray) if args.verbose
                 stat = fs.statSync sourceFile
-                fs.utimesSync path.resolve(targetFile), stat.atime, stat.mtime
+                ttat = fs.statSync targetFile
+                if stat.mtime.getTime() != ttat.mtime.getTime()
+                    # log stat.mtime.getTime(), ttat.mtime.getTime(), stat.mtime.getTime() != ttat.mtime.getTime()
+                    fs.utimesSync path.resolve(targetFile), stat.atime, stat.mtime
 
 ###
 000   000   0000000   000      000   000
@@ -337,7 +340,7 @@ if args.info
         if targetFile
             if dirty sourceFile, targetFile
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red) 
-            else
+            else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
 
 ###
@@ -350,7 +353,7 @@ if args.info
 
 if args.run or args.rebuild
     dowatch = false
-    log '🔧🔧 run'.gray
+    log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
 
     walk (sourceFile, targetFile) ->
         if targetFile
