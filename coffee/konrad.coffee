@@ -147,7 +147,7 @@ resolve = (unresolved) ->
 
 relative = (absolute, to) ->
     d = to ? args.arguments[0] ? '.'
-    if not fu.isDir d then d = ''
+    if not fu.isDir d then d = '.'
     r = path.relative d, absolute
         
 ###
@@ -358,6 +358,7 @@ if args.info
             if path.basename(sourceFile) == '.git'
                 git = require('simple-git') path.dirname sourceFile
                 git.status (err,status) ->
+                    #log noon.stringify status, colors:true
                     if err
                         error err
                         return
@@ -366,25 +367,29 @@ if args.info
                         if _.isEmpty status[k]
                             delete status[k]
                         m = 
-                            not_added: colors.red
-                            modified:  colors.green
-                            created:   colors.magenta
+                            not_added:  colors.gray
+                            conflicted: colors.yellow
+                            modified:   colors.green
+                            created:    colors.magenta
+                            deleted:    colors.red
 
                         if k in _.keys m
                             for f in status[k] ? []
-                                if not fu.isDir args.arguments[0]
+                                d = args.arguments[0] ? '.'
+                                if not fu.isDir d
                                     if f != args.arguments[0]
                                         continue
                                 if args.arguments.length > 1
                                     if f not in args.arguments
                                         continue
                                 change = "    " + prettyFilePath(relative(path.join(path.dirname(sourceFile), f)), m[k]) 
-                                if k == 'modified' and args.verbose
+                                if k in ['modified', 'created'] and args.verbose
                                     childp = require 'child_process'
                                     res = childp.execSync "git diff -U0 #{path.join(path.dirname(sourceFile), f)}", 
                                         encoding: 'utf8'
                                         cwd: path.dirname sourceFile
                                     diff = ""
+                                    c = '▼'.blue.bold
                                     for l in res.split '\n'
                                         ls = chalk.stripColor(l)
                                         if ls[0] in ['+', '-', '@'] and ls[1] not in ['+', '-']
@@ -393,10 +398,11 @@ if args.info
                                             else if ls[0] == '-'
                                                 diff += ("\n " +ls.substr(1)).red.bold.dim
                                             else 
-                                                diff += ("\n▬").gray.dim
-                                    change += diff+"\n▬\n".gray.dim if diff.length
+                                                diff += ("\n"+c)
+                                                c = '●'.blue.dim
+                                    change += diff+"\n▲".blue.dim if diff.length
                                 changes.push change
-                            
+                    
                     if _.isEmpty changes then return
                     log 'git '.bgBlue.bold.blue + prettyFilePath(relative(path.dirname(sourceFile)), colors.white).bgBlue
                     for c in changes
