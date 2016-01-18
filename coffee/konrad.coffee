@@ -7,10 +7,12 @@
 ###
 
 fs     = require 'fs'
+fu     = require 'fs-utils'
 path   = require 'path'
 sds    = require 'sds'
 noon   = require 'noon'
 colors = require 'colors'
+chalk  = require 'chalk'
 _      = require 'lodash'
 
 pkg     = require "#{__dirname}/../package"
@@ -143,8 +145,9 @@ resolve = (unresolved) ->
 000   000  00000000  0000000  000   000     000     000      0      00000000
 ###
 
-relative = (absolute) ->
-    d = args.arguments[0] ? '.'
+relative = (absolute, to) ->
+    d = to ? args.arguments[0] ? '.'
+    if not fu.isDir d then d = ''
     r = path.relative d, absolute
         
 ###
@@ -293,7 +296,6 @@ run = (sourceFile) ->
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
-                    # log stat.mtime.getTime(), ttat.mtime.getTime(), stat.mtime.getTime() != ttat.mtime.getTime()
                     fs.utimesSync path.resolve(targetFile), stat.atime, stat.mtime
 
 ###
@@ -304,23 +306,33 @@ run = (sourceFile) ->
 00     00  000   000  0000000  000   000
 ###
 
-walk = (f) ->
+walk = (opt, cb) ->
+    
+    if _.isFunction opt
+        cb = opt
+        opt = {}
     
     walkdir = require 'walkdir'
     d = args.arguments[0] ? '.'
+    if not fu.isDir d then d = '.'
     try
-        walkdir.sync d, (p) ->    
-            for i in ignore
-                if i.test p
-                    log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
-                    @ignore p
-                    return
+        walkdir.sync d, (p) ->
+            if not opt.all
+                for i in ignore
+                    if i.test p
+                        log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
+                        @ignore p
+                        return
             if path.extname(p).substr(1) in _.keys(opt)
-                f p, target p
-            else if args.debug
-                log prettyFilePath(relative(p), colors.gray)
-    catch e
-        error e
+                cb p, target p
+            else 
+                if opt.all
+                    if not cb p
+                        @ignore p
+                if args.debug
+                    log prettyFilePath(relative(p), colors.gray)
+    catch err
+        error err
 
 dowatch = true
 
@@ -336,13 +348,66 @@ if args.info
     dowatch = false
     log '○● info'.gray
 
-    walk (sourceFile, targetFile) ->
+    walk all: true, (sourceFile, targetFile) ->
         if targetFile
             if dirty sourceFile, targetFile
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red) 
             else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
+        else            
+            if path.basename(sourceFile) == '.git'
+                git = require('simple-git') path.dirname sourceFile
+                git.status (err,status) ->
+                    if err
+                        error err
+                        return
+                    changes = []
+                    for k,v of _.clone status
+                        if _.isEmpty status[k]
+                            delete status[k]
+                        m = 
+                            not_added: colors.red
+                            modified:  colors.green
+                            created:   colors.magenta
 
+                        if k in _.keys m
+                            for f in status[k] ? []
+                                if not fu.isDir args.arguments[0]
+                                    if f != args.arguments[0]
+                                        continue
+                                if args.arguments.length > 1
+                                    if f not in args.arguments
+                                        continue
+                                change = "    " + prettyFilePath(relative(path.join(path.dirname(sourceFile), f)), m[k]) 
+                                if k == 'modified' and args.verbose
+                                    childp = require 'child_process'
+                                    res = childp.execSync "git diff -U0 #{path.join(path.dirname(sourceFile), f)}", 
+                                        encoding: 'utf8'
+                                        cwd: path.dirname sourceFile
+                                    diff = ""
+                                    for l in res.split '\n'
+                                        ls = chalk.stripColor(l)
+                                        if ls[0] in ['+', '-', '@'] and ls[1] not in ['+', '-']
+                                            if ls[0] == '+'
+                                                diff += ("\n "+ls.substr(1)).white
+                                            else if ls[0] == '-'
+                                                diff += ("\n " +ls.substr(1)).red.bold.dim
+                                            else 
+                                                diff += ("\n▬").gray.dim
+                                    change += diff+"\n▬\n".gray.dim if diff.length
+                                changes.push change
+                            
+                    if _.isEmpty changes then return
+                    log 'git '.bgBlue.bold.blue + prettyFilePath(relative(path.dirname(sourceFile)), colors.white).bgBlue
+                    for c in changes
+                        log c
+
+            if fu.isDir sourceFile
+                for i in ignore
+                    if i.test sourceFile
+                        return false
+        true
+                
 ###
                 00000000   000   000  000   000
                 000   000  000   000  0000  000
