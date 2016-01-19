@@ -7,19 +7,14 @@ if [ -n "$TEST" ] ; then
     fi
 fi
 
-
-if [ $# -eq 0 ]; then
-    git push
-else
+if [ $# -ne 0 ]; then
     `dirname $0`/commit "$*"
 fi
 
-
 if [ "`sds -rp 'konrad.bump on'`" != "commit" ]; then
     `dirname $0`/bump
+    `dirname $0`/commit
 fi
-
-`dirname $0`/commit v
 
 VERSION=`sds -rp version`
 
