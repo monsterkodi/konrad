@@ -13,13 +13,13 @@ else
     `dirname $0`/commit "$*"
 fi
 
-if [ -z "`sds -p konrad.bump on commit`" ]; then
-    echo 'bump on release'    
+if [ "`sds -rp 'konrad.bump on'`" != "commit" ]; then
     `dirname $0`/bump
 fi
 
 VERSION=`sds -rp version`
 `dirname $0`/commit "v$VERSION"
+
 git tag -f -a -m "v$VERSION" $VERSION
 git push --tags -q
 npm publish

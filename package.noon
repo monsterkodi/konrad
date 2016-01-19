@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.3.3
+version         0.3.4
 main            js/konrad.js
 bin             
                 konrad  ./bin/konrad
@@ -34,4 +34,4 @@ dependencies
                 walkdir             0.0.11
                 write-file-atomic   ^1.1.4
 konrad          
-                bump on commit  true
+                bump on     commit
