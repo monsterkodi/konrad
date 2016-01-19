@@ -13,7 +13,11 @@ else
     `dirname $0`/commit "$*"
 fi
 
-`dirname $0`/bump
+if [ -z "`sds -p konrad.bump on commit`" ]; then
+    echo 'bump on release'    
+    `dirname $0`/bump
+fi
+
 VERSION=`sds -rp version`
 `dirname $0`/commit "v$VERSION"
 git tag -f -a -m "v$VERSION" $VERSION
