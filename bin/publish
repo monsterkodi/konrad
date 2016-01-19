@@ -7,11 +7,13 @@ if [ -n "$TEST" ] ; then
     fi
 fi
 
+
 if [ $# -eq 0 ]; then
     git push
 else
     `dirname $0`/commit "$*"
 fi
+
 
 if [ "`sds -rp 'konrad.bump on'`" != "commit" ]; then
     `dirname $0`/bump
