@@ -6,6 +6,7 @@ fi
 
 if [ -n "`sds -p konrad.bump on commit`" ]; then
     echo 'do bump'
+    `dirname $0`/bump
 else
     echo 'no bump'    
 fi

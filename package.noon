@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.2.5
+version         0.2.6
 main            js/konrad.js
 bin             
                 konrad  ./bin/konrad
