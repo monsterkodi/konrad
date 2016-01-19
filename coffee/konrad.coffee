@@ -81,8 +81,9 @@ config = (p) ->
 ignore = [
     /node_modules/
     /bower_components/
-    /gulpfile.coffee$/
-    /Gruntfile.coffee$/
+    /gulpfile\.coffee$/
+    /Gruntfile\.coffee$/
+    /\.konrad\.noon$/
     /\/js$/
     /\/img$/
     /\/\..+$/
@@ -191,7 +192,7 @@ dirty = (sourceFile, targetFile) ->
     if not fs.existsSync targetFile then return true
     ss = fs.statSync sourceFile
     ts = fs.statSync targetFile
-    ss.mtime > ts.mtime
+    ss.mtime.getTime() > ts.mtime.getTime()
 
 ###
 00000000  00000000   00000000    0000000   00000000
@@ -358,6 +359,7 @@ if args.info
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
             else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
+                
         else
             if path.basename(sourceFile) == '.git'
                 git = require('simple-git') path.dirname sourceFile
@@ -487,7 +489,7 @@ reload = ->
     return if not watcher?
     watcher.close()
     log prettyTime(), '🔧  reload'.gray
-    require('child_process').execSync "/usr/bin/env node #{__filename}",
+    require('child_process').execSync "/usr/bin/env node #{__filename} #{args.verbose and '-v' or ''}",
         cwd:      process.cwd()
         encoding: 'utf8'
         stdio:    'inherit'
