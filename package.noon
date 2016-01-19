@@ -27,6 +27,7 @@ dependencies
               lodash          ^4.0.0
               mkpath          ^1.0.0
               noon            >=0.6.16
+              sds             ^1.4.23
               semver          ^5.1.0
               simple-git      ^1.21.0
               stylus          ^0.53.0
