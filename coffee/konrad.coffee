@@ -1,9 +1,9 @@
 ###
-000   000   0000000   000   000  00000000    0000000   0000000  
+000   000   0000000   000   000  00000000    0000000   0000000
 000  000   000   000  0000  000  000   000  000   000  000   000
 0000000    000   000  000 0 000  0000000    000000000  000   000
 000  000   000   000  000  0000  000   000  000   000  000   000
-000   000   0000000   000   000  000   000  000   000  0000000  
+000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
 fs     = require 'fs'
@@ -34,7 +34,7 @@ konrad
     quiet      . ? log nothing                     . = false
     debug      . ? log debug                       . = false
     logtime    . ? log with time                   . = true
-    
+
 arguments
     [no option]  directory to watch         #{'.'.magenta}
     info         directory to inspect       #{'.'.magenta}
@@ -43,16 +43,16 @@ arguments
     bump         semver version             #{'patch'.magenta}
     commit       commit message
     publish      commit message
-    
+
 version  #{pkg.version}
 """
-    
+
 ###
- 0000000   0000000   000   000  00000000  000   0000000 
-000       000   000  0000  000  000       000  000      
+ 0000000   0000000   000   000  00000000  000   0000000
+000       000   000  0000  000  000       000  000
 000       000   000  000 0 000  000000    000  000  0000
 000       000   000  000  0000  000       000  000   000
- 0000000   0000000   000   000  000       000   0000000 
+ 0000000   0000000   000   000  000       000   0000000
 ###
 
 opt = noon.parse """
@@ -69,12 +69,12 @@ config = (p) ->
         if fs.existsSync path.join p, '.konrad.noon'
             return _.defaultsDeep sds.load(path.join p, '.konrad.noon'), opt
     opt
-    
+
 ###
 000   0000000   000   000   0000000   00000000   00000000
-000  000        0000  000  000   000  000   000  000     
-000  000  0000  000 0 000  000   000  0000000    0000000 
-000  000   000  000  0000  000   000  000   000  000     
+000  000        0000  000  000   000  000   000  000
+000  000  0000  000 0 000  000   000  0000000    0000000
+000  000   000  000  0000  000   000  000   000  000
 000   0000000   000   000   0000000   000   000  00000000
 ###
 
@@ -90,18 +90,18 @@ ignore = [
     /\.app$/
     /_misc/
 ]
-        
+
 ###
 00000000   00000000   00000000  000000000  000000000  000   000
-000   000  000   000  000          000        000      000 000 
-00000000   0000000    0000000      000        000       00000  
-000        000   000  000          000        000        000   
-000        000   000  00000000     000        000        000   
+000   000  000   000  000          000        000      000 000
+00000000   0000000    0000000      000        000       00000
+000        000   000  000          000        000        000
+000        000   000  00000000     000        000        000
 ###
 
 prettyPath = (p, c=colors.yellow) ->
     p.split(path.sep).map((n) -> c(n)).join c(path.sep).dim
-    
+
 prettyFilePath = (p, c=colors.yellow) ->
     if path.dirname(p) not in ['.', '/']
         "#{prettyPath path.dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
@@ -125,9 +125,9 @@ prettyTime = () ->
 
 ###
 00000000   00000000   0000000   0000000   000      000   000  00000000
-000   000  000       000       000   000  000      000   000  000     
-0000000    0000000   0000000   000   000  000       000 000   0000000 
-000   000  000            000  000   000  000         000     000     
+000   000  000       000       000   000  000      000   000  000
+0000000    0000000   0000000   000   000  000       000 000   0000000
+000   000  000            000  000   000  000         000     000
 000   000  00000000  0000000    0000000   0000000      0      00000000
 ###
 
@@ -136,12 +136,12 @@ resolve = (unresolved) ->
     p = path.resolve p
     p = path.normalize p
     p
-    
+
 ###
 00000000   00000000  000       0000000   000000000  000  000   000  00000000
-000   000  000       000      000   000     000     000  000   000  000     
-0000000    0000000   000      000000000     000     000   000 000   0000000 
-000   000  000       000      000   000     000     000     000     000     
+000   000  000       000      000   000     000     000  000   000  000
+0000000    0000000   000      000000000     000     000   000 000   0000000
+000   000  000       000      000   000     000     000     000     000
 000   000  00000000  0000000  000   000     000     000      0      00000000
 ###
 
@@ -149,57 +149,54 @@ relative = (absolute, to) ->
     d = to ? args.arguments[0] ? '.'
     if not fu.isDir d then d = '.'
     r = path.relative d, absolute
-        
+
 ###
 000000000   0000000   00000000    0000000   00000000  000000000
-   000     000   000  000   000  000        000          000   
-   000     000000000  0000000    000  0000  0000000      000   
-   000     000   000  000   000  000   000  000          000   
-   000     000   000  000   000   0000000   00000000     000   
+   000     000   000  000   000  000        000          000
+   000     000000000  0000000    000  0000  0000000      000
+   000     000   000  000   000  000   000  000          000
+   000     000   000  000   000   0000000   00000000     000
 ###
 
 target = (sourceFile) ->
     ext = path.extname(sourceFile).substr(1)
     o = config sourceFile
     return if 'ignore' in _.keys o
-    
+
     if o[ext].filter?
         matches = false
         for r in o[ext].filter
             if new RegExp(r).test(sourceFile)
                 matches = true
-        if not matches 
+        if not matches
             log prettyFilePath relative(sourceFile), colors.blue if args.verbose
-            return       
-    
+            return
+
     targetFile = _.clone sourceFile
-            
     if o[ext].replace?
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
-                        
     return if not o[ext].ext?
-        
     targetFile = path.join path.dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
 
 ###
 0000000    000  00000000   000000000  000   000
-000   000  000  000   000     000      000 000 
-000   000  000  0000000       000       00000  
-000   000  000  000   000     000        000   
-0000000    000  000   000     000        000   
+000   000  000  000   000     000      000 000
+000   000  000  0000000       000       00000
+000   000  000  000   000     000        000
+0000000    000  000   000     000        000
 ###
 
 dirty = (sourceFile, targetFile) ->
     if not fs.existsSync targetFile then return true
     ss = fs.statSync sourceFile
     ts = fs.statSync targetFile
-    ss.mtime > ts.mtime    
+    ss.mtime > ts.mtime
 
 ###
-00000000  00000000   00000000    0000000   00000000 
+00000000  00000000   00000000    0000000   00000000
 000       000   000  000   000  000   000  000   000
-0000000   0000000    0000000    000   000  0000000  
+0000000   0000000    0000000    000   000  0000000
 000       000   000  000   000  000   000  000   000
 00000000  000   000  000   000   0000000   000   000
 ###
@@ -207,9 +204,12 @@ dirty = (sourceFile, targetFile) ->
 sticky = false
 error = (e) ->
     log "#{'[ERROR]'.bold.red} #{String(e).red}"
-    require('growl') String(e).strip, 
-        title: 'ERROR'
-        sticky: sticky
+    try
+        require('growl') String(e).strip,
+            title: 'ERROR'
+            sticky: sticky
+    catch err
+        true
 
 ###
 00000000   000   000  000   000
@@ -218,44 +218,44 @@ error = (e) ->
 000   000  000   000  000  0000
 000   000   0000000   000   000
 ###
-    
+
 run = (sourceFile) ->
-    
+
     ###
-    00000000   00000000   0000000   0000000  
+    00000000   00000000   0000000   0000000
     000   000  000       000   000  000   000
     0000000    0000000   000000000  000   000
     000   000  000       000   000  000   000
-    000   000  00000000  000   000  0000000  
+    000   000  00000000  000   000  0000000
     ###
-    fs.readFile sourceFile, 'utf8', (err, data) -> 
-        
-        if err 
+    fs.readFile sourceFile, 'utf8', (err, data) ->
+
+        if err
             log "can't read #{sourceFile}"
             return
 
         if args.debug then log "source file".gray, sourceFile
-                
+
         ext = path.extname(sourceFile).substr(1)
-        
+
         targetFile = target sourceFile
-        
+
         if args.debug then log "target file".gray, targetFile
-        
+
         o = config sourceFile
-        
+
         try
             ###
              0000000   0000000   00     00  00000000   000  000      00000000
-            000       000   000  000   000  000   000  000  000      000     
-            000       000   000  000000000  00000000   000  000      0000000 
-            000       000   000  000 0 000  000        000  000      000     
+            000       000   000  000   000  000   000  000  000      000
+            000       000   000  000000000  00000000   000  000      0000000
+            000       000   000  000 0 000  000        000  000      000
              0000000   0000000   000   000  000        000  0000000  00000000
             ###
             compiled = switch ext
                 when 'coffee'
                     coffee = require 'coffee-script'
-                    coffee.compile data, 
+                    coffee.compile data,
                         filename: sourceFile
                 when 'styl'
                     stylus = require 'stylus'
@@ -271,24 +271,24 @@ run = (sourceFile) ->
             error e
             return
 
-        fs.readFile targetFile, 'utf8', (err, targetData) ->  
-            
+        fs.readFile targetFile, 'utf8', (err, targetData) ->
+
             if compiled != targetData
                 ###
                 000   000  00000000   000  000000000  00000000
-                000 0 000  000   000  000     000     000     
-                000000000  0000000    000     000     0000000 
-                000   000  000   000  000     000     000     
+                000 0 000  000   000  000     000     000
+                000000000  0000000    000     000     0000000
+                000   000  000   000  000     000     000
                 00     00  000   000  000     000     00000000
                 ###
                 require('mkpath').sync path.dirname targetFile
                 require('write-file-atomic') targetFile, compiled, (err) ->
-                    if err 
+                    if err
                         log "can't write #{targetFile.bold.yellow}".bold.red
                         return
-                    if not args.quiet 
+                    if not args.quiet
                         log prettyTime(), "👍  #{prettyFilePath targetFile}"
-                    
+
                     if path.resolve(targetFile) == __filename
                         reload()
             else
@@ -300,18 +300,18 @@ run = (sourceFile) ->
 
 ###
 000   000   0000000   000      000   000
-000 0 000  000   000  000      000  000 
-000000000  000000000  000      0000000  
-000   000  000   000  000      000  000 
+000 0 000  000   000  000      000  000
+000000000  000000000  000      0000000
+000   000  000   000  000      000  000
 00     00  000   000  0000000  000   000
 ###
 
 walk = (opt, cb) ->
-    
+
     if _.isFunction opt
         cb = opt
         opt = {}
-    
+
     walkdir = require 'walkdir'
     d = args.arguments[0] ? '.'
     if not fu.isDir d then d = '.'
@@ -325,9 +325,10 @@ walk = (opt, cb) ->
                         return
             if path.extname(p).substr(1) in _.keys(opt)
                 cb p, target p
-            else 
+            else
                 if opt.all
                     if not cb p
+                        # log '@ignore', p
                         @ignore p
                 if args.debug
                     log prettyFilePath(relative(p), colors.gray)
@@ -337,24 +338,27 @@ walk = (opt, cb) ->
 dowatch = true
 
 ###
-                000  000   000  00000000   0000000 
+                000  000   000  00000000   0000000
                 000  0000  000  000       000   000
 000000  000000  000  000 0 000  000000    000   000
                 000  000  0000  000       000   000
-                000  000   000  000        0000000 
+                000  000   000  000        0000000
 ###
 
 if args.info
     dowatch = false
     log '○● info'.gray
 
-    walk all: true, (sourceFile, targetFile) ->
+    optall = _.defaults opt, all: true
+    walk optall, (sourceFile, targetFile) ->
+        # log 'info', sourceFile.red, targetFile
         if targetFile
+
             if dirty sourceFile, targetFile
-                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red) 
+                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
             else if args.verbose
-                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green) 
-        else            
+                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
+        else
             if path.basename(sourceFile) == '.git'
                 git = require('simple-git') path.dirname sourceFile
                 git.status (err,status) ->
@@ -366,7 +370,7 @@ if args.info
                     for k,v of _.clone status
                         if _.isEmpty status[k]
                             delete status[k]
-                        m = 
+                        m =
                             not_added:  colors.gray
                             conflicted: colors.yellow
                             modified:   colors.green
@@ -382,10 +386,10 @@ if args.info
                                 if args.arguments.length > 1
                                     if f not in args.arguments
                                         continue
-                                change = "    " + prettyFilePath(relative(path.join(path.dirname(sourceFile), f)), m[k]) 
-                                if k in ['modified', 'created'] and args.verbose
-                                    childp = require 'child_process'
-                                    res = childp.execSync "git diff -U0 #{path.join(path.dirname(sourceFile), f)}", 
+                                change = "    " + prettyFilePath(relative(path.join(path.dirname(sourceFile), f)), m[k])
+                                childp = require 'child_process'
+                                if k in ['modified', 'created'] and args.verbose and childp.execSync?
+                                    res = childp.execSync "git diff -U0 --ignore-space-at-eol #{path.join(path.dirname(sourceFile), f)}",
                                         encoding: 'utf8'
                                         cwd: path.dirname sourceFile
                                     diff = ""
@@ -397,12 +401,12 @@ if args.info
                                                 diff += ("\n "+ls.substr(1)).white
                                             else if ls[0] == '-'
                                                 diff += ("\n " +ls.substr(1)).red.bold.dim
-                                            else 
+                                            else
                                                 diff += ("\n"+c)
                                                 c = '●'.blue.dim
                                     change += diff+"\n▲".blue.dim if diff.length
                                 changes.push change
-                    
+
                     if _.isEmpty changes then return
                     log 'git '.bgBlue.bold.blue + prettyFilePath(relative(path.dirname(sourceFile)), colors.white).bgBlue
                     for c in changes
@@ -411,9 +415,10 @@ if args.info
             if fu.isDir sourceFile
                 for i in ignore
                     if i.test sourceFile
+                        # log 'ignore', i, sourceFile.blue
                         return false
         true
-                
+
 ###
                 00000000   000   000  000   000
                 000   000  000   000  0000  000
@@ -426,27 +431,27 @@ if args.run or args.rebuild
     dowatch = false
     log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
 
-    walk (sourceFile, targetFile) ->
+    walk opt, (sourceFile, targetFile) ->
         if targetFile
-            isDirty = dirty sourceFile, targetFile 
+            isDirty = dirty sourceFile, targetFile
             if args.rebuild or isDirty
                 src = prettyFilePath(_.padEnd(relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
-                tgt = prettyFilePath(relative(targetFile), colors.green) 
+                tgt = prettyFilePath(relative(targetFile), colors.green)
                 log src, "🔧  ", tgt
                 run sourceFile
 
 ###
-                 0000000  00     00  0000000  
+                 0000000  00     00  0000000
                 000       000   000  000   000
 000000  000000  000       000000000  000   000
                 000       000 0 000  000   000
-                 0000000  000   000  0000000  
+                 0000000  000   000  0000000
 ###
 
 # log noon.stringify args, colors:true
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
-    
+
     if args[cmd]
         dowatch = false
         try
@@ -459,20 +464,21 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
                 cwd: process.cwd()
                 encoding: 'utf8'
                 stdio: 'inherit'
-        catch e
+        catch err
             error "command #{cmd.bold.yellow} #{'failed!'.red}"
+            log String(err).red
             break
         log '🔧  done'.gray if args.verbose
-        
+
         if args.arguments and cmd in ['commit', 'bump']
             break
 
 ###
-00000000   00000000  000       0000000    0000000   0000000  
+00000000   00000000  000       0000000    0000000   0000000
 000   000  000       000      000   000  000   000  000   000
 0000000    0000000   000      000   000  000000000  000   000
 000   000  000       000      000   000  000   000  000   000
-000   000  00000000  0000000   0000000   000   000  0000000  
+000   000  00000000  0000000   0000000   000   000  0000000
 ###
 
 watcher = null
@@ -487,7 +493,7 @@ reload = ->
         stdio:    'inherit'
     log 'exit'.yellow.bold
     process.exit 0
-    
+
 if dowatch
     sticky = true
 
@@ -500,27 +506,24 @@ if dowatch
     ###
 
     watch = (opt, cb) ->
-        
+
         pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
-        
+
         d = args.arguments[0] ? '.'
-        
+
         log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}".gray
-        watcher = require('chokidar').watch d, 
+        watcher = require('chokidar').watch d,
             ignored: ignore
             ignoreInitial: true
-            
+
         watcher
             .on 'add',    (p) -> if pass p then cb p
             .on 'change', (p) -> if pass p then cb p
 
     watch opt, (sourceFile) ->
-        
+
         o = config sourceFile
 
         return if 'ignore' in _.keys o
-        
-        run sourceFile
-    
 
-        
+        run sourceFile
