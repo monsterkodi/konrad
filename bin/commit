@@ -12,6 +12,8 @@ fi
 git add .
 git status -sb
 git commit -m $MSG
+
 echo 'pushing'
+
 git push -q
 git status -sb
