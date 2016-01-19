@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 if [ $# -eq 0 ]; then
-    echo '[ERROR] no commit message!' | lolcat -p 0.3
-    exit 1
+    MSG="v`sds -rp version`"
+else
+    MSG="$*"
 fi
 
 if [ "`sds -rp 'konrad.bump on'`" = "commit" ]; then
@@ -10,7 +11,7 @@ fi
 
 git add .
 git status -sb
-git commit -m "$*"
+git commit -m $MSG
 echo 'pushing'
 git push -q
 git status -sb

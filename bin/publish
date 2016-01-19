@@ -17,8 +17,9 @@ if [ "`sds -rp 'konrad.bump on'`" != "commit" ]; then
     `dirname $0`/bump
 fi
 
+`dirname $0`/commit
+
 VERSION=`sds -rp version`
-`dirname $0`/commit "v$VERSION"
 
 git tag -f -a -m "v$VERSION" $VERSION
 git push --tags -q
