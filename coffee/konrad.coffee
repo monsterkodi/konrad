@@ -511,8 +511,9 @@ if dowatch
 
         d = args.arguments[0] ? '.'
 
-        log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}".gray
-        watcher = require('chokidar').watch d,
+        v = args.verbose and " ● version #{pkg.version}".dim.gray or ''
+        log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
+        watcher = require('chokidar').watch d, 
             ignored: ignore
             ignoreInitial: true
 
