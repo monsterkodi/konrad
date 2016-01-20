@@ -30,9 +30,11 @@ konrad
     run        . ? build dirty or missing targets  . = false
     rebuild    . ? rebuild all targets             . = false . - R
     info       . ? show info                       . = false
+    status     . ? show git status                 . = false
+    diff       . ? show git diff                   . = false
     verbose    . ? log more                        . = false
     quiet      . ? log nothing                     . = false
-    debug      . ? log debug                       . = false
+    debug      . ? log debug                       . = false . - D
     logtime    . ? log with time                   . = true
 
 arguments
@@ -81,8 +83,8 @@ config = (p) ->
 ignore = [
     /node_modules/
     /bower_components/
-    /gulpfile\.coffee$/
-    /Gruntfile\.coffee$/
+    /gulpfile.coffee$/
+    /Gruntfile.coffee$/
     /\.konrad\.noon$/
     /\/js$/
     /\/img$/
@@ -318,12 +320,15 @@ walk = (opt, cb) ->
     if not fu.isDir d then d = '.'
     try
         walkdir.sync d, (p) ->
-            if not opt.all
-                for i in ignore
-                    if i.test p
-                        log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
-                        @ignore p
-                        return
+            
+            for i in ignore
+                if i.test p
+                    log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
+                    if opt.all
+                        cb p
+                    @ignore p
+                    return
+                    
             if path.extname(p).substr(1) in _.keys(opt)
                 cb p, target p
             else
@@ -350,8 +355,7 @@ if args.info
     dowatch = false
     log '○● info'.gray
 
-    optall = _.defaults opt, all: true
-    walk optall, (sourceFile, targetFile) ->
+    walk opt, (sourceFile, targetFile) ->
         # log 'info', sourceFile.red, targetFile
         if targetFile
 
@@ -359,8 +363,27 @@ if args.info
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
             else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
-                
-        else
+    true    
+    
+###
+                 0000000  000000000   0000000   000000000  000   000   0000000
+                000          000     000   000     000     000   000  000     
+000000  000000  0000000      000     000000000     000     000   000  0000000 
+                     000     000     000   000     000     000   000       000
+                0000000      000     000   000     000      0000000   0000000 
+###
+
+if args.diff
+    args.status  = true
+    args.verbose = true
+        
+if args.status
+    dowatch = false    
+    optall = _.defaults opt, all: true
+    walk optall, (sourceFile, targetFile) ->
+
+        if not targetFile
+        
             if path.basename(sourceFile) == '.git'
                 git = require('simple-git') path.dirname sourceFile
                 git.status (err,status) ->
@@ -389,6 +412,7 @@ if args.info
                                     if f not in args.arguments
                                         continue
                                 change = "    " + prettyFilePath(relative(path.join(path.dirname(sourceFile), f)), m[k])
+                                change = (change+" ").bgBlue if args.verbose
                                 childp = require 'child_process'
                                 if k in ['modified', 'created'] and args.verbose and childp.execSync?
                                     res = childp.execSync "git diff -U0 --ignore-space-at-eol #{path.join(path.dirname(sourceFile), f)}",
@@ -410,7 +434,10 @@ if args.info
                                 changes.push change
 
                     if _.isEmpty changes then return
-                    log 'git '.bgBlue.bold.blue + prettyFilePath(relative(path.dirname(sourceFile)), colors.white).bgBlue
+                    relPath = relative path.dirname sourceFile
+                    relPath = '.' if relPath == ''
+                    sourcePath = prettyFilePath relPath, colors.white
+                    log 'git '.bgBlue.bold.blue + (sourcePath+" ").bgBlue
                     for c in changes
                         log c
 
