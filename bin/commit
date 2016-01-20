@@ -12,7 +12,7 @@ fi
 
 git add .
 git status -sb
-git commit -m $MSG
+git commit -m "$MSG"
 
 echo -n 'pushing' | colorcat -yf
 

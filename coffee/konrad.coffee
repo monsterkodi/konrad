@@ -29,7 +29,7 @@ konrad
     test       . ? run tests                       . = false
     run        . ? build dirty or missing targets  . = false
     rebuild    . ? rebuild all targets             . = false . - R
-    info       . ? show info                       . = false
+    info       . ? show build status               . = false
     status     . ? show git status                 . = false
     diff       . ? show git diff                   . = false
     verbose    . ? log more                        . = false
@@ -40,6 +40,8 @@ konrad
 arguments
     [no option]  directory to watch         #{'.'.magenta}
     info         directory to inspect       #{'.'.magenta}
+    status       files or directory         #{'.'.magenta}
+    diff         files or directory         #{'.'.magenta}
     run          directory to build         #{'.'.magenta}
     rebuild      directory to rebuild       #{'.'.magenta}
     bump         semver version             #{'patch'.magenta}
@@ -141,6 +143,29 @@ resolve = (unresolved) ->
     p
 
 ###
+ 0000000   00000000    0000000   0000000    000  00000000 
+000   000  000   000  000        000   000  000  000   000
+000000000  0000000    000  0000  000   000  000  0000000  
+000   000  000   000  000   000  000   000  000  000   000
+000   000  000   000   0000000   0000000    000  000   000
+###
+
+argDir = () ->
+    if args.arguments[0]
+        d = resolve args.arguments[0]
+        if fu.isDir d
+            return d
+        d = path.parse(d).dir
+        if fu.isDir d
+            return d
+    resolve '.'
+    
+argDirRel = () ->
+    if argDir() == resolve '.'
+        return ''
+    relative argDir(), '.'
+    
+###
 00000000   00000000  000       0000000   000000000  000  000   000  00000000
 000   000  000       000      000   000     000     000  000   000  000
 0000000    0000000   000      000000000     000     000   000 000   0000000
@@ -149,7 +174,7 @@ resolve = (unresolved) ->
 ###
 
 relative = (absolute, to) ->
-    d = to ? args.arguments[0] ? '.'
+    d = to? and resolve(to) or argDir()
     if not fu.isDir d then d = '.'
     r = path.relative d, absolute
 
@@ -316,10 +341,8 @@ walk = (opt, cb) ->
         opt = {}
 
     walkdir = require 'walkdir'
-    d = args.arguments[0] ? '.'
-    if not fu.isDir d then d = '.'
     try
-        walkdir.sync d, (p) ->
+        walkdir.sync argDir(), (p) ->
             
             for i in ignore
                 if i.test p
@@ -332,12 +355,11 @@ walk = (opt, cb) ->
             if path.extname(p).substr(1) in _.keys(opt)
                 cb p, target p
             else
-                if opt.all
-                    if not cb p
-                        # log '@ignore', p
-                        @ignore p
                 if args.debug
                     log prettyFilePath(relative(p), colors.gray)
+                if opt.all
+                    if not cb p
+                        @ignore p
     catch err
         error err
 
@@ -356,7 +378,6 @@ if args.info
     log '○● info'.gray
 
     walk opt, (sourceFile, targetFile) ->
-        # log 'info', sourceFile.red, targetFile
         if targetFile
 
             if dirty sourceFile, targetFile
@@ -373,6 +394,71 @@ if args.info
                 0000000      000     000   000     000      0000000   0000000 
 ###
 
+gitStatus = (sourceFile) ->
+    
+    gitDir = path.dirname sourceFile
+    git = require('simple-git') gitDir
+    git.status (err,status) ->
+        if err
+            error err
+            return
+        changes = []
+        for k,v of _.clone status
+            if _.isEmpty status[k]
+                delete status[k]
+            m =
+                not_added:  colors.gray
+                conflicted: colors.yellow
+                modified:   colors.green
+                created:    colors.magenta
+                deleted:    colors.red
+
+            if k in _.keys m
+                for f in status[k] ? []
+                    d = argDir()
+                    
+                    if args.arguments.length
+                        filtered = true
+                        for a in args.arguments
+                            if path.join(gitDir, f).indexOf(resolve a) == 0
+                                filtered = false
+                                break
+                        if filtered
+                            log 'filtered', resolve(a), f, path.join(gitDir, f) if args.debug
+                            continue
+
+                    prfx   = "    "
+                    prfx   = "█   ".blue if args.verbose
+                    gitFile = path.join gitDir, f
+                    relPath = relative gitFile, '.'
+                    change = prfx + prettyFilePath(relPath, m[k])                                
+                    childp = require 'child_process'
+                    if k in ['modified', 'created'] and args.verbose and childp.execSync?
+                        res = childp.execSync "git diff -U0 --ignore-space-at-eol #{gitFile}",
+                            encoding: 'utf8'
+                            cwd: gitDir
+                        diff = ""
+                        c = '▼'.blue.bold
+                        for l in res.split '\n'
+                            ls = chalk.stripColor(l)
+                            if ls[0] in ['+', '-', '@'] and ls[1] not in ['+', '-']
+                                if ls[0] == '+'
+                                    diff += ("\n "+ls.substr(1)).white
+                                else if ls[0] == '-'
+                                    diff += ("\n " +ls.substr(1)).red.bold.dim
+                                else
+                                    diff += ("\n"+c)
+                                    c = '●'.blue.dim
+                        change += diff+"\n▲".blue.dim if diff.length
+                    changes.push change
+
+        relPath = relative gitDir, resolve '.'
+        relPath = '.' if relPath == ''
+        gitPath = prettyFilePath relPath, colors.white
+        log 'git '.bgBlue.bold.blue + (gitPath+" ").bgBlue
+        for c in changes
+            log c
+
 if args.diff
     args.status  = true
     args.verbose = true
@@ -380,73 +466,29 @@ if args.diff
 if args.status
     dowatch = false    
     optall = _.defaults opt, all: true
+    gitcount = 0
     walk optall, (sourceFile, targetFile) ->
 
         if not targetFile
         
             if path.basename(sourceFile) == '.git'
-                git = require('simple-git') path.dirname sourceFile
-                git.status (err,status) ->
-                    #log noon.stringify status, colors:true
-                    if err
-                        error err
-                        return
-                    changes = []
-                    for k,v of _.clone status
-                        if _.isEmpty status[k]
-                            delete status[k]
-                        m =
-                            not_added:  colors.gray
-                            conflicted: colors.yellow
-                            modified:   colors.green
-                            created:    colors.magenta
-                            deleted:    colors.red
-
-                        if k in _.keys m
-                            for f in status[k] ? []
-                                d = args.arguments[0] ? '.'
-                                if not fu.isDir d
-                                    if f != args.arguments[0]
-                                        continue
-                                if args.arguments.length > 1
-                                    if f not in args.arguments
-                                        continue
-                                change = "    " + prettyFilePath(relative(path.join(path.dirname(sourceFile), f)), m[k])
-                                change = (change+" ").bgBlue if args.verbose
-                                childp = require 'child_process'
-                                if k in ['modified', 'created'] and args.verbose and childp.execSync?
-                                    res = childp.execSync "git diff -U0 --ignore-space-at-eol #{path.join(path.dirname(sourceFile), f)}",
-                                        encoding: 'utf8'
-                                        cwd: path.dirname sourceFile
-                                    diff = ""
-                                    c = '▼'.blue.bold
-                                    for l in res.split '\n'
-                                        ls = chalk.stripColor(l)
-                                        if ls[0] in ['+', '-', '@'] and ls[1] not in ['+', '-']
-                                            if ls[0] == '+'
-                                                diff += ("\n "+ls.substr(1)).white
-                                            else if ls[0] == '-'
-                                                diff += ("\n " +ls.substr(1)).red.bold.dim
-                                            else
-                                                diff += ("\n"+c)
-                                                c = '●'.blue.dim
-                                    change += diff+"\n▲".blue.dim if diff.length
-                                changes.push change
-
-                    if _.isEmpty changes then return
-                    relPath = relative path.dirname sourceFile
-                    relPath = '.' if relPath == ''
-                    sourcePath = prettyFilePath relPath, colors.white
-                    log 'git '.bgBlue.bold.blue + (sourcePath+" ").bgBlue
-                    for c in changes
-                        log c
-
+                gitStatus sourceFile
+                gitcount += 1
+                
             if fu.isDir sourceFile
                 for i in ignore
                     if i.test sourceFile
-                        # log 'ignore', i, sourceFile.blue
                         return false
         true
+        
+    if not gitcount
+        gitup = path.parse argDir()
+        while gitup.base
+            dotGit = path.join gitup.dir, '.git'
+            if fs.existsSync dotGit
+                gitStatus dotGit
+                break
+            gitup = path.parse gitup.dir
 
 ###
                 00000000   000   000  000   000
@@ -476,8 +518,6 @@ if args.run or args.rebuild
                 000       000 0 000  000   000
                  0000000  000   000  0000000
 ###
-
-# log noon.stringify args, colors:true
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
