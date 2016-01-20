@@ -12,7 +12,7 @@ fi
 
 git add .
 git status -sb
-git commit -m "$MSG" -q
+git commit -m "$MSG" | colorcat -P `dirname $0`/../colorcat/commit.noon
 
 echo -n 'pushing' | colorcat -yf
 

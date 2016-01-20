@@ -262,13 +262,14 @@ run = (sourceFile) ->
             log "can't read #{sourceFile}"
             return
 
-        if args.debug then log "source file".gray, sourceFile
+        log "source file".gray, sourceFile if args.debug
 
         ext = path.extname(sourceFile).substr(1)
 
         targetFile = target sourceFile
+        return if not targetFile?
 
-        if args.debug then log "target file".gray, targetFile
+        log "target file".gray, targetFile if args.debug
 
         o = config sourceFile
 
