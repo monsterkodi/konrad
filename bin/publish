@@ -22,6 +22,6 @@ git tag -f -a -m "v$VERSION" $VERSION
 git push --tags -q
 npm publish
 if [ -e `npm -g bin`/`sds -rp name` ]; then
-    echo -n "installing `sds -rp name` globally" | colorcat -yf
+    echo -n "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*)  . gray.dim . yellow.bold . gray.dim"
     npm install -g `sds -rp name`
 fi
