@@ -1,1 +1,1 @@
-(\[)(\w+)( \d+)(\])(.*)  . gray.dim . green . gray . gray.dim . yellow.bold
+(\[)(\w+)( \w+)(\])(.*)  . gray.dim . green . gray . gray.dim . yellow.bold
