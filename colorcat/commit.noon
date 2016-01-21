@@ -1,2 +1,2 @@
-(\[)(\w+)( \w+)(\])(.*)  . gray.dim . green . gray . gray.dim . yellow.bold
-\d+ files changed, (\d+ ins).*,( \d+ del).*  . green . red
+(\[)(\S+)( \S+)(\])(.*)  . gray.dim . green . gray . gray.dim . yellow.bold
+.\d+ files changed, (\d+ ins).*,( \d+ del).*  . green . red
