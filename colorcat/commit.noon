@@ -1,2 +1,4 @@
 (\[)(\S+)( \S+)(\])(.*)  . gray.dim . green . gray . gray.dim . yellow.bold
-.\d+ files changed, (\d+ ins).*,( \d+ del).*  . green . red
+.\d+ files? changed,( \d+ ins).*,( \d+ del).*  . green . red
+(\S+ )mode \S+ (\S+)   . gray.dim . green
+(rewrite )(\S+ )(\S+)  . gray.dim . green . gray.dim
