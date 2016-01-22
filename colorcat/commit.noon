@@ -1,4 +1,6 @@
 \[(\S+)( \S+)\](.*)    . g . xd . yf
 .\d+ files? changed,( \d+ ins).*,( \d+ del).*  . g . r
+.\d+ files? changed,( \d+ ins).*               . g
+.\d+ files? changed,( \d+ del).*               . r
 (\S+ )mode \S+ (\S+)   . xd . g
 (rewrite )(\S+ )(\S+)  . xd . g . xd
