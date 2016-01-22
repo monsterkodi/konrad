@@ -3,7 +3,8 @@ if [ ! -e package.json ]; then
     echo "[ERROR] no package.json!" | lolcat -p 0.3
     exit 1
 fi
+npm prune
 ncu -a
 npm update
 npm update
-npm ls -s --depth 0
+npm ls -s --depth 0 | colorcat -p "(.── )(\S+)(@)([\d\.]+)  . zd . g . b . m"

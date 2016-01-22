@@ -2,7 +2,7 @@
 TEST=`sds -rp scripts.test`
 if [ -n "$TEST" ] ; then
     if ! npm test ; then
-        echo -n '[ERROR] test failed!' | colorcat -p "(\[.+\])(.*)  . bgRed.bold.yellow . bold.yellow" 
+        echo -n '[ERROR] test failed!' | colorcat -p "(\[.+\])(.*)  . Rfy . fy" 
         exit 1
     fi
 fi
@@ -23,6 +23,6 @@ git push --tags -q
 echo -n 'npm publish' | colorcat -z
 npm publish
 if [ -e `npm -g bin`/`sds -rp name` ]; then
-    echo -n "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*)  . gray . yellow.bold . gray"
+    echo -n "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*)  . x . fy . x"
     npm install -g `sds -rp name`
 fi

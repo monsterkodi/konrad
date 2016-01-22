@@ -1,21 +1,21 @@
 name            konrad
 description     builds my stuff
-version         0.4.8
+version         0.4.9
 main            js/konrad.js
-bin             
+bin
                 konrad  ./bin/konrad
-repository      
+repository
                 type    git
                 url     git+https://github.com/monsterkodi/konrad.git
-keywords        
+keywords
                 build
                 tool
 author          monsterkodi
 license         Unlicense
-bugs            
+bugs
                 url     https://github.com/monsterkodi/konrad/issues
 homepage        https://github.com/monsterkodi/konrad
-dependencies    
+dependencies
                 chalk               ^1.1.1
                 chokidar            ^1.4.2
                 coffee-script       ^1.10.0
@@ -23,15 +23,15 @@ dependencies
                 fs-utils            ^0.7.0
                 growl               ^1.8.1
                 jade                ^1.11.0
-                karg                >=0.1.19
+                karg                >=0.1.31
                 lodash              ^4.0.0
                 mkpath              ^1.0.0
-                noon                >=0.6.16
+                noon                >=0.7.4
                 sds                 ^1.4.23
                 semver              ^5.1.0
                 simple-git          ^1.21.0
                 stylus              ^0.53.0
                 walkdir             0.0.11
                 write-file-atomic   ^1.1.4
-konrad          
+konrad
                 bump on     commit

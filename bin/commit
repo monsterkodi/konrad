@@ -11,7 +11,7 @@ if [ $# -eq 0 ]; then
         MSG="v`sds -rp version`"
     fi
     if [ -z "$MSG" ]; then
-        echo -n '[ERROR] no commit message and no package.json!' | colorcat -p "(\[.+\])(.*)  . bgRed.bold.yellow . bold.yellow" 
+        echo -n '[ERROR] no commit message and no package.json!' | colorcat -p "(\[.+\])(.*)  . Rfy . fy" 
         exit 1
     fi
 else
