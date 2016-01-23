@@ -13,6 +13,7 @@ sds    = require 'sds'
 noon   = require 'noon'
 colors = require 'colors'
 chalk  = require 'chalk'
+childp = require 'child_process'
 _      = require 'lodash'
 
 pkg     = require "#{__dirname}/../package"
@@ -404,6 +405,7 @@ gitStatus = (sourceFile) ->
             error err
             return
         changes = []
+                
         for k,v of _.clone status
             if _.isEmpty status[k]
                 delete status[k]
@@ -428,13 +430,12 @@ gitStatus = (sourceFile) ->
                             log 'filtered', resolve(a), f, path.join(gitDir, f) if args.debug
                             continue
 
-                    prfx   = "    "
-                    prfx   = "█   ".blue if args.verbose
+                    prfx    = "    "
+                    prfx    = (k == 'modified' and colors.blue or m[k]) "█   "
                     gitFile = path.join gitDir, f
                     relPath = relative gitFile, '.'
-                    change = prfx + prettyFilePath(relPath, m[k])                                
-                    childp = require 'child_process'
-                    if k in ['modified', 'created'] and args.verbose and childp.execSync?
+                    change  = prfx + prettyFilePath(relPath, m[k])                                
+                    if k in ['modified', 'created'] and args.verbose
                         res = childp.execSync "git diff -U0 --ignore-space-at-eol #{gitFile}",
                             encoding: 'utf8'
                             cwd: gitDir
@@ -456,7 +457,23 @@ gitStatus = (sourceFile) ->
         relPath = relative gitDir, resolve '.'
         relPath = '.' if relPath == ''
         gitPath = prettyFilePath relPath, colors.white
-        log 'git '.bgBlue.bold.blue + (gitPath+" ").bgBlue
+        
+        
+        aheadBehind = () ->
+            st = childp.execSync "git status -sb",
+                cwd: gitDir
+                encoding: 'utf8'
+            st = st.split('\n')[0].split '['
+            if st.length > 1
+                st = st[1].substr(0,st[1].length-1)
+                st = st.replace ', ', ' '
+                st = st.replace /ahead (.*)/, "▲ $1".yellow.bold.bgBlack
+                st = st.replace /behind (.*)/, "▼ $1".red.bold.bgBlack
+                st = _.padEnd st, 4
+            else 
+                ''
+            
+        log ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
         for c in changes
             log c
 
@@ -530,7 +547,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
             command = "#{cmdpath} #{cmdargs}"
             if args.verbose
                 log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
-            require('child_process').execSync command,
+            childp.execSync command,
                 cwd: process.cwd()
                 encoding: 'utf8'
                 stdio: 'inherit'
@@ -557,7 +574,7 @@ reload = ->
     return if not watcher?
     watcher.close()
     log prettyTime(), '🔧  reload'.gray
-    require('child_process').execSync "/usr/bin/env node #{__filename} #{args.verbose and '-v' or ''}",
+    childp.execSync "/usr/bin/env node #{__filename} #{args.verbose and '-v' or ''}",
         cwd:      process.cwd()
         encoding: 'utf8'
         stdio:    'inherit'
