@@ -2,7 +2,7 @@
 TEST=`sds -rp scripts.test`
 if [ -n "$TEST" ] ; then
     if ! npm test ; then
-        echo -n '[ERROR] test failed!' | colorcat -p "(\[.+\])(.*)  . Rfy . fy" 
+        echo '[ERROR] test failed!' | colorcat -p "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
         exit 1
     fi
 fi
@@ -16,13 +16,13 @@ fi
 
 VERSION=`sds -rp version`
 
-echo -n 'tagging' | colorcat -x
+echo 'tagging' | colorcat -x
 git tag -f -a -m "v$VERSION" $VERSION
-echo -n 'pushing tags' | colorcat -x
+echo 'pushing tags' | colorcat -x
 git push --tags -q
-echo -n 'npm publish' | colorcat -x
+echo 'npm publish' | colorcat -x
 npm publish
 if [ -e `npm -g bin`/`sds -rp name` ]; then
-    echo -n "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*)  . x . fy . x"
+    echo "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*) . x . fy . x"
     npm install -g `sds -rp name`
 fi
