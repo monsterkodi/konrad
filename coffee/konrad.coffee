@@ -91,6 +91,7 @@ ignore = [
     /\.konrad\.noon$/
     /\/js$/
     /\/img$/
+    /\/test\//
     /\/\..+$/
     /\.git$/
     /\.app$/
