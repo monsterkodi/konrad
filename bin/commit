@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# if [ "`sds -rp 'konrad.bump on'`" = "commit" ]; then
-#     `dirname $0`/bump
-# fi
-
 if [ $# -eq 0 ]; then
     if [ -e package.json ]; then
         MSG="v`sds -rp version`"
