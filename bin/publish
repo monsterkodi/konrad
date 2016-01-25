@@ -21,8 +21,8 @@ git tag -f -a -m "v$VERSION" $VERSION
 echo 'pushing tags' | colorcat -x
 git push --tags -q
 echo 'npm publish'  | colorcat -x
-npm publish
+npm publish         | colorcat -P `dirname $0`/../colorcat/npm.noon
 if [ -e `npm -g bin`/`sds -rp name` ]; then
     echo "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*)  . x . fy . x"
-    npm install -g `sds -rp name`
+    npm install -g `sds -rp name`             | colorcat -P `dirname $0`/../colorcat/npm.noon
 fi
