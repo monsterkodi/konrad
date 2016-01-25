@@ -3,4 +3,4 @@
 (.\d+ files? changed, )(\d+ )(ins.*)                  . gds:++ . g  . s:
 (.\d+ files? changed, )(\d+ )(del.*)                  . rds:-- . r  . s:
 (\S+ )mode \S+ (\S+)                                  . xd . g
-(rewrite )(\S+ )(\S+)                                 . xd . g . xd
+(rewrite )(\S+ )(\S+)                                . xd . g . xd
