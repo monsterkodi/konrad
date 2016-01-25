@@ -1,35 +1,35 @@
-name          konrad
-description   builds my stuff
-version       0.4.30
-main          js/konrad.js
+name            konrad
+description     builds my stuff
+version         0.4.31
+main            js/konrad.js
 bin
-              konrad  ./bin/konrad
+                konrad  ./bin/konrad
 repository
-              type  git
-              url   git+https://github.com/monsterkodi/konrad.git
+                type    git
+                url     git+https://github.com/monsterkodi/konrad.git
 keywords
-              build
-              tool
-author        monsterkodi
-license       Unlicense
+                build
+                tool
+author          monsterkodi
+license         Unlicense
 bugs
-              url   https://github.com/monsterkodi/konrad/issues
-homepage      https://github.com/monsterkodi/konrad
+                url     https://github.com/monsterkodi/konrad/issues
+homepage        https://github.com/monsterkodi/konrad
 dependencies
-              chalk           ^1.1.1
-              chokidar        ^1.4.2
-              coffee-script   ^1.10.0
-              colors          ^1.1.2
-              fs-utils        ^0.7.0
-              growl           ^1.8.1
-              jade            ^1.11.0
-              karg            >=0.1.32
-              lodash          ^4.0.0
-              mkpath          ^1.0.0
-              noon            >=0.8.2
-              sds             ^1.4.23
-              semver          ^5.1.0
-              simple-git      ^1.21.0
-              stylus          ^0.53.0
-              walkdir         0.0.11
-              write-file-atomic  ^1.1.4
+                chalk               ^1.1.1
+                chokidar            ^1.4.2
+                coffee-script       ^1.10.0
+                colors              ^1.1.2
+                fs-utils            ^0.7.0
+                growl               ^1.8.1
+                jade                ^1.11.0
+                karg                >=0.1.32
+                lodash              ^4.0.0
+                mkpath              ^1.0.0
+                noon                >=0.8.2
+                sds                 ^1.4.23
+                semver              ^5.1.0
+                simple-git          ^1.21.0
+                stylus              ^0.53.0
+                walkdir             0.0.11
+                write-file-atomic   ^1.1.4
