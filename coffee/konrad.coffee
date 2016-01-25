@@ -421,9 +421,10 @@ gitStatus = (sourceFile) ->
                 for f in status[k] ? []
                     d = argDir()
                     
-                    if args.arguments.length
+                    arglist = _.filter args.arguments, (a) -> a not in ['fetch']
+                    if arglist.length
                         filtered = true
-                        for a in args.arguments
+                        for a in arglist
                             if path.join(gitDir, f).indexOf(resolve a) == 0
                                 filtered = false
                                 break
@@ -461,6 +462,10 @@ gitStatus = (sourceFile) ->
         
         
         aheadBehind = () ->
+            if 'fetch' in args.arguments
+                childp.execSync "git fetch",
+                    cwd: gitDir
+                    encoding: 'utf8'
             st = childp.execSync "git status -sb",
                 cwd: gitDir
                 encoding: 'utf8'
