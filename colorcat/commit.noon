@@ -1,6 +1,6 @@
-\[(\S+)( \S+)\](.*)    . g . xd . yf
-.\d+ files? changed,( \d+ ins).*,( \d+ del).*  . g . r
-.\d+ files? changed,( \d+ ins).*               . g
-.\d+ files? changed,( \d+ del).*               . r
-(\S+ )mode \S+ (\S+)   . xd . g
-(rewrite )(\S+ )(\S+)  . xd . g . xd
+(\[)(\S+)( \S+)(\])(.*)                              . s: . g . xd . s: . yf
+(.\d+ files? changed, )(\d+ )(ins.*, )(\d+ )(del.*)  . gs:++ . g . rs:-- . r . rs:
+(.\d+ files? changed, )(\d+ )(ins.*)                 . gs:++ . g . s:
+(.\d+ files? changed, )(\d+ )(del.*)                 . rs:-- . r . s:
+(\S+ )mode \S+ (\S+)                                 . xd . g
+(rewrite )(\S+ )(\S+)                                . xd . g . xd
