@@ -1,0 +1,8 @@
+(## )(\S+)(\.\.\.)(\S+)  . s: . g . gd . r
+(ahead)( \d+)            . yfs:▲ . yf
+(behind)( \d+)           . rfs:▼ . rf
+(\?\?)( .+)              . |xs: █ | . x
+( M)( \S+)               . |gs: █ | . gf
+(M )( \S+)               . |bs:█  | . gf
+(A )( \S+)               . |ms:█  | . mf
+(A)(M)( \S+)             .  ms:█ . |gs:█ | . mf
