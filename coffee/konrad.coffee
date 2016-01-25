@@ -432,7 +432,6 @@ gitStatus = (sourceFile) ->
                             continue
 
                     prfx    = "    "
-                    # prfx    = (k == 'modified' and colors.green.bold or m[k]) "█   "
                     prfx    = m[k] "█   "
                     gitFile = path.join gitDir, f
                     relPath = relative gitFile, '.'
