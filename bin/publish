@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 TEST=`sds -rp scripts.test`
 if [ -n "$TEST" ] ; then
     if ! npm test ; then
@@ -16,12 +17,15 @@ fi
 
 VERSION=`sds -rp version`
 
-echo 'tagging' | colorcat -x
+echo 'tagging'                        | colorcat -x
 git tag -f -a -m "v$VERSION" $VERSION
-echo 'pushing tags' | colorcat -x
+
+echo 'pushing tags'                   | colorcat -x
 git push --tags -q
-echo 'npm publish'  | colorcat -x
-npm publish         | colorcat -P `dirname $0`/../colorcat/npm.noon
+
+echo 'npm publish'                    | colorcat -x
+npm publish                           | colorcat -P `dirname $0`/../colorcat/npm.noon
+
 if [ -e `npm -g bin`/`sds -rp name` ]; then
     echo "installing `sds -rp name` globally" | colorcat -p "(.*)( .* )(.*)  . x . fy . x"
     npm install -g `sds -rp name`             | colorcat -P `dirname $0`/../colorcat/npm.noon

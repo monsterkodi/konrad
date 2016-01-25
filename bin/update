@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
+
 if [ ! -e package.json ]; then
     echo '[ERROR] no package.json!' | colorcat -p "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy"     
     exit 1
 fi
-npm prune  | colorcat -P `dirname $0`/../colorcat/npm.noon
-ncu -a     | colorcat -P `dirname $0`/../colorcat/ncu.noon
-npm update | colorcat -P `dirname $0`/../colorcat/npm.noon
-npm update | colorcat -P `dirname $0`/../colorcat/npm.noon
-npm ls -s --depth 0 | colorcat -p "(.──\s)(\S+)(@)([\d\.]+) . xd . g . z . m :: (\S+)(@)([\d\.]+)\s(.*) . yf . z . mf . z"
+
+npm prune           | colorcat -P `dirname $0`/../colorcat/npm.noon
+ncu -a              | colorcat -P `dirname $0`/../colorcat/ncu.noon
+npm update          | colorcat -P `dirname $0`/../colorcat/npm.noon
+npm update          | colorcat -P `dirname $0`/../colorcat/npm.noon
+npm ls -s --depth 0 | colorcat -P `dirname $0`/../colorcat/npm.noon
