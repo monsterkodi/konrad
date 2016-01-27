@@ -447,7 +447,7 @@ gitStatus = (sourceFile) ->
                         c = '▼'.blue.bold
                         for l in res.split '\n'
                             ls = chalk.stripColor(l)
-                            if ls[0] in ['+', '-', '@'] and ls[1] not in ['+', '-']
+                            if (ls[0] in ['+', '-', '@']) and (ls.substr(0,4) not in ['+++ ', '--- '])
                                 if ls[0] == '+'
                                     diff += ("\n "+ls.substr(1)).white
                                 else if ls[0] == '-'
