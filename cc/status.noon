@@ -1,14 +1,16 @@
-(## )(\S+)(\.\.\.)(\S+)  . s: . g . gd . r
-(ahead)( \d+)            . yfs:▲ . yf
-(behind)( \d+)           . rfs:▼ . rf
-(\?)(\?)( .+)            .  zs:█ . xds:█ . x
-\s(M)( \S+)              . gds:█ . g
-\s(D)( \S+)              .  rs:█ . r
-(M)\s( \S+)              .  gs:█ . gf
-(D)\s( \S+)              . rfs:█ . rf
-(A)(\s+\S+)              .  ms:█ . mf
-(A)(M)( \S+)             .  ms:█ .  gs:█ . mf
-(M)(M)( \S+)             .  gs:█ . gds:█ . gf
-\[|\]                    s:
-[\/\.]                   d
-,                        s:
+(## )(\S+)(\.\.\.)(\S+)    . s: . g . gd . r
+(ahead)( \d+)              . yfs:▲ . yf
+(behind)( \d+)             . rfs:▼ . rf
+(\?)(\?)( .+)              .  zs:█ . xds:█ . x
+\s(M)( \S+)                . gds:█ . g
+\s(D)( \S+)                .  rs:█ . r
+(M)\s( \S+)                .  gs:█ . gf
+(D)\s( \S+)                . rfs:█ . rf
+(A)(\s+\S+)                .  ms:█ . mf
+(A)(M)( \S+)               .  ms:█ .  gs:█ . mf
+(M)(M)( \S+)               .  gs:█ . gds:█ . gf
+(R)\s( \S+)\s.*\s(\S+)     .  gs:█ . x . gf
+\[|\]                      s:
+[\/\.]                     d
+,                          s:
+->                         s:►
