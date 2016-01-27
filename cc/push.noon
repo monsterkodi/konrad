@@ -1,4 +1,4 @@
-.*                                          red 
+.*                                          r
 (.*)(Counting|Writing|ompress|Total)(.*)  . xd . xd . xd
 (.*)(rejected)(.*\s\()(.+)(\).*)          . rs:push_ . r . |s:: | . rf . s:
 (^hint: )(.*)                             . s: . s:
