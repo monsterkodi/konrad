@@ -1,4 +1,7 @@
+.*                                          red 
 (.*)(Counting|Writing|ompress|Total)(.*)  . xd . xd . xd
-(.*)(rejected)(.*)(\s.fetch first.)(.*)   . s: . rf . s: . rf . s:
+(.*)(rejected)(.*\s\()(.+)(\).*)          . rs:push_ . r . |s:: | . rf . s:
 (^hint: )(.*)                             . s: . s:
+error: failed to push.*                     s:
+To git.*                                    s:
 \d+                                         f

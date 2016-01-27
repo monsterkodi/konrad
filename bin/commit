@@ -20,5 +20,5 @@ git commit -m "$MSG" | colorcat -P `dirname $0`/../cc/commit.noon
 
 echo 'pushing'       | colorcat -x
 
-git push -q          | colorcat -P `dirname $0`/../cc/push.noon
+git push -q 2>&1     | colorcat -P `dirname $0`/../cc/push.noon
 git status -sb       | colorcat -P `dirname $0`/../cc/status.noon
