@@ -5,8 +5,8 @@ if [ ! -e package.json ]; then
     exit 1
 fi
 
-npm prune           | colorcat -P `dirname $0`/../colorcat/npm.noon
-ncu -a              | colorcat -P `dirname $0`/../colorcat/ncu.noon
-npm update          | colorcat -P `dirname $0`/../colorcat/npm.noon
-npm update          | colorcat -P `dirname $0`/../colorcat/npm.noon
-npm ls -s --depth 0 | colorcat -P `dirname $0`/../colorcat/npm.noon
+npm prune           | colorcat -P `dirname $0`/../cc/npm.noon
+ncu -a              | colorcat -P `dirname $0`/../cc/ncu.noon
+npm update          | colorcat -P `dirname $0`/../cc/npm.noon
+npm update          | colorcat -P `dirname $0`/../cc/npm.noon
+npm ls -s --depth 0 | colorcat -P `dirname $0`/../cc/npm.noon

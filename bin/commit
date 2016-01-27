@@ -15,10 +15,10 @@ else
 fi
 
 git add .
-git status -sb       | colorcat -P `dirname $0`/../colorcat/status.noon
-git commit -m "$MSG" | colorcat -P `dirname $0`/../colorcat/commit.noon
+git status -sb       | colorcat -P `dirname $0`/../cc/status.noon
+git commit -m "$MSG" | colorcat -P `dirname $0`/../cc/commit.noon
 
 echo 'pushing'       | colorcat -x
 
-git push -q
-git status -sb       | colorcat -P `dirname $0`/../colorcat/status.noon
+git push -q          | colorcat -P `dirname $0`/../cc/push.noon
+git status -sb       | colorcat -P `dirname $0`/../cc/status.noon
