@@ -1,0 +1,15 @@
+(\[)(\S+)( \S+)(\])(.*)                 . s: . g . xd . s: . yf
+(.\d+ files? changed,)                  . s:
+( \d+)( ins\S+)                         . g . gds:++
+( \d+)( del\S+)                         . r . rds:--
+(\S+ )(mode \S+ )(\S+)                  . xd . s: . g
+(delete )(mode \S+ )(\S+)               . rd . s: . r
+(rewrite )(\S+ )(\S+)                   . xd . g . xd
+\+{10}                                  gs:■
+\-{10}                                  rs:■
+(.*)(\| Bin \d+ )(\S+)( \d+)( bytes)    . x . |s:   | . xds:▶ . xd . zd
+(.*)(\| )(\s*\d+ )(\+*)(\-*)            . y . |s:  | . xd . gs:▶ . rs:▶
+(Updating) (\S+)(\.\.)(\S+)             . wfs:pull . xd . zd . xd
+Fast-forward                            s:
+[\/\.|]                                 d
+
