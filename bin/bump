@@ -33,5 +33,7 @@ fs.writeFileSync file, JSON.stringify(pack, null, '  '), encoding: 'utf8'
 # write package.noon if it exists
 noonFile = path.join process.cwd(), 'package.noon'
 if fs.existsSync noonFile
-    fs.writeFileSync noonFile, noon.stringify(pack), encoding: 'utf8'
+    noon.save noonFile, pack, 
+        indent:   '  '
+        maxalign: 16
     

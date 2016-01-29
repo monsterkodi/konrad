@@ -9,7 +9,6 @@
 fs     = require 'fs'
 fu     = require 'fs-utils'
 path   = require 'path'
-sds    = require 'sds'
 noon   = require 'noon'
 colors = require 'colors'
 chalk  = require 'chalk'
@@ -24,7 +23,7 @@ args = require('karg') """
 konrad
     arguments  . ? see arguments                   . ** .
     bump       . ? bump package.* version          . = false
-    commit     . ? commit with message             . = false
+    commit     . ? add, commit and push            . = false
     publish    . ? bump, commit & publish to npm   . = false
     update     . ? update npm packages             . = false
     test       . ? run tests                       . = false
@@ -72,7 +71,7 @@ config = (p) ->
     while path.dirname(p).length and path.dirname(p) not in ['.', '/']
         p = path.dirname p
         if fs.existsSync path.join p, '.konrad.noon'
-            return _.defaultsDeep sds.load(path.join p, '.konrad.noon'), opt
+            return _.defaultsDeep noon.load(path.join p, '.konrad.noon'), opt
     opt
 
 ###
@@ -295,9 +294,9 @@ run = (sourceFile) ->
                     jade = require 'jade'
                     jade.render data, pretty: true
                 when 'json'
-                    sds.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
+                    noon.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
                 when 'noon'
-                    sds.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
+                    noon.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
         catch e
             error e
             return
