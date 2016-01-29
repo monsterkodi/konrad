@@ -15,7 +15,7 @@ else
 fi
 
 git add .
-git status -sb       | colorcat -P `dirname $0`/../cc/status.noon
+git status -sb       | colorcat -P  `dirname $0`/../cc/status.noon
 git commit -m "$MSG" | colorcat -sP `dirname $0`/../cc/commit.noon
 
 echo 'pushing'       | colorcat -x

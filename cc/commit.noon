@@ -1,4 +1,4 @@
-(\[)(\S+)( \S+)(\])(.*)        . s: . g . xd . s: . yf
+(\[)(\S+)( \S+)(\])(.*)        . s: . g . xd . s: . wf
 (.\d+ files? changed,)         . s:
 ( \d+)( ins\S+)                . g . gds:++
 ( \d+)( del\S+)                . r . rds:--
