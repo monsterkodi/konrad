@@ -17,7 +17,7 @@ fi
 
 VERSION=`sds -rp version`
 
-echo 'tagging'                        | colorcat -x
+echo "tagging $VERSION"               | colorcat -x
 git tag -f -a -m "v$VERSION" $VERSION
 
 echo 'pushing tags'                   | colorcat -x
