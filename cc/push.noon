@@ -1,2 +1,2 @@
 (.*)(Counting|Writing|ompress|Total|hint:|error:|\.\.|To git)(.*)  . s: . s: . s:
-(.*)(rejected)(.*\s\()(.+)(\).*)          . rs:push_ . r . |s:: | . yRf . s:
+(.*)(rejected)(.*\s\()(.+)(\).*)          . rs:push_ . r . |rs:: | . yRf . s:
