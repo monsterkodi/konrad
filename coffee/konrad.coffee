@@ -52,11 +52,11 @@ version  #{pkg.version}
 """
 
 ###
- 0000000   0000000   000   000  00000000  000   0000000
-000       000   000  0000  000  000       000  000
-000       000   000  000 0 000  000000    000  000  0000
-000       000   000  000  0000  000       000  000   000
- 0000000   0000000   000   000  000       000   0000000
+ 0000000   00000000   000000000
+000   000  000   000     000   
+000   000  00000000      000   
+000   000  000           000   
+ 0000000   000           000   
 ###
 
 opt = noon.parse """
@@ -67,12 +67,50 @@ styl    . ext css . replace .. /style/ /css/
 jade    . ext html
 """
 
+###
+00000000   00000000   0000000   0000000   000      000   000  00000000
+000   000  000       000       000   000  000      000   000  000
+0000000    0000000   0000000   000   000  000       000 000   0000000
+000   000  000            000  000   000  000         000     000
+000   000  00000000  0000000    0000000   0000000      0      00000000
+###
+
+resolve = (unresolved) ->
+    p = unresolved.replace /\~/, process.env.HOME
+    p = path.resolve p
+    p = path.normalize p
+    p
+
+###
+ 0000000   0000000   000   000  00000000  000   0000000
+000       000   000  0000  000  000       000  000
+000       000   000  000 0 000  000000    000  000  0000
+000       000   000  000  0000  000       000  000   000
+ 0000000   0000000   000   000  000       000   0000000
+###
+
 config = (p) ->
     while path.dirname(p).length and path.dirname(p) not in ['.', '/']
         p = path.dirname p
         if fs.existsSync path.join p, '.konrad.noon'
-            return _.defaultsDeep noon.load(path.join p, '.konrad.noon'), opt
+            o = _.defaultsDeep noon.load(path.join p, '.konrad.noon'), opt
+            if o.ignore?.map?
+                o.ignore = o.ignore.map (i) ->
+                    if _.isString i
+                        new RegExp i
+                    else
+                        i
+            return o
     opt
+
+configPath = (key, p) ->
+    while path.dirname(p).length and path.dirname(p) not in ['.', '/']
+        p = path.dirname p
+        if fs.existsSync path.join p, '.konrad.noon'
+            o = _.defaultsDeep noon.load(path.join p, '.konrad.noon'), opt
+            if o[key]?
+                return resolve p
+    null
 
 ###
 000   0000000   000   000   0000000   00000000   00000000
@@ -82,7 +120,7 @@ config = (p) ->
 000   0000000   000   000   0000000   000   000  00000000
 ###
 
-ignore = [
+opt.ignore = [
     /node_modules/
     /bower_components/
     /gulpfile.coffee$/
@@ -90,7 +128,21 @@ ignore = [
     /\.konrad\.noon$/
     /\/js$/
     /\/img$/
-    /\/test\//
+    # /\/test\//
+    /\/\..+$/
+    /\.git$/
+    /\.app$/
+    /_misc/
+]
+
+watch_ignore = [
+    /node_modules/
+    /bower_components/
+    /gulpfile.coffee$/
+    /Gruntfile.coffee$/
+    /\.konrad\.noon$/
+    /\/js$/
+    /\/img$/
     /\/\..+$/
     /\.git$/
     /\.app$/
@@ -130,20 +182,6 @@ prettyTime = () ->
         ''
 
 ###
-00000000   00000000   0000000   0000000   000      000   000  00000000
-000   000  000       000       000   000  000      000   000  000
-0000000    0000000   0000000   000   000  000       000 000   0000000
-000   000  000            000  000   000  000         000     000
-000   000  00000000  0000000    0000000   0000000      0      00000000
-###
-
-resolve = (unresolved) ->
-    p = unresolved.replace /\~/, process.env.HOME
-    p = path.resolve p
-    p = path.normalize p
-    p
-
-###
  0000000   00000000    0000000   0000000    000  00000000 
 000   000  000   000  000        000   000  000  000   000
 000000000  0000000    000  0000  000   000  000  0000000  
@@ -180,6 +218,24 @@ relative = (absolute, to) ->
     r = path.relative d, absolute
 
 ###
+ 0000000  000   000   0000000   000   000  000      0000000  
+000       000   000  000   000  000   000  000      000   000
+0000000   000000000  000   000  000   000  000      000   000
+     000  000   000  000   000  000   000  000      000   000
+0000000   000   000   0000000    0000000   0000000  0000000  
+###
+
+should = (k, o, p) ->
+    return false if not o[k]? or not _.isArray o[k]
+    for i in o[k]
+        r = i
+        r = new RegExp i if _.isString i
+        if r.test p
+            log prettyFilePath(relative(p), colors.gray), 'should '.blue+k.bold.blue if args.debug
+            return true
+    false
+    
+###
 000000000   0000000   00000000    0000000   00000000  000000000
    000     000   000  000   000  000        000          000
    000     000000000  0000000    000  0000  0000000      000
@@ -190,7 +246,6 @@ relative = (absolute, to) ->
 target = (sourceFile) ->
     ext = path.extname(sourceFile).substr(1)
     o = config sourceFile
-    return if 'ignore' in _.keys o
 
     if o[ext].filter?
         matches = false
@@ -241,14 +296,14 @@ error = (e) ->
         true
 
 ###
-00000000   000   000  000   000
-000   000  000   000  0000  000
-0000000    000   000  000 0 000
-000   000  000   000  000  0000
-000   000   0000000   000   000
+0000000    000   000  000  000      0000000  
+000   000  000   000  000  000      000   000
+0000000    000   000  000  000      000   000
+000   000  000   000  000  000      000   000
+0000000     0000000   000  0000000  0000000  
 ###
 
-run = (sourceFile) ->
+build = (sourceFile, cb) ->
 
     ###
     00000000   00000000   0000000   0000000
@@ -321,6 +376,8 @@ run = (sourceFile) ->
 
                     if path.resolve(targetFile) == __filename
                         reload()
+                    else if cb?
+                        cb sourceFile, targetFile
             else
                 log 'unchanged'.green.dim, prettyFilePath(relative(targetFile), colors.gray) if args.verbose
                 stat = fs.statSync sourceFile
@@ -346,15 +403,23 @@ walk = (opt, cb) ->
     try
         walkdir.sync argDir(), (p) ->
             
-            for i in ignore
-                if i.test p
-                    log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
-                    if opt.all
-                        cb p
-                    @ignore p
-                    return
+            o = config p
+
+            if should 'ignore', o, p
+                if opt.all
+                    cb p
+                @ignore p
+                return
+                
+            # for i in o.ignore
+            #     if i.test p
+            #         log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
+            #         if opt.all
+            #             cb p
+            #         @ignore p
+            #         return
                     
-            if path.extname(p).substr(1) in _.keys(opt)
+            if path.extname(p).substr(1) in _.keys(o)
                 cb p, target p
             else
                 if args.debug
@@ -368,11 +433,11 @@ walk = (opt, cb) ->
 dowatch = true
 
 ###
-                000  000   000  00000000   0000000
-                000  0000  000  000       000   000
-000000  000000  000  000 0 000  000000    000   000
-                000  000  0000  000       000   000
-                000  000   000  000        0000000
+000  000   000  00000000   0000000 
+000  0000  000  000       000   000
+000  000 0 000  000000    000   000
+000  000  0000  000       000   000
+000  000   000  000        0000000 
 ###
 
 if args.info
@@ -381,19 +446,18 @@ if args.info
 
     walk opt, (sourceFile, targetFile) ->
         if targetFile
-
             if dirty sourceFile, targetFile
-                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.red), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
+                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.yellow), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
             else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
     true    
     
 ###
-                 0000000  000000000   0000000   000000000  000   000   0000000
-                000          000     000   000     000     000   000  000     
-000000  000000  0000000      000     000000000     000     000   000  0000000 
-                     000     000     000   000     000     000   000       000
-                0000000      000     000   000     000      0000000   0000000 
+ 0000000  000000000   0000000   000000000  000   000   0000000
+000          000     000   000     000     000   000  000     
+0000000      000     000000000     000     000   000  0000000 
+     000     000     000   000     000     000   000       000
+0000000      000     000   000     000      0000000   0000000 
 ###
 
 gitStatus = (sourceFile) ->
@@ -501,7 +565,7 @@ if args.status
                 gitcount += 1
                 
             if fu.isDir sourceFile
-                for i in ignore
+                for i in opt.ignore
                     if i.test sourceFile
                         return false
         true
@@ -516,11 +580,11 @@ if args.status
             gitup = path.parse gitup.dir
 
 ###
-                00000000   000   000  000   000
-                000   000  000   000  0000  000
-000000  000000  0000000    000   000  000 0 000
-                000   000  000   000  000  0000
-                000   000   0000000   000   000
+00000000   000   000  000   000
+000   000  000   000  0000  000
+0000000    000   000  000 0 000
+000   000  000   000  000  0000
+000   000   0000000   000   000
 ###
 
 if args.run or args.rebuild
@@ -534,34 +598,40 @@ if args.run or args.rebuild
                 src = prettyFilePath(_.padEnd(relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
                 tgt = prettyFilePath(relative(targetFile), colors.green)
                 log src, "🔧  ", tgt
-                run sourceFile
+                build sourceFile
 
 ###
-                 0000000  00     00  0000000
-                000       000   000  000   000
-000000  000000  000       000000000  000   000
-                000       000 0 000  000   000
-                 0000000  000   000  0000000
+ 0000000  00     00  0000000  
+000       000   000  000   000
+000       000000000  000   000
+000       000 0 000  000   000
+ 0000000  000   000  0000000  
 ###
+
+runcmd = (cmd, cmdargs, cwd) -> 
+    try
+        cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
+        command = "#{cmdpath} #{cmdargs}"
+        if args.verbose
+            log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
+        childp.execSync command,
+            cwd: cwd
+            encoding: 'utf8'
+            stdio: 'inherit'
+    catch err
+        error "command #{cmd.bold.yellow} #{'failed!'.red}"
+        log String(err).red
+        return false
+    true
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
     if args[cmd]
         dowatch = false
-        try
-            cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
-            cmdargs = args.arguments.join ' '
-            command = "#{cmdpath} #{cmdargs}"
-            if args.verbose
-                log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
-            childp.execSync command,
-                cwd: process.cwd()
-                encoding: 'utf8'
-                stdio: 'inherit'
-        catch err
-            error "command #{cmd.bold.yellow} #{'failed!'.red}"
-            log String(err).red
+        
+        if not runcmd cmd, args.arguments.join ' ', process.cwd()
             break
+
         log '🔧  done'.gray if args.verbose
 
         if args.arguments and cmd in ['commit', 'bump']
@@ -581,7 +651,10 @@ reload = ->
     return if not watcher?
     watcher.close()
     log prettyTime(), '🔧  reload'.gray
-    childp.execSync "/usr/bin/env node #{__filename} #{args.verbose and '-v' or ''}",
+    arg = ''
+    arg += ' -v' if args.verbose
+    arg += ' -D' if args.debug
+    childp.execSync "/usr/bin/env node #{__filename} #{arg}",
         cwd:      process.cwd()
         encoding: 'utf8'
         stdio:    'inherit'
@@ -589,6 +662,7 @@ reload = ->
     process.exit 0
 
 if dowatch
+    
     sticky = true
 
     ###
@@ -599,7 +673,7 @@ if dowatch
     00     00  000   000     000      0000000  000   000
     ###
 
-    watch = (opt, cb) ->
+    watch = (cb) ->
 
         pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
 
@@ -608,17 +682,23 @@ if dowatch
         v = args.verbose and " ● version #{pkg.version}".dim.gray or ''
         log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
-            ignored: ignore
+            ignored: watch_ignore
             ignoreInitial: true
 
         watcher
             .on 'add',    (p) -> if pass p then cb p
             .on 'change', (p) -> if pass p then cb p
 
-    watch opt, (sourceFile) ->
+    watch (sourceFile) ->
 
         o = config sourceFile
 
-        return if 'ignore' in _.keys o
+        test = (source) ->
+            if should 'test', o, source
+                runcmd 'test', source, configPath 'test', resolve source
 
-        run sourceFile
+        if not should 'ignore', o, sourceFile
+            build sourceFile, test
+        else
+            test sourceFile
+
