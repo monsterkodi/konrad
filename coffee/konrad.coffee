@@ -126,16 +126,17 @@ opt.ignore = [
     /\.konrad\.noon$/
 ]
 
-watch_ignore = [
-    /node_modules/
-    /bower_components/
-    /\/js$/
-    /\/img$/
-    /\/\..+$/
-    /\.git$/
-    /\.app$/
-    /_misc/
-]
+wlk =
+    ignore: [
+        /node_modules/
+        /bower_components/
+        /\/js$/
+        /\/img$/
+        /\/\..+$/
+        /\.git$/
+        /\.app$/
+        /_misc/
+    ]
 
 ###
 00000000   00000000   00000000  000000000  000000000  000   000
@@ -394,6 +395,12 @@ walk = (opt, cb) ->
             o = config p
 
             if should 'ignore', o, p
+                if opt.all
+                    cb p
+                @ignore p
+                return
+
+            if should 'ignore', wlk, p
                 if opt.all
                     cb p
                 @ignore p
@@ -661,7 +668,7 @@ if dowatch
         v = args.verbose and " ● version #{pkg.version}".dim.gray or ''
         log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
-            ignored: watch_ignore
+            ignored: wlk.ignore
             ignoreInitial: true
 
         watcher
