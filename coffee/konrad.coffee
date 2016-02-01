@@ -121,26 +121,14 @@ configPath = (key, p) ->
 ###
 
 opt.ignore = [
-    /node_modules/
-    /bower_components/
     /gulpfile.coffee$/
     /Gruntfile.coffee$/
     /\.konrad\.noon$/
-    /\/js$/
-    /\/img$/
-    # /\/test\//
-    /\/\..+$/
-    /\.git$/
-    /\.app$/
-    /_misc/
 ]
 
 watch_ignore = [
     /node_modules/
     /bower_components/
-    /gulpfile.coffee$/
-    /Gruntfile.coffee$/
-    /\.konrad\.noon$/
     /\/js$/
     /\/img$/
     /\/\..+$/
@@ -253,7 +241,7 @@ target = (sourceFile) ->
             if new RegExp(r).test(sourceFile)
                 matches = true
         if not matches
-            log prettyFilePath relative(sourceFile), colors.blue if args.verbose
+            log prettyFilePath relative(sourceFile), colors.blue if args.debug
             return
 
     targetFile = _.clone sourceFile
@@ -411,14 +399,6 @@ walk = (opt, cb) ->
                 @ignore p
                 return
                 
-            # for i in o.ignore
-            #     if i.test p
-            #         log prettyFilePath(relative(p), colors.gray), 'ignored'.blue if args.debug
-            #         if opt.all
-            #             cb p
-            #         @ignore p
-            #         return
-                    
             if path.extname(p).substr(1) in _.keys(o)
                 cb p, target p
             else
@@ -501,7 +481,7 @@ gitStatus = (sourceFile) ->
                     relPath = relative gitFile, '.'
                     lame    = path.extname(gitFile) == '.js' or path.basename(gitFile) == 'package.json'
                     change  = prfx + prettyFilePath(relPath, (lame and m[k].dim or m[k]))
-                    if k in ['modified', 'created'] and args.verbose # verbose status == diff
+                    if k in ['modified', 'created'] and args.verbose
                         continue if lame
                         res = childp.execSync "git diff -U0 --ignore-space-at-eol #{gitFile}",
                             encoding: 'utf8'
@@ -678,7 +658,6 @@ if dowatch
         pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
 
         d = args.arguments[0] ? '.'
-
         v = args.verbose and " ● version #{pkg.version}".dim.gray or ''
         log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
