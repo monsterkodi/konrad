@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "main": "js/konrad.js",
   "bin": {
     "konrad": "./bin/konrad"
