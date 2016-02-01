@@ -635,15 +635,16 @@ watcher = null
 reload = ->
     return if not watcher?
     watcher.close()
-    log prettyTime(), '🔧  reload'.gray
+    log prettyTime(), '🔧  reload'.gray if not args.quiet
     arg = ''
     arg += ' -v' if args.verbose
     arg += ' -D' if args.debug
+    arg += ' -q' if args.quiet
     childp.execSync "/usr/bin/env node #{__filename} #{arg}",
         cwd:      process.cwd()
         encoding: 'utf8'
         stdio:    'inherit'
-    log 'exit'.yellow.bold
+    log 'exit'.yellow.bold if not args.quiet
     process.exit 0
 
 if dowatch
