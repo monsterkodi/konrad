@@ -395,22 +395,20 @@ walk = (opt, cb) ->
             o = config p
 
             if should 'ignore', o, p
-                if opt.all
-                    cb p
+                cb p if opt.all
                 @ignore p
                 return
 
             if should 'ignore', wlk, p
-                if opt.all
-                    cb p
+                cb p if opt.all
                 @ignore p
                 return
                 
-            if path.extname(p).substr(1) in _.keys(o)
+            if path.extname(p).substr(1) in _.keys o
                 cb p, target p
             else
                 if args.debug
-                    log prettyFilePath(relative(p), colors.gray)
+                    log prettyFilePath relative(p), colors.gray
                 if opt.all
                     if not cb p
                         @ignore p
