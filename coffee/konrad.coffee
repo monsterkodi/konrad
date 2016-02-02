@@ -274,13 +274,12 @@ dirty = (sourceFile, targetFile) ->
 00000000  000   000  000   000   0000000   000   000
 ###
 
-sticky = false
 error = (e) ->
     log "#{'[ERROR]'.bold.red} #{String(e).red}"
     try
         require('growl') String(e).strip,
             title: 'ERROR'
-            sticky: sticky
+            sticky: false
     catch err
         true
 
@@ -649,8 +648,6 @@ reload = ->
 
 if dowatch
     
-    sticky = true
-
     ###
     000   000   0000000   000000000   0000000  000   000
     000 0 000  000   000     000     000       000   000
