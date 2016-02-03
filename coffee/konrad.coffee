@@ -15,10 +15,10 @@ chalk  = require 'chalk'
 childp = require 'child_process'
 _      = require 'lodash'
 
-pkg     = require "#{__dirname}/../package"
-log     = console.log
+pkg    = require "#{__dirname}/../package"
+log    = console.log
 
-args = require('karg') """
+args   = require('karg') """
 
 konrad
     arguments  . ? see arguments                   . ** .
