@@ -498,7 +498,7 @@ gitStatus = (sourceFile) ->
                                 if ls[0] == '+'
                                     diff += ("\n "+ls.substr(1)).white
                                 else if ls[0] == '-'
-                                    diff += ("\n " +ls.substr(1)).red.bold.dim
+                                    diff += ("\n " +ls.substr(1)).gray.bold.dim
                                 else
                                     diff += ("\n"+c)
                                     c = '●'.blue.dim
