@@ -4,7 +4,7 @@ if [ $# -eq 0 ]; then
     if [ -e package.json ]; then
         MSG="v`sds -rp version`"
     elif [ -e ../package.json ]; then
-        MSG="v`sds -rp version`"
+        MSG="v`sds -rp version ../package.json`"
     fi
     if [ -z "$MSG" ]; then
         echo '[ERROR] no commit message and no package.json!' | colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
