@@ -65,6 +65,7 @@ noon    . ext json
 json    . ext noon . filter .. package.json$
 styl    . ext css . replace .. /style/ /css/
 jade    . ext html
+js      
 """
 
 ###
@@ -130,7 +131,6 @@ wlk =
     ignore: [
         /node_modules/
         /bower_components/
-        /\/js$/
         /\/img$/
         /\/\..+$/
         /\.git$/
@@ -215,8 +215,17 @@ relative = (absolute, to) ->
 ###
 
 should = (k, o, p) ->
-    return false if not o[k]? or not _.isArray o[k]
-    for i in o[k]
+
+    return false if not o[k]? 
+    
+    if _.isArray o[k]
+        keys = o[k]
+    else if _.isObject o[k]
+        keys = _.keys o[k]
+    else
+        keys = [o[k]]
+
+    for i in keys
         r = i
         r = new RegExp i if _.isString i
         if r.test p
@@ -236,7 +245,7 @@ target = (sourceFile) ->
     ext = path.extname(sourceFile).substr(1)
     o = config sourceFile
 
-    if o[ext].filter?
+    if o[ext]?.filter?
         matches = false
         for r in o[ext].filter
             if new RegExp(r).test(sourceFile)
@@ -246,10 +255,12 @@ target = (sourceFile) ->
             return
 
     targetFile = _.clone sourceFile
-    if o[ext].replace?
+    if o[ext]?.replace?
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
-    return if not o[ext].ext?
+            
+    return if not o[ext]?.ext?
+    
     targetFile = path.join path.dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
 
 ###
@@ -293,6 +304,25 @@ error = (e) ->
 
 build = (sourceFile, cb) ->
 
+    log "source file".gray, sourceFile if args.debug
+
+    ext = path.extname(sourceFile).substr(1)
+
+    o   = config sourceFile
+
+    if ext == 'js' and should 'browserify', o, sourceFile
+        main = o.browserify.main
+        out  = o.browserify.out
+        pwd  = configPath 'browserify', resolve sourceFile
+        if out != relative sourceFile, pwd
+            runcmd 'browserify', "#{main} #{out}", pwd
+        return
+
+    targetFile = target sourceFile
+    return if not targetFile?
+
+    log "target file".gray, targetFile if args.debug
+
     ###
     00000000   00000000   0000000   0000000
     000   000  000       000   000  000   000
@@ -305,17 +335,6 @@ build = (sourceFile, cb) ->
         if err
             log "can't read #{sourceFile}"
             return
-
-        log "source file".gray, sourceFile if args.debug
-
-        ext = path.extname(sourceFile).substr(1)
-
-        targetFile = target sourceFile
-        return if not targetFile?
-
-        log "target file".gray, targetFile if args.debug
-
-        o = config sourceFile
 
         try
             ###
@@ -340,6 +359,9 @@ build = (sourceFile, cb) ->
                     noon.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
                 when 'noon'
                     noon.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
+                else 
+                    throw "don't know how to build files with extname .#{ext.bold}!".yellow
+                    
         catch e
             error e
             return
@@ -540,6 +562,7 @@ if args.status
     dowatch = false    
     optall = _.defaults opt, all: true
     gitcount = 0
+    
     walk optall, (sourceFile, targetFile) ->
 
         if not targetFile

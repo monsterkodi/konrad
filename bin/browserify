@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ ! -e $1 ]; then
+    echo '[ERROR] no input file!' | colorcat -p "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy"     
+    exit 1
+fi
+
+# echo 'browserify'       | colorcat -sx
+
+browserify $1 > $2
