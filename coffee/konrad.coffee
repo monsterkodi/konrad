@@ -253,10 +253,11 @@ target = (sourceFile) ->
             return
 
     targetFile = _.clone sourceFile
+
     if o[ext]?.replace?
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
-            
+        
     return if not o[ext]?.ext?
     
     targetFile = path.join path.dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
@@ -306,7 +307,7 @@ build = (sourceFile, cb) ->
 
     ext = path.extname(sourceFile).substr(1)
 
-    o   = config sourceFile
+    o = config sourceFile
 
     if ext == 'js' and should 'browserify', o, sourceFile
         main = o.browserify.main
@@ -694,6 +695,7 @@ if dowatch
 
     watch (sourceFile) ->
 
+        sourceFile = resolve sourceFile
         o = config sourceFile
 
         test = (source) ->
