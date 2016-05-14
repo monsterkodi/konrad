@@ -14,6 +14,8 @@ else
     MSG="$*"
 fi
 
+set -e
+
 git add .
 git status -sb       | colorcat -sP `dirname $0`/../cc/status.noon
 git commit -m "$MSG" | colorcat -sP `dirname $0`/../cc/commit.noon

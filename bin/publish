@@ -12,6 +12,8 @@ if [ $# -ne 0 ]; then
     `dirname $0`/commit "$*"
 fi
 
+set -e
+
 `dirname $0`/bump
 `dirname $0`/commit
 
