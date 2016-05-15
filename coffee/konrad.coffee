@@ -63,6 +63,7 @@ noon    . ext json
 json    . ext noon . filter .. package.json$
 styl    . ext css . replace .. /style/ /css/
 jade    . ext html
+pug     . ext html
 js      
 """
 
@@ -354,6 +355,9 @@ build = (sourceFile, cb) ->
                 when 'jade'
                     jade = require 'jade'
                     jade.render data, pretty: true
+                when 'pug'
+                    pug = require 'pug'
+                    pug.render data, pretty: true
                 when 'json'
                     noon.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
                 when 'noon'
