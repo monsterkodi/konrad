@@ -351,7 +351,10 @@ build = (sourceFile, cb) ->
                         filename: sourceFile
                 when 'styl'
                     stylus = require 'stylus'
-                    stylus.render data
+                    stylus data
+                        .set 'filename', sourceFile
+                        .set 'paths', [path.dirname(sourceFile)]
+                        .render()
                 when 'jade'
                     jade = require 'jade'
                     jade.render data, pretty: true
