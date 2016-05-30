@@ -690,8 +690,8 @@ if dowatch
         pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
 
         d = args.arguments[0] ? '.'
-        v = args.verbose and " ● version #{pkg.version}".dim.gray or ''
-        log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
+        v = " ● v#{pkg.version}".dim.gray
+        log prettyTime(), "🔧 watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
             ignored: wlk.ignore
             ignoreInitial: true
