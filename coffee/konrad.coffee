@@ -58,10 +58,10 @@ version  #{pkg.version}
 #0000000    00000000  000       000   000   0000000   0000000     000     0000000 
 
 opt = noon.parse """
-coffee  . ext js  . replace .. /coffee/ /js/
+coffee  . ext js  . replace .. /coffee/ /js/ .. ^coffee/ js/
 noon    . ext json
 json    . ext noon . filter .. package.json$
-styl    . ext css . replace .. /style/ /css/
+styl    . ext css . replace .. /style/ /css/ .. ^style/ css/
 jade    . ext html
 pug     . ext html
 js      
@@ -75,11 +75,21 @@ js
 000   000  00000000  0000000    0000000   0000000      0      00000000
 ###
 
+slashreg = new RegExp "\\\\", 'g'
+slashpath = (p) -> 
+    p = p.replace slashreg, "/" if path.sep == "\\" 
+    p
+    
+slashjoin = -> [].map.call(arguments, (p) -> slashpath p).join "/"
+
 resolve = (unresolved) ->
     p = unresolved.replace /\~/, process.env.HOME
     p = path.resolve p
     p = path.normalize p
+    p = slashpath p
     p
+
+dirname = (p) -> slashpath path.dirname p
 
 ###
  0000000   0000000   000   000  00000000  000   0000000
@@ -90,10 +100,10 @@ resolve = (unresolved) ->
 ###
 
 config = (p) ->
-    while path.dirname(p).length and path.dirname(p) not in ['.', '/']
-        p = path.dirname p
-        if fs.existsSync path.join p, '.konrad.noon'
-            o = _.defaultsDeep noon.load(path.join p, '.konrad.noon'), opt
+    while dirname(p).length and dirname(p) not in ['.', '/']
+        p = dirname p
+        if fs.existsSync slashjoin p, '.konrad.noon'
+            o = _.defaultsDeep noon.load(slashjoin p, '.konrad.noon'), opt
             if o.ignore?.map?
                 o.ignore = o.ignore.map (i) ->
                     if _.isString i
@@ -104,10 +114,10 @@ config = (p) ->
     opt
 
 configPath = (key, p) ->
-    while path.dirname(p).length and path.dirname(p) not in ['.', '/']
-        p = path.dirname p
-        if fs.existsSync path.join p, '.konrad.noon'
-            o = _.defaultsDeep noon.load(path.join p, '.konrad.noon'), opt
+    while dirname(p).length and dirname(p) not in ['.', '/']
+        p = dirname p
+        if fs.existsSync slashjoin p, '.konrad.noon'
+            o = _.defaultsDeep noon.load(slashjoin p, '.konrad.noon'), opt
             if o[key]?
                 return resolve p
     null
@@ -146,11 +156,11 @@ wlk =
 ###
 
 prettyPath = (p, c=colors.yellow) ->
-    p.split(path.sep).map((n) -> c(n)).join c(path.sep).dim
+    p.split('/').map((n) -> c(n)).join c('/').dim
 
 prettyFilePath = (p, c=colors.yellow) ->
-    if path.dirname(p) not in ['.', '/']
-        "#{prettyPath path.dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
+    if dirname(p) not in ['.', '/']
+        "#{prettyPath dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
     else
         "#{prettyFile path.basename(p), c}"
 
@@ -182,7 +192,7 @@ argDir = () ->
         d = resolve args.arguments[0]
         if fu.isDir d
             return d
-        d = path.parse(d).dir
+        d = slashpath path.parse(d).dir
         if fu.isDir d
             return d
     resolve '.'
@@ -202,8 +212,8 @@ argDirRel = () ->
 
 relative = (absolute, to) ->
     d = to? and resolve(to) or argDir()
-    if not fu.isDir d then d = '.'
-    r = path.relative d, absolute
+    if not fu.isDir(d) then d = '.'
+    r = slashpath path.relative d, absolute
 
 ###
  0000000  000   000   0000000   000   000  000      0000000  
@@ -256,12 +266,13 @@ target = (sourceFile) ->
     targetFile = _.clone sourceFile
 
     if o[ext]?.replace?
+        # log 'replace:', o[ext].replace if args.debug
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
         
     return if not o[ext]?.ext?
     
-    targetFile = path.join path.dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
+    targetFile = slashjoin dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
 
 ###
 0000000    000  00000000   000000000  000   000
@@ -353,7 +364,7 @@ build = (sourceFile, cb) ->
                     stylus = require 'stylus'
                     stylus data
                         .set 'filename', sourceFile
-                        .set 'paths', [path.dirname(sourceFile)]
+                        .set 'paths', [dirname(sourceFile)]
                         .render()
                 when 'jade'
                     jade = require 'jade'
@@ -382,7 +393,7 @@ build = (sourceFile, cb) ->
                 000   000  000   000  000     000     000
                 00     00  000   000  000     000     00000000
                 ###
-                require('mkpath').sync path.dirname targetFile
+                require('mkpath').sync dirname targetFile
                 require('write-file-atomic') targetFile, compiled, (err) ->
                     if err
                         log "can't write #{targetFile.bold.yellow}".bold.red
@@ -390,7 +401,8 @@ build = (sourceFile, cb) ->
                     if not args.quiet
                         log prettyTime(), "👍  #{prettyFilePath targetFile}"
 
-                    if path.resolve(targetFile) == __filename
+                    #if path.resolve(targetFile) == __filename
+                    if resolve(targetFile) == slashpath __filename
                         reload()
                     else if cb?
                         cb sourceFile, targetFile
@@ -399,7 +411,7 @@ build = (sourceFile, cb) ->
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
-                    fs.utimesSync path.resolve(targetFile), stat.atime, stat.mtime
+                    fs.utimesSync resolve(targetFile), stat.atime, stat.mtime
 
 ###
 000   000   0000000   000      000   000
@@ -417,18 +429,19 @@ walk = (opt, cb) ->
 
     walkdir = require 'walkdir'
     try
-        walkdir.sync argDir(), (p) ->
+        walkdir.sync argDir(), (wp) ->
             
+            p = slashpath wp
             o = config p
 
             if should 'ignore', o, p
                 cb p if opt.all
-                @ignore p
+                @ignore wp
                 return
 
             if should 'ignore', wlk, p
                 cb p if opt.all
-                @ignore p
+                @ignore wp
                 return
                 
             if path.extname(p).substr(1) in _.keys o
@@ -438,7 +451,7 @@ walk = (opt, cb) ->
                     log prettyFilePath relative(p), colors.gray
                 if opt.all
                     if not cb p
-                        @ignore p
+                        @ignore wp
     catch err
         error err
 
@@ -474,7 +487,7 @@ if args.info
 
 gitStatus = (sourceFile) ->
     
-    gitDir = path.dirname sourceFile
+    gitDir = dirname sourceFile
     git = require('simple-git') gitDir
     git.status (err,status) ->
         if err
@@ -500,16 +513,16 @@ gitStatus = (sourceFile) ->
                     if arglist.length
                         filtered = true
                         for a in arglist
-                            if path.join(gitDir, f).indexOf(resolve a) == 0
+                            if slashjoin(gitDir, f).indexOf(resolve a) == 0
                                 filtered = false
                                 break
                         if filtered
-                            log 'filtered', resolve(a), f, path.join(gitDir, f) if args.debug
+                            log 'filtered', resolve(a), f, slashjoin(gitDir, f) if args.debug
                             continue
 
                     prfx    = "    "
                     prfx    = m[k] "█   "
-                    gitFile = path.join gitDir, f
+                    gitFile = slashjoin gitDir, f
                     relPath = relative gitFile, '.'
                     lame    = path.extname(gitFile) == '.js' or path.basename(gitFile) == 'package.json'
                     change  = prfx + prettyFilePath(relPath, (lame and m[k].dim or m[k]))
@@ -520,7 +533,7 @@ gitStatus = (sourceFile) ->
                             cwd: gitDir
                         diff = ""
                         c = '▼'.blue.bold
-                        for l in res.split '\n'
+                        for l in res.split /\r?\n/
                             ls = chalk.stripColor(l)
                             if (ls[0] in ['+', '-', '@']) and (ls.substr(0,4) not in ['+++ ', '--- '])
                                 if ls[0] == '+'
@@ -546,7 +559,7 @@ gitStatus = (sourceFile) ->
             st = childp.execSync "git status -sb",
                 cwd: gitDir
                 encoding: 'utf8'
-            st = st.split('\n')[0].split '['
+            st = st.split(/\r?\n/)[0].split '['
             if st.length > 1
                 st = st[1].substr(0,st[1].length-1)
                 st = st.replace ', ', ' '
@@ -586,7 +599,7 @@ if args.status
     if not gitcount
         gitup = path.parse argDir()
         while gitup.base
-            dotGit = path.join gitup.dir, '.git'
+            dotGit = slashjoin slashpath(gitup.dir), '.git'
             if fs.existsSync dotGit
                 gitStatus dotGit
                 break
@@ -697,8 +710,8 @@ if dowatch
             ignoreInitial: true
 
         watcher
-            .on 'add',    (p) -> if pass p then cb p
-            .on 'change', (p) -> if pass p then cb p
+            .on 'add',    (p) -> if pass p then cb slashpath p
+            .on 'change', (p) -> if pass p then cb slashpath p
 
     watch (sourceFile) ->
 
