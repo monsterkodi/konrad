@@ -21,7 +21,7 @@ log    = console.log
 args   = require('karg') """
 
 konrad
-    arguments  . ? see arguments                   . ** .
+    arguments  . ? see arguments                   . **
     bump       . ? bump package.* version          . = false
     commit     . ? add, commit and push            . = false
     publish    . ? bump, commit & publish to npm   . = false
@@ -532,24 +532,23 @@ gitStatus = (sourceFile) ->
                             encoding: 'utf8'
                             cwd: gitDir
                         diff = ""
-                        c = '▼'.blue.bold
+                        c = '▼'.bold.blue
                         for l in res.split /\r?\n/
                             ls = chalk.stripColor(l)
                             if (ls[0] in ['+', '-', '@']) and (ls.substr(0,4) not in ['+++ ', '--- '])
                                 if ls[0] == '+'
-                                    diff += ("\n "+ls.substr(1)).white
+                                    diff += "\n " + (ls.substr(1)).white
                                 else if ls[0] == '-'
-                                    diff += ("\n " +ls.substr(1)).gray.bold.dim
+                                    diff += "\n " + (ls.substr(1)).gray.bold.dim
                                 else
                                     diff += ("\n"+c)
                                     c = '●'.blue.dim
-                        change += diff+"\n▲".blue.dim if diff.length
+                        change += diff+"\n"+"▲".blue.dim if diff.length
                     changes.push change
 
         relPath = relative gitDir, resolve '.'
         relPath = '.' if relPath == ''
         gitPath = prettyFilePath relPath, colors.white
-        
         
         aheadBehind = () ->
             if 'fetch' in args.arguments
