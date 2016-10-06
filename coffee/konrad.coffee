@@ -240,6 +240,7 @@ should = (k, o, p) ->
         if r.test p
             log prettyFilePath(relative(p), colors.gray), 'should '.blue+k.bold.blue if args.debug
             return true
+    # log prettyFilePath(relative(p), colors.gray), 'should '.red+k.bold.red if args.debug
     false
     
 ###
@@ -326,6 +327,7 @@ build = (sourceFile, cb) ->
         out  = o.browserify.out
         pwd  = configPath 'browserify', resolve sourceFile
         if out != relative sourceFile, pwd
+            log prettyFilePath(_.padEnd(relative(main), 40), colors.yellow), "🔧  ", prettyFilePath(relative(out), colors.blue)
             runcmd 'browserify', "#{main} #{out}", pwd
         return
 
@@ -605,27 +607,6 @@ if args.status
             gitup = path.parse gitup.dir
 
 ###
-00000000   000   000  000   000
-000   000  000   000  0000  000
-0000000    000   000  000 0 000
-000   000  000   000  000  0000
-000   000   0000000   000   000
-###
-
-if args.run or args.rebuild
-    dowatch = false
-    log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
-
-    walk opt, (sourceFile, targetFile) ->
-        if targetFile
-            isDirty = dirty sourceFile, targetFile
-            if args.rebuild or isDirty
-                src = prettyFilePath(_.padEnd(relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
-                tgt = prettyFilePath(relative(targetFile), colors.green)
-                log src, "🔧  ", tgt
-                build sourceFile
-
-###
  0000000  00     00  0000000  
 000       000   000  000   000
 000       000000000  000   000
@@ -648,6 +629,30 @@ runcmd = (cmd, cmdargs, cwd) ->
         log String(err).red
         return false
     true
+
+###
+00000000   000   000  000   000
+000   000  000   000  0000  000
+0000000    000   000  000 0 000
+000   000  000   000  000  0000
+000   000   0000000   000   000
+###
+
+if args.run or args.rebuild
+    dowatch = false
+    log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+    walk opt, (sourceFile, targetFile) ->
+        if targetFile
+            isDirty = dirty sourceFile, targetFile
+            if args.rebuild or isDirty
+                src = prettyFilePath(_.padEnd(relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
+                tgt = prettyFilePath(relative(targetFile), colors.green)
+                log src, "🔧  ", tgt
+                build sourceFile, (sourceFile, targetFile) ->
+                    o = config targetFile
+                    if should 'browserify', o, targetFile
+                        log prettyFilePath(_.padEnd(relative(o.browserify.main), 40), colors.yellow), "🔧  ", prettyFilePath(relative(o.browserify.out), colors.blue)
+                        runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", configPath 'browserify', resolve targetFile
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
