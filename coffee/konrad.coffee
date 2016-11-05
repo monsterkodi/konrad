@@ -711,7 +711,9 @@ if dowatch
         log prettyTime(), "🔧 watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
             ignored: wlk.ignore
-            ignoreInitial: true
+            ignoreInitial:  true
+            usePolling:     false
+            useFsEvents:    true
 
         watcher
             .on 'add',    (p) -> if pass p then cb slashpath p
