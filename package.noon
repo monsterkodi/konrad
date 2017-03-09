@@ -1,6 +1,6 @@
 name          konrad
 description   builds my stuff
-version       0.5.19
+version       0.6.0
 main          js/konrad.js
 bin
               konrad  ./bin/konrad
@@ -21,7 +21,6 @@ dependencies
               coffee-script   ^1.12.4
               colors          ^1.1.2
               fs-utils        ^0.7.0
-              growl           ^1.9.2
               jade            ^1.11.0
               karg            >=1.0.9
               lodash          ^4.17.4
