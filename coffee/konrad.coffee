@@ -240,7 +240,6 @@ should = (k, o, p) ->
         if r.test p
             log prettyFilePath(relative(p), colors.gray), 'should '.blue+k.bold.blue if args.debug
             return true
-    # log prettyFilePath(relative(p), colors.gray), 'should '.red+k.bold.red if args.debug
     false
     
 ###
@@ -267,7 +266,6 @@ target = (sourceFile) ->
     targetFile = _.clone sourceFile
 
     if o[ext]?.replace?
-        # log 'replace:', o[ext].replace if args.debug
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
         
@@ -305,9 +303,10 @@ error = (title, msg) ->
         subtitle = splitted.shift()
         message  = splitted.join '\n' 
         if subtitle.startsWith '/'
-            file = subtitle.split(":")[0]
-            line = subtitle.split(":")[1]
-            subtitle = "#{path.basename file} #{line}"
+            [file,line,clmn] = subtitle.split(":",4)
+            line = parseInt line
+            clmn = parseInt clmn
+            subtitle = "#{path.basename file} #{line}:#{clmn}"
         else
             line = ''
             file = ''
@@ -317,7 +316,7 @@ error = (title, msg) ->
             title:    title
             subtitle: subtitle
             message:  message
-            execute:  "/usr/local/bin/ko \"#{file}:#{line}\""
+            execute:  "/usr/local/bin/ko \"#{file}:#{line}:#{clmn}\""
     catch err
         log "[ERROR] osx notification failed", err
 
@@ -418,7 +417,6 @@ build = (sourceFile, cb) ->
                     if not args.quiet
                         log prettyTime(), "👍  #{prettyFilePath targetFile}"
 
-                    #if path.resolve(targetFile) == __filename
                     if resolve(targetFile) == slashpath __filename
                         reload()
                     else if cb?
@@ -641,7 +639,6 @@ runcmd = (cmd, cmdargs, cwd) ->
             stdio: 'inherit'
     catch err
         error "command error", "command #{cmd.bold.yellow} #{'failed!'.red}"
-        # log String(err).red
         return false
     true
 
@@ -723,7 +720,7 @@ if dowatch
 
         d = args.arguments[0] ? '.'
         v = " ● v#{pkg.version}".dim.gray
-        log prettyTime(), "🔧 watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
+        log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
             ignored: wlk.ignore
             ignoreInitial:  true
