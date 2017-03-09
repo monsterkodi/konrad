@@ -301,22 +301,27 @@ error = (title, msg) ->
         stripped = String(msg).strip
         splitted = stripped.split '\n'
         subtitle = splitted.shift()
+        subtitle = title if subtitle.length == 0
         message  = splitted.join '\n' 
+        message  = subtitle if message.length == 0
         if subtitle.startsWith '/'
             [file,line,clmn] = subtitle.split(":",4)
             line = parseInt line
             clmn = parseInt clmn
-            subtitle = "#{path.basename file} #{line}:#{clmn}"
+            if file?.length and Number.isInteger(line) and Number.isInteger(clmn)
+                subtitle = "#{path.basename file} #{line}:#{clmn}"
+                execute  = "/usr/local/bin/ko \"#{file}:#{line}:#{clmn}\""
         else
             line = ''
             file = ''
+            
         require('osx-notifier')
             type:     'fail'
             group:    'konrad'
             title:    title
             subtitle: subtitle
             message:  message
-            execute:  "/usr/local/bin/ko \"#{file}:#{line}:#{clmn}\""
+            execute:  execute
     catch err
         log "[ERROR] osx notification failed", err
 
