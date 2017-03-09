@@ -1,1 +1,43 @@
-[]
+{
+  "name": "konrad",
+  "description": "builds my stuff",
+  "version": "0.5.18",
+  "main": "js/konrad.js",
+  "bin": {
+    "konrad": "./bin/konrad"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monsterkodi/konrad.git"
+  },
+  "keywords": [
+    "build",
+    "tool"
+  ],
+  "author": "monsterkodi",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/monsterkodi/konrad/issues"
+  },
+  "homepage": "https://github.com/monsterkodi/konrad",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "chokidar": "^1.6.1",
+    "coffee-script": "^1.12.4",
+    "colors": "^1.1.2",
+    "fs-utils": "^0.7.0",
+    "growl": "^1.9.2",
+    "jade": "^1.11.0",
+    "karg": ">=1.0.9",
+    "lodash": "^4.17.4",
+    "mkpath": "^1.0.0",
+    "noon": ">=1.0.13",
+    "osx-notifier": "^0.2.2",
+    "pug": "^2.0.0-beta11",
+    "semver": "^5.3.0",
+    "simple-git": "^1.67.0",
+    "stylus": "^0.54.5",
+    "walkdir": "0.0.11",
+    "write-file-atomic": "^1.3.1"
+  }
+}

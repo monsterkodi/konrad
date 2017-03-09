@@ -297,14 +297,29 @@ dirty = (sourceFile, targetFile) ->
 00000000  000   000  000   000   0000000   000   000
 ###
 
-error = (e) ->
-    log "#{'[ERROR]'.bold.red} #{String(e).red}"
+error = (title, msg) ->
+    log "#{title.bold.yellow} #{String(msg).red}"
     try
-        require('growl') String(e).strip,
-            title: 'ERROR'
-            sticky: false
+        stripped = String(msg).strip
+        splitted = stripped.split '\n'
+        subtitle = splitted.shift()
+        message  = splitted.join '\n' 
+        if subtitle.startsWith '/'
+            file = subtitle.split(":")[0]
+            line = subtitle.split(":")[1]
+            subtitle = "#{path.basename file} #{line}"
+        else
+            line = ''
+            file = ''
+        require('osx-notifier')
+            type:     'fail'
+            group:    'konrad'
+            title:    title
+            subtitle: subtitle
+            message:  message
+            execute:  "/usr/local/bin/ko \"#{file}:#{line}\""
     catch err
-        true
+        log "[ERROR] osx notification failed", err
 
 ###
 0000000    000   000  000  000      0000000  
@@ -382,7 +397,7 @@ build = (sourceFile, cb) ->
                     throw "don't know how to build files with extname .#{ext.bold}!".yellow
                     
         catch e
-            error e
+            error "compile error", e
             return
 
         fs.readFile targetFile, 'utf8', (err, targetData) ->
@@ -455,7 +470,7 @@ walk = (opt, cb) ->
                     if not cb p
                         @ignore wp
     catch err
-        error err
+        error 'walk error', err
 
 dowatch = true
 
@@ -493,7 +508,7 @@ gitStatus = (sourceFile) ->
     git = require('simple-git') gitDir
     git.status (err,status) ->
         if err
-            error err
+            error 'git error', err
             return
         changes = []
                 
@@ -625,8 +640,8 @@ runcmd = (cmd, cmdargs, cwd) ->
             encoding: 'utf8'
             stdio: 'inherit'
     catch err
-        error "command #{cmd.bold.yellow} #{'failed!'.red}"
-        log String(err).red
+        error "command error", "command #{cmd.bold.yellow} #{'failed!'.red}"
+        # log String(err).red
         return false
     true
 
