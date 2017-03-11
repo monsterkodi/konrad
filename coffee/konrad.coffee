@@ -727,7 +727,7 @@ if dowatch
         v = " ● v#{pkg.version}".dim.gray
         log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d, 
-            ignored: wlk.ignore
+            ignored:        wlk.ignore
             ignoreInitial:  true
             usePolling:     false
             useFsEvents:    true

@@ -2,3 +2,4 @@ js
 Icon?
 notes.md
 node_modules
+bin/*.js

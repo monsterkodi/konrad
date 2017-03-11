@@ -1,0 +1,14 @@
+title  konrad
+icon   img/konrad.icns
+background  img/dmg.png
+contents
+    .
+        x   416
+        y   94
+        type  link 
+        path  /Applications
+    .
+        x   94
+        y   94
+        type  file 
+        path  konrad-darwin-x64/konrad.app
