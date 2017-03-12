@@ -24,7 +24,6 @@ queue = (items, opt) ->
         if item = items.shift()
             r = opt.cb? item
             if r == 'stop'
-                log 'stop queue'
                 return 
         else
             opt.done?()

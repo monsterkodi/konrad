@@ -3,14 +3,17 @@
 # 000000000  000000000  000  000 0 000
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
-
-electron      = require 'electron'
-proc          = require 'child_process'
-noon          = require 'noon'
-fs            = require 'fs'
+{
+fileExists
+}             = require './tools/tools'
 prefs         = require './tools/prefs'
 log           = require './tools/log'
 pkg           = require '../package.json'
+electron      = require 'electron'
+proc          = require 'child_process'
+colors        = require 'colors'
+noon          = require 'noon'
+fs            = require 'fs'
 app           = electron.app
 BrowserWindow = electron.BrowserWindow
 Tray          = electron.Tray
@@ -18,7 +21,50 @@ Menu          = electron.Menu
 ipc           = electron.ipcMain
 win           = undefined
 tray          = undefined
-debug         = false
+
+#  0000000   00000000    0000000    0000000
+# 000   000  000   000  000        000     
+# 000000000  0000000    000  0000  0000000 
+# 000   000  000   000  000   000       000
+# 000   000  000   000   0000000   0000000 
+
+args  = require('karg') """
+
+#{pkg.productName}
+
+    show      . ? open window on startup  . = false
+    prefs     . ? show preferences        . = false
+    noprefs   . ? don't load preferences  . = false
+    verbose   . ? log more                . = false
+    DevTools  . ? open developer tools    . = false
+    
+version  #{pkg.version}
+
+""", dontExit: true
+
+app.exit 0 if not args?
+
+if args.verbose
+    log colors.white.bold "\n#{pkg.productName}", colors.gray "v#{pkg.version}\n"
+    log colors.yellow.bold 'process'
+    p = cwd: process.cwd()
+    log noon.stringify p, colors:true
+    log colors.yellow.bold 'args'
+    log noon.stringify args, colors:true
+    log ''
+
+# 00000000   00000000   00000000  00000000   0000000
+# 000   000  000   000  000       000       000     
+# 00000000   0000000    0000000   000000    0000000 
+# 000        000   000  000       000            000
+# 000        000   000  00000000  000       0000000 
+
+prefs.init shortcut: 'F5'
+
+if args.prefs
+    log colors.yellow.bold 'prefs'
+    if fileExists prefs.file
+        log noon.stringify noon.load(prefs.file), colors:true
 
 # 000  00000000    0000000
 # 000  000   000  000     
@@ -48,22 +94,39 @@ showWindow = ->
     else
         createWindow()
     
+screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
+
 createWindow = ->
+    
+    bounds = prefs.get 'bounds', null
+    if not bounds
+        {w, h} = screenSize()
+        bounds = {}
+        bounds.width = h + 122
+        bounds.height = h
+        bounds.x = parseInt (w-bounds.width)/2
+        bounds.y = 0
+
     win = new BrowserWindow
-        width:           1000
-        height:          1200
+        x:               bounds.x
+        y:               bounds.y
+        width:           bounds.width
+        height:          bounds.height
+        minWidth:        556
+        minHeight:       206
         titleBarStyle:   'hidden'
-        backgroundColor: '#181818'
+        backgroundColor: '#000'
         maximizable:     true
-        minimizable:     false
-        fullscreen:      false
-        show:            true
+        useContentSize:  true
+        fullscreenable:  false
+        show:            false
         
     bounds = prefs.get 'bounds'
+    log 'bounds', bounds
     win.setBounds bounds if bounds?
         
     win.loadURL "file://#{__dirname}/../index.html"
-    win.webContents.openDevTools() if debug
+    win.webContents.openDevTools() if args.DevTools
     app.dock.show()
     win.on 'closed', -> win = null
     win.on 'close', (event) ->
@@ -74,8 +137,26 @@ createWindow = ->
 
 saveBounds = ->
     if win?
+        log 'saveBounds', win.getBounds()
         prefs.set 'bounds', win.getBounds()
     
+#  0000000   0000000     0000000   000   000  000000000
+# 000   000  000   000  000   000  000   000     000   
+# 000000000  0000000    000   000  000   000     000   
+# 000   000  000   000  000   000  000   000     000   
+# 000   000  0000000     0000000    0000000      000   
+
+showAbout = ->    
+    w = new BrowserWindow
+        show:            true
+        center:          true
+        resizable:       false
+        frame:           false
+        backgroundColor: '#000'            
+        width:           400
+        height:          400
+    w.loadURL "file://#{__dirname}/../about.html"
+
 #00000000   00000000   0000000   0000000    000   000
 #000   000  000       000   000  000   000   000 000 
 #0000000    0000000   000000000  000   000    00000  
@@ -90,6 +171,8 @@ app.on 'ready', ->
     
     app.setName pkg.productName
     
+    showWindow() if args.show
+    
     # 00     00  00000000  000   000  000   000
     # 000   000  000       0000  000  000   000
     # 000000000  0000000   000 0 000  000   000
@@ -100,7 +183,8 @@ app.on 'ready', ->
         label: app.getName()
         submenu: [
             label: "About #{pkg.name}"
-            click: -> clipboard.writeText "#{pkg.name} v#{pkg.version}"
+            accelerator: 'Command+.'
+            click: showAbout
         ,            
             label: 'Clear Log'
             accelerator: 'Command+K'
@@ -118,8 +202,6 @@ app.on 'ready', ->
         ]
     ]
         
-    prefs.init shortcut: 'F5'
-
-    electron.globalShortcut.register prefs.get('shortcut'), showWindow
+    electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
 
     
