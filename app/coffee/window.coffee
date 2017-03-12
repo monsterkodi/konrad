@@ -21,7 +21,6 @@ window.onresize = -> ipc.send 'saveBounds'
 
 openFile = (f) ->
     f = resolve f
-    console.log "open file: '#{f}'"
     childp.spawn '/usr/local/bin/ko', [f]
 
 tasks = {}
@@ -29,6 +28,31 @@ tasks = {}
 clearLog   = -> $("main").innerHTML = ''
 clearTasks = -> clearLog(); tasks = {}
 ipc.on "clearLog", clearLog
+
+taskDiv = (opt) ->
+    
+    tasks[opt.key]?.remove()
+    
+    div = document.createElement 'div'
+    tim = document.createElement 'span'
+    fil = document.createElement 'span'
+    
+    div.classList.add 'task'
+    
+    tim.classList.add 'time'
+    tim.innerHTML = opt.time
+    
+    fil.classList.add opt.file? and 'file' or 'message'
+    fil.innerHTML = " #{opt.icon} #{opt.file ? opt.message}"
+    fil.onclick = () -> openFile opt.file if opt.file? 
+
+    div.appendChild tim
+    div.appendChild fil
+    
+    tasks[opt.key] = div
+    $('main').appendChild div
+    
+    div
 
 # 000000000   0000000    0000000  000   000  
 #    000     000   000  000       000  000   
@@ -43,26 +67,7 @@ onTask = (s) ->
     [source, target] = sourceTarget.split ' ► '
     
     source = source.trim()
-    tasks[source]?.div?.remove()
-    
-    div = document.createElement 'div'
-    tim = document.createElement 'span'
-    fil = document.createElement 'span'
-    
-    div.classList.add 'task'
-    tim.classList.add 'time'
-    fil.classList.add 'file'
-    fil.onclick = () -> openFile source 
-    
-    tim.innerHTML = time
-    fil.innerHTML = ' 👍 ' + source
-    
-    div.appendChild tim
-    div.appendChild fil
-    
-    tasks[source] = div: div
-    
-    $('main').appendChild div
+    div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
 
 # 00     00  00000000   0000000   0000000   0000000    0000000   00000000  
@@ -75,26 +80,8 @@ onMessage = (s) ->
     
     [time, msg] = s.split ' 🔧 '
     
-    tasks['msg']?.div?.remove()
+    div = taskDiv time: time, message: msg, key: 'msg', icon: '🔧'
     
-    div = document.createElement 'div'
-    tim = document.createElement 'span'
-    fil = document.createElement 'span'
-    
-    div.classList.add 'task'
-    tim.classList.add 'time'
-    fil.classList.add 'message'
-    
-    tim.innerHTML = time
-    fil.innerHTML = ' 🔧 ' + msg
-    
-    div.appendChild tim
-    div.appendChild fil
-    
-    tasks['msg'] = div: div
-    
-    $('main').appendChild div    
-
 # 00000000  00000000   00000000    0000000   00000000   
 # 000       000   000  000   000  000   000  000   000  
 # 0000000   0000000    0000000    000   000  0000000    
@@ -108,33 +95,16 @@ onError = (s) ->
     
     lines = s.split '\n'
     [time, file] = lines.shift().split ' 😡 '
-    console.log "time: '#{time}' file: '#{file}'"
     file = file.trim()
     
-    div = document.createElement 'div'
-    tim = document.createElement 'span'
-    fil = document.createElement 'span'
-    
-    div.classList.add 'task'
-    tim.classList.add 'time'
-    fil.classList.add 'file'
-    fil.onclick = () -> openFile file
-    
-    tim.innerHTML = time
-    fil.innerHTML = ' 😡 ' + file
-    
-    div.appendChild tim
-    div.appendChild fil
-    
-    tasks[file.split(':')[0]] = div: div
+    div = taskDiv time: time, file: file, key: file.split(':')[0], icon: '😡'
     
     for l in lines
         pre = document.createElement 'pre'
         pre.classList.add 'error'
         pre.textContent = l
         div.appendChild pre
-        
-    $('main').appendChild div
+     
     div.scrollIntoViewIfNeeded()
     
 setTitleBar = (s) ->
