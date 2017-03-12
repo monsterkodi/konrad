@@ -32,7 +32,7 @@ args  = require('karg') """
 
 #{pkg.productName}
 
-    show      . ? open window on startup  . = false
+    show      . ? open window on startup  . = true
     prefs     . ? show preferences        . = false
     noprefs   . ? don't load preferences  . = false
     verbose   . ? log more                . = false
@@ -74,7 +74,9 @@ if args.prefs
 
 ipc.on 'openDevTools', => win?.webContents.openDevTools()
 ipc.on 'reloadWin',    => win?.webContents.reloadIgnoringCache()
+ipc.on 'showWin',      -> showWindow()
 ipc.on 'saveBounds',   -> saveBounds()
+ipc.on 'highlight',    -> highlight()
 
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -97,6 +99,11 @@ showWindow = ->
         createWindow()
     
 screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
+
+highlight = ->
+    tray.setHighlightMode 'always' 
+    unhighlight = -> tray.setHighlightMode 'never' 
+    setTimeout unhighlight, 1000
 
 createWindow = ->
     
@@ -134,6 +141,7 @@ createWindow = ->
         win.hide()
         app.dock.hide()
         event.preventDefault()
+        
     win
 
 saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
@@ -178,28 +186,76 @@ app.on 'ready', ->
     # 000   000  00000000  000   000   0000000 
     
     Menu.setApplicationMenu Menu.buildFromTemplate [
-        label: app.getName()
-        submenu: [
-            label: "About #{pkg.name}"
-            accelerator: 'Command+.'
-            click: showAbout
-        ,            
-            label: 'Clear Log'
-            accelerator: 'Command+K'
-            click: -> win.webContents.send 'clearLog'
+            label: app.getName()
+            submenu: [
+                label:        "About #{pkg.name}"
+                accelerator:  'Command+.'
+                click:        showAbout
+            ,
+                type: 'separator'
+            ,
+                label:       'Clear Log'
+                accelerator: 'Command+K'
+                click:        -> win?.webContents.send 'clearLog'
+            ,
+                type: 'separator'
+            ,
+                label:       "Hide #{pkg.productName}"
+                accelerator: 'Cmd+H'
+                click:        -> win?.hide()
+            ,
+                label:       'Hide Others'
+                accelerator: 'Cmd+Alt+H'
+                role:        'hideothers'
+            ,
+                type: 'separator'
+            ,
+                label:       'Quit'
+                accelerator: 'Command+Q'
+                click: -> 
+                    saveBounds()
+                    prefs.save -> app.exit 0
+            ]
         ,
-            label: 'Close Window'
-            accelerator: 'Command+W'
-            click: -> win.close()
-        ,
-            label: 'Quit'
-            accelerator: 'Command+Q'
-            click: -> 
-                saveBounds()
-                prefs.save()
-                app.exit 0
+            # 000   000  000  000   000  0000000     0000000   000   000
+            # 000 0 000  000  0000  000  000   000  000   000  000 0 000
+            # 000000000  000  000 0 000  000   000  000   000  000000000
+            # 000   000  000  000  0000  000   000  000   000  000   000
+            # 00     00  000  000   000  0000000     0000000   00     00
+            
+            label: 'Window'
+            submenu: [
+                label:       'Minimize'
+                accelerator: 'Alt+Cmd+M'
+                click:       -> win?.minimize()
+            ,
+                label:       'Maximize'
+                accelerator: 'Cmd+Shift+m'
+                click:       -> win?.maximize()
+            ,
+                type: 'separator'
+            ,                            
+                label:       'Close Window'
+                accelerator: 'Cmd+W'
+                click:       -> win?.close()
+            ,
+                type: 'separator'
+            ,                            
+                label:       'Bring All to Front'
+                accelerator: 'Alt+Cmd+`'
+                click:       -> win?.show()
+            ,
+                type: 'separator'
+            ,   
+                label:       'Reload Window'
+                accelerator: 'Ctrl+Alt+Cmd+L'
+                click:       -> win?.webContents.reloadIgnoringCache()
+            ,                
+                label:       'Toggle DevTools'
+                accelerator: 'Cmd+Alt+I'
+                click:       -> win?.webContents.openDevTools()
+            ]
         ]
-    ]
         
     electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
 

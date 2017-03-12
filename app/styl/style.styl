@@ -34,7 +34,7 @@ body
     color               #fff
     overflow            hidden
     font-family         fontMono
-    font-size           12px
+    font-size           14px
     -webkit-user-select none
     -webkit-app-region  no-drag
     
@@ -79,16 +79,70 @@ body
     right               0
     left                0
     top                 titlebarHeight
-    
+    padding             frameWidth
     border-left         frameWidth solid frameColor
     border-right        frameWidth solid frameColor
     border-bottom       frameWidth solid frameColor
     overflow            auto
     pointer-events      auto
-    min-height          ctrlHeight
-    background          #000 
-    color               #ddd 
+    -webkit-user-select text
+    background          #000
+    color               #aaa
+
+// 000000000   0000000    0000000  000   000  
+//    000     000   000  000       000  000   
+//    000     000000000  0000000   0000000    
+//    000     000   000       000  000  000   
+//    000     000   000  0000000   000   000  
+
+.task
+    cursor              pointer
+    white-space         nowrap
+    animation                   highlightTask 0.7s
+    animation-timing-function   ease-in-out
+    animation-iteration-count   1
+        
+.task .time
+    color                       #555
+    animation                   highlightTime 1s
+    animation-timing-function   ease-in
+    animation-iteration-count   1
+
+.task .file
+    color                       #ff0
+    animation                   highlightFile 1.5s
+    animation-timing-function   ease-in-out
+    animation-iteration-count   1
+
+.task .message
+    color                       #888
+
+//    0000000   000   000  000  00     00   0000000   000000000  000   0000000   000   000
+//   000   000  0000  000  000  000   000  000   000     000     000  000   000  0000  000
+//   000000000  000 0 000  000  000000000  000000000     000     000  000   000  000 0 000
+//   000   000  000  0000  000  000 0 000  000   000     000     000  000   000  000  0000
+//   000   000  000   000  000  000   000  000   000     000     000   0000000   000   000
     
+highlightColor = #89f
+
+@keyframes highlightTime
+    0%,100%   
+        color           #555
+    50%  
+        color           highlightColor
+
+@keyframes highlightFile
+    0%,100%   
+        color           #ff0
+    50%  
+        color           highlightColor
+        
+@keyframes highlightTask
+    0%,100%   
+        font-size       14px
+    50%  
+        font-size       12px
+
 //  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000 
 // 000       000       000   000  000   000  000      000      000   000  000   000  000   000
 // 0000000   000       0000000    000   000  000      000      0000000    000000000  0000000  

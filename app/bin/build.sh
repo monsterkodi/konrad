@@ -2,7 +2,10 @@
 cd `dirname $0`/..
 
 NAME=`sds -rp productName`
+
 killall $NAME
+killall $NAME
+
 konrad --run
 
 node_modules/electron-packager/cli.js . --overwrite --icon=img/$NAME.icns
