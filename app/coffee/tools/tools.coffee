@@ -28,6 +28,7 @@ queue = (items, opt) ->
         else
             opt.done?()
             return
+    opt.batched?()
     if items.length
         fnc = -> queue items, opt
         if not opt?.timeout?

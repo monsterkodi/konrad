@@ -7,6 +7,7 @@
 ###
 
 fs     = require 'fs'
+os     = require 'os'
 fu     = require 'fs-utils'
 path   = require 'path'
 noon   = require 'noon'
@@ -32,6 +33,7 @@ konrad
     info       . ? show build status               . = false
     status     . ? show git status                 . = false
     diff       . ? show git diff                   . = false
+    notify     . ? notify on error                 . = false
     verbose    . ? log more                        . = false
     quiet      . ? log nothing                     . = false
     debug      . ? log debug                       . = false . - D
@@ -159,6 +161,7 @@ prettyPath = (p, c=colors.yellow) ->
     p.split('/').map((n) -> c(n)).join c('/').dim
 
 prettyFilePath = (p, c=colors.yellow) ->
+    p = p.replace os.homedir(), "~" 
     if dirname(p) not in ['.', '/']
         "#{prettyPath dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
     else
@@ -296,16 +299,26 @@ dirty = (sourceFile, targetFile) ->
 ###
 
 error = (title, msg) ->
-    log "#{title.bold.yellow} #{String(msg).red}"
+    stripped = String(msg).strip
+    splitted = stripped.split '\n'
+    
+    if title == 'compile error'
+        [sourceFile, rest] = splitted[0].split(': ')
+        log prettyTime(), "😡  #{prettyFilePath sourceFile}"
+        splitted[0] = rest.bold.yellow
+        log splitted.join '\n'
+    else
+        log "#{title.bold.yellow} #{String(stripped).red}"
+        
+    return if not args.notify
+    
     try
-        stripped = String(msg).strip
-        splitted = stripped.split '\n'
         subtitle = splitted.shift()
         subtitle = title if subtitle.length == 0
-        message  = splitted.join '\n' 
+        message  = splitted.join '\n'
         message  = subtitle if message.length == 0
-        if subtitle.startsWith '/'
-            [file,line,clmn] = subtitle.split(":",4)
+        if sourceFile
+            [file,line,clmn] = sourceFile.split ":" 
             line = parseInt line
             clmn = parseInt clmn
             if file?.length and Number.isInteger(line) and Number.isInteger(clmn)
@@ -318,12 +331,12 @@ error = (title, msg) ->
         require('osx-notifier')
             type:     'fail'
             group:    'konrad'
-            title:    title
-            subtitle: subtitle
-            message:  message
+            title:    colors.strip title
+            subtitle: colors.strip subtitle
+            message:  colors.strip message
             execute:  execute
     catch err
-        log "[ERROR] osx notification failed", err
+        log "[ERROR] notification failed", err
 
 ###
 0000000    000   000  000  000      0000000  
@@ -420,14 +433,19 @@ build = (sourceFile, cb) ->
                         log "can't write #{targetFile.bold.yellow}".bold.red
                         return
                     if not args.quiet
-                        log prettyTime(), "👍  #{prettyFilePath targetFile}"
+                        if args.verbose
+                            log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
+                        else
+                            log prettyTime(), "👍  #{prettyFilePath targetFile}"
 
                     if resolve(targetFile) == slashpath __filename
                         reload()
                     else if cb?
                         cb sourceFile, targetFile
             else
-                log 'unchanged'.green.dim, prettyFilePath(relative(targetFile), colors.gray) if args.verbose
+                log 'unchanged'.green.dim, prettyFilePath(relative(targetFile), colors.gray) if args.debug
+                if args.verbose
+                    log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
@@ -702,6 +720,7 @@ reload = ->
     arg += ' -v' if args.verbose
     arg += ' -D' if args.debug
     arg += ' -q' if args.quiet
+    arg += ' -n' if args.notify
     childp.execSync "/usr/bin/env node #{__filename} #{arg}",
         cwd:      process.cwd()
         encoding: 'utf8'
