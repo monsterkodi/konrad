@@ -5,22 +5,22 @@
 # 000   000  000   000  000  000   000
 {
 fileExists
-}             = require './tools/tools'
-prefs         = require './tools/prefs'
-log           = require './tools/log'
-pkg           = require '../package.json'
-electron      = require 'electron'
-proc          = require 'child_process'
-colors        = require 'colors'
-noon          = require 'noon'
-fs            = require 'fs'
-app           = electron.app
-BrowserWindow = electron.BrowserWindow
-Tray          = electron.Tray
-Menu          = electron.Menu
-ipc           = electron.ipcMain
-win           = undefined
-tray          = undefined
+}        = require './tools/tools'
+prefs    = require './tools/prefs'
+log      = require './tools/log'
+pkg      = require '../package.json'
+electron = require 'electron'
+proc     = require 'child_process'
+colors   = require 'colors'
+noon     = require 'noon'
+fs       = require 'fs'
+app      = electron.app
+Window   = electron.BrowserWindow
+Tray     = electron.Tray
+Menu     = electron.Menu
+ipc      = electron.ipcMain
+win      = undefined
+tray     = undefined
 
 #  0000000   00000000    0000000    0000000
 # 000   000  000   000  000        000     
@@ -72,7 +72,9 @@ if args.prefs
 # 000  000        000     
 # 000  000         0000000
 
-ipc.on 'open-console', => win?.webContents.openDevTools()
+ipc.on 'openDevTools', => win?.webContents.openDevTools()
+ipc.on 'reloadWin',    => win?.webContents.reloadIgnoringCache()
+ipc.on 'saveBounds',   -> saveBounds()
 
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -81,7 +83,7 @@ ipc.on 'open-console', => win?.webContents.openDevTools()
 #00     00  000  000   000  0000000     0000000   00     00
 
 toggleWindow = ->
-    if win?.isVisible()
+    if win?.isVisible() and win?.isFocused()
         win.hide()    
         app.dock.hide()        
     else
@@ -107,22 +109,21 @@ createWindow = ->
         bounds.x = parseInt (w-bounds.width)/2
         bounds.y = 0
 
-    win = new BrowserWindow
+    win = new Window
         x:               bounds.x
         y:               bounds.y
         width:           bounds.width
         height:          bounds.height
-        minWidth:        556
+        minWidth:        206
         minHeight:       206
         titleBarStyle:   'hidden'
         backgroundColor: '#000'
         maximizable:     true
         useContentSize:  true
         fullscreenable:  false
-        show:            false
+        show:            true
         
     bounds = prefs.get 'bounds'
-    log 'bounds', bounds
     win.setBounds bounds if bounds?
         
     win.loadURL "file://#{__dirname}/../index.html"
@@ -135,10 +136,7 @@ createWindow = ->
         event.preventDefault()
     win
 
-saveBounds = ->
-    if win?
-        log 'saveBounds', win.getBounds()
-        prefs.set 'bounds', win.getBounds()
+saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
     
 #  0000000   0000000     0000000   000   000  000000000
 # 000   000  000   000  000   000  000   000     000   
@@ -147,7 +145,7 @@ saveBounds = ->
 # 000   000  0000000     0000000    0000000      000   
 
 showAbout = ->    
-    w = new BrowserWindow
+    w = new Window
         show:            true
         center:          true
         resizable:       false
@@ -198,6 +196,7 @@ app.on 'ready', ->
             accelerator: 'Command+Q'
             click: -> 
                 saveBounds()
+                prefs.save()
                 app.exit 0
         ]
     ]

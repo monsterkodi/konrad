@@ -5,11 +5,11 @@
 //      000     000        000     000    
 // 0000000      000        000     0000000
 
-frameWidth            = 6px
-frameColor            = #222
-frameBorder           = frameWidth solid frameColor
-titlebarHeight        = 22px
-fontMono              = "Menlo", "Cousine", "Liberation Mono", "Andale Mono", monospace
+frameWidth     = 6px
+frameColor     = #222
+frameBorder    = frameWidth solid frameColor
+titlebarHeight = 22px
+fontMono       = "Menlo", "Cousine", "Liberation Mono", "Andale Mono", monospace
 
 fill-abs()
     position            absolute
@@ -34,6 +34,7 @@ body
     color               #fff
     overflow            hidden
     font-family         fontMono
+    font-size           12px
     -webkit-user-select none
     -webkit-app-region  no-drag
     
@@ -49,13 +50,22 @@ body
     background          #333
     color               #aaa
     font-size           13px
-    padding-top         2px
+    padding-top         4px
     padding-left        70px
     padding-right       70px
     white-space         nowrap
     -webkit-app-region  drag
     position            static
     display             block
+
+.titlebarPath
+    color               #888
+
+.titlebarDot
+    color               #444
+
+.titlebarVersion
+    color               #555
 
 // 00     00   0000000   000  000   000  
 // 000   000  000   000  000  0000  000  
@@ -73,10 +83,10 @@ body
     border-left         frameWidth solid frameColor
     border-right        frameWidth solid frameColor
     border-bottom       frameWidth solid frameColor
-    overflow            scroll
+    overflow            auto
     pointer-events      auto
     min-height          ctrlHeight
-    background          #000 // #181818
+    background          #000 
     color               #ddd 
     
 //  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000 
