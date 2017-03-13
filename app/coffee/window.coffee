@@ -27,6 +27,7 @@ tasks = {}
 
 clearLog   = -> $("main").innerHTML = ''
 clearTasks = -> clearLog(); tasks = {}
+
 ipc.on "clearLog", clearLog
 
 taskDiv = (opt) ->
@@ -113,6 +114,7 @@ setTitleBar = (s) ->
     html += "<span class='titlebarDot'> ● </span>"
     html += "<span class='titlebarVersion'>#{version}</span>"
     $('titlebar').innerHTML = html
+    $('titlebar').ondblclick = => ipc.send 'toggleMaximize'
 
 # 000   000  00000000  000   000
 # 000  000   000        000 000 

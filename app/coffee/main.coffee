@@ -72,11 +72,12 @@ if args.prefs
 # 000  000        000     
 # 000  000         0000000
 
-ipc.on 'openDevTools', => win?.webContents.openDevTools()
-ipc.on 'reloadWin',    => win?.webContents.reloadIgnoringCache()
-ipc.on 'showWin',      -> showWindow()
-ipc.on 'saveBounds',   -> saveBounds()
-ipc.on 'highlight',    -> highlight()
+ipc.on 'openDevTools',   -> win?.webContents.openDevTools()
+ipc.on 'reloadWin',      -> win?.webContents.reloadIgnoringCache()
+ipc.on 'showWin',        -> showWindow()
+ipc.on 'saveBounds',     -> saveBounds()
+ipc.on 'highlight',      -> highlight()
+ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
 
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -231,7 +232,7 @@ app.on 'ready', ->
             ,
                 label:       'Maximize'
                 accelerator: 'Cmd+Shift+m'
-                click:       -> win?.maximize()
+                click:       -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
             ,
                 type: 'separator'
             ,                            

@@ -1,0 +1,6 @@
+(remote: )(Counting.*|Compressing.*|Total.*)  . s: . s:
+(Unpacking objects:.*)                        . s: 
+(From .*)                                     . s: 
+(\S+\.\.\S+\s+)(\S.*)                         . s: . xd 
+(\* \[new tag\])(.*->)(.*)                    . xds:■ . s: . g
+(\s\s+)                                       . |s: | 
