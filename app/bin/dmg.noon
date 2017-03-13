@@ -1,6 +1,6 @@
 title  konrad
-icon   img/konrad.icns
-background  img/dmg.png
+icon   ../img/konrad.icns
+background  ../img/dmg.png
 contents
     .
         x   416
@@ -11,4 +11,4 @@ contents
         x   94
         y   94
         type  file 
-        path  konrad-darwin-x64/konrad.app
+        path  ../konrad-darwin-x64/konrad.app

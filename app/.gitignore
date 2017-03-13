@@ -1,9 +1,9 @@
 js
 css
 bin/*.js
-package.json
+bin/*.json
 node_modules
-konrad-darwin-x64
+*-darwin-x64
+*.json
 *.html
-dmg.json
-konrad.dmg
+*.dmg
