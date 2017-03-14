@@ -1,6 +1,10 @@
 title  konrad
 icon   ../img/konrad.icns
 background  ../img/dmg.png
+window
+    position
+        x   200
+        y   600
 contents
     .
         x   416

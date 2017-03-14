@@ -129,19 +129,17 @@ createWindow = ->
         maximizable:     true
         useContentSize:  true
         fullscreenable:  false
-        show:            true
+        show:            false
         
     bounds = prefs.get 'bounds'
     win.setBounds bounds if bounds?
         
     win.loadURL "file://#{__dirname}/../index.html"
     win.webContents.openDevTools() if args.DevTools
-    app.dock.show()
     win.on 'closed', -> win = null
-    win.on 'close', (event) ->
-        win.hide()
-        app.dock.hide()
-        event.preventDefault()
+    win.on 'close', -> app.dock.hide()
+    win.on 'hide', -> app.dock.hide()
+    win.on 'ready-to-show', -> win.show(); app.dock.show()
         
     win
 
@@ -163,6 +161,8 @@ showAbout = ->
         width:           400
         height:          400
     w.loadURL "file://#{__dirname}/../about.html"
+
+app.on 'window-all-closed', (event) -> event.preventDefault()
 
 #00000000   00000000   0000000   0000000    000   000
 #000   000  000       000   000  000   000   000 000 
