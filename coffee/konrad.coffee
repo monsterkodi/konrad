@@ -60,13 +60,14 @@ version  #{pkg.version}
 #0000000    00000000  000       000   000   0000000   0000000     000     0000000 
 
 opt = noon.parse """
+ignore
+    /.*-darwin-x64/
 coffee  . ext js  . replace .. /coffee/ /js/ .. ^coffee/ js/
 noon    . ext json
 json    . ext noon . filter .. package.json$
 styl    . ext css . replace .. /style/ /css/ .. /styl/ /js/css/
 jade    . ext html
 pug     . ext html . replace .. /pug/ /js/
-js      
 """
 
 ###
