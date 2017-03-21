@@ -4,13 +4,15 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 {
+resolve,
 fileExists
 }        = require './tools/tools'
 prefs    = require './tools/prefs'
+about    = require './tools/about'
 log      = require './tools/log'
 pkg      = require '../package.json'
 electron = require 'electron'
-proc     = require 'child_process'
+childp   = require 'child_process'
 colors   = require 'colors'
 noon     = require 'noon'
 fs       = require 'fs'
@@ -19,8 +21,11 @@ Window   = electron.BrowserWindow
 Tray     = electron.Tray
 Menu     = electron.Menu
 ipc      = electron.ipcMain
-win      = undefined
-tray     = undefined
+konrad   = null
+win      = null
+tray     = null
+konradVersion  = null
+konradLastTask = []
 
 #  0000000   00000000    0000000    0000000
 # 000   000  000   000  000        000     
@@ -79,6 +84,43 @@ ipc.on 'saveBounds',     -> saveBounds()
 ipc.on 'highlight',      -> highlight()
 ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
 
+startKonrad = ->
+    konrad = childp.spawn resolve('~/s/konrad/bin/konrad'), ['-v'], 
+        cwd:    resolve '~/s'
+        shell: '/usr/local/bin/bash'
+        
+    konrad.on 'close', (code) -> 
+        log "konrad exit code: #{code}"
+        if win?
+            win.webContents.send 'konradExit', "konrad exit code: #{code}"
+        else
+            createWindow 'konradExit', "konrad exit code: #{code}"
+    
+    konrad.stderr.on 'data', (data) ->
+        s = data.toString()
+        log "konrad error: #{s}"
+        if win?
+            win.webContents.send 'konradError', "konrad error: #{s}"
+        else
+            createWindow 'konradError', "konrad error: #{s}"
+    
+    konrad.stdout.on 'data', (data) -> 
+        s = data.toString()
+        if /\ watching\ /.test s 
+            konradVersion = s.split('watching ')[1]
+            win?.send 'konradVersion', konradVersion
+        else if win?
+            win.webContents.send 'konradOutput', s
+        else
+            if / 😡 /.test s 
+                createWindow 'konradOutput', s
+            else
+                highlight()
+                log 'konrad output:', s
+                konradLastTask.push s
+            
+    log 'konrad started'
+
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
 #000000000  000  000 0 000  000   000  000   000  000000000
@@ -92,7 +134,7 @@ toggleWindow = ->
     else
         showWindow()
 
-showWindow = ->
+showWindow = () ->
     if win?
         win.show()
         app.dock.show()
@@ -106,7 +148,7 @@ highlight = ->
     unhighlight = -> tray.setHighlightMode 'never' 
     setTimeout unhighlight, 1000
 
-createWindow = ->
+createWindow = (ipcMsg, ipcArg) ->
     
     bounds = prefs.get 'bounds', null
     if not bounds
@@ -134,13 +176,21 @@ createWindow = ->
     bounds = prefs.get 'bounds'
     win.setBounds bounds if bounds?
         
-    win.loadURL "file://#{__dirname}/../index.html"
+    win.loadURL "file://#{__dirname}/index.html"
     win.webContents.openDevTools() if args.DevTools
     win.on 'closed', -> win = null
     win.on 'close', -> app.dock.hide()
     win.on 'hide', -> app.dock.hide()
-    win.on 'ready-to-show', -> win.show(); app.dock.show()
-        
+    win.on 'ready-to-show', -> 
+        win.show() 
+        app.dock.show()
+        win.webContents.send 'konradVersion', konradVersion if konradVersion
+        if ipcMsg
+            win.webContents.send ipcMsg, ipcArg 
+        else if konradLastTask.length
+            for t in konradLastTask
+                win.webContents.send 'konradOutput', t
+        konradLastTask = []
     win
 
 saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
@@ -151,16 +201,7 @@ saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
 # 000   000  000   000  000   000  000   000     000   
 # 000   000  0000000     0000000    0000000      000   
 
-showAbout = ->    
-    w = new Window
-        show:            true
-        center:          true
-        resizable:       false
-        frame:           false
-        backgroundColor: '#000'            
-        width:           400
-        height:          400
-    w.loadURL "file://#{__dirname}/../about.html"
+showAbout = -> about img: "#{__dirname}/../img/about.png"
 
 app.on 'window-all-closed', (event) -> event.preventDefault()
 
@@ -179,6 +220,7 @@ app.on 'ready', ->
     app.setName pkg.productName
     
     showWindow() if args.show
+    startKonrad()
     
     # 00     00  00000000  000   000  000   000
     # 000   000  000       0000  000  000   000

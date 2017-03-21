@@ -28,7 +28,21 @@ tasks = {}
 clearLog   = -> $("main").innerHTML = ''
 clearTasks = -> clearLog(); tasks = {}
 
+# 000  00000000    0000000  
+# 000  000   000  000       
+# 000  00000000   000       
+# 000  000        000       
+# 000  000         0000000  
+
 ipc.on "clearLog", clearLog
+ipc.on "konradExit", (event, s) ->  
+ipc.on "konradError", (event, s) ->  
+ipc.on "konradVersion", (event, s) -> setTitleBar s
+ipc.on "konradOutput", (event, s) ->  
+    if      / 😡 /.test s then onError   s
+    else if / 👍 /.test s then onTask    s
+    else if / 🔧 /.test s then onMessage s
+    else console.log 'konrad!!: ', s
 
 taskDiv = (opt) ->
     
@@ -130,24 +144,4 @@ document.onkeydown = (event) ->
         when 'command+alt+i'      then return ipc.send 'openDevTools'
         when 'command+alt+ctrl+l' then return ipc.send 'reloadWin'
 
-# konrad = childp.spawn '/usr/local/bin/konrad', ['-v'], 
-konrad = childp.spawn resolve('~/s/konrad/bin/konrad'), ['-v'], 
-    cwd:    resolve '~/s'
-    shell: '/usr/local/bin/bash'
-    
-konrad.on 'close', (code) -> 
-    log "konrad exit code: #{code}"
-    ipc.send 'showWin'
-
-konrad.stderr.on 'data', (data) ->
-    s = data.toString()
-    log "konrad error: #{s}"
-
-konrad.stdout.on 'data', (data) -> 
-    s = data.toString()
-    if /\ watching\ /.test s then setTitleBar s.split('watching ')[1]
-    else if    / 😡 /.test s then onError   s
-    else if    / 👍 /.test s then onTask    s
-    else if    / 🔧 /.test s then onMessage s
-    else console.log 'konrad: ', s
 

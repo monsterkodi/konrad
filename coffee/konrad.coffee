@@ -63,9 +63,9 @@ opt = noon.parse """
 coffee  . ext js  . replace .. /coffee/ /js/ .. ^coffee/ js/
 noon    . ext json
 json    . ext noon . filter .. package.json$
-styl    . ext css . replace .. /style/ /css/ .. ^style/ css/
+styl    . ext css . replace .. /style/ /css/ .. /styl/ /js/css/
 jade    . ext html
-pug     . ext html
+pug     . ext html . replace .. /pug/ /js/
 js      
 """
 
