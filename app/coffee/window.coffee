@@ -139,9 +139,10 @@ setTitleBar = (s) ->
 document.onkeydown = (event) ->
     {mod, key, combo} = keyinfo.forEvent event
     switch combo
-        when 'esc'                then return window.close()
+        when 'k'                  then clearTasks()
+        when 'esc'                then window.close()
         when 'command+c'          then document.execCommand 'copy' 
-        when 'command+alt+i'      then return ipc.send 'openDevTools'
-        when 'command+alt+ctrl+l' then return ipc.send 'reloadWin'
+        when 'command+alt+i'      then ipc.send 'openDevTools'
+        when 'command+alt+ctrl+l' then ipc.send 'reloadWin'
 
 
