@@ -4,12 +4,12 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000  
 # 000   000   0000000   000   000  000   000  000   000  0000000    
 {
-resolve,
 unresolve,
-$}        = require './tools/tools'
-log       = require './tools/log'  
-keyinfo   = require './tools/keyinfo'
-prefs     = require './tools/prefs'
+resolve,
+keyinfo,
+prefs,
+log,
+$}        = require 'kxk'
 childp    = require 'child_process'
 electron  = require 'electron'
 moment    = require 'moment'

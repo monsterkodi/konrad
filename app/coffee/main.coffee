@@ -4,15 +4,15 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 {
+fileExists,
 resolve,
-fileExists
-}        = require './tools/tools'
-prefs    = require './tools/prefs'
-about    = require './tools/about'
-log      = require './tools/log'
+about,
+prefs,
+log
+}        = require 'kxk'
 pkg      = require '../package.json'
-electron = require 'electron'
 childp   = require 'child_process'
+electron = require 'electron'
 colors   = require 'colors'
 noon     = require 'noon'
 fs       = require 'fs'
@@ -201,7 +201,7 @@ saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
 # 000   000  000   000  000   000  000   000     000   
 # 000   000  0000000     0000000    0000000      000   
 
-showAbout = -> about img: "#{__dirname}/../img/about.png"
+showAbout = -> about img: "#{__dirname}/../img/about.png", pkg: pkg
 
 app.on 'window-all-closed', (event) -> event.preventDefault()
 
