@@ -37,7 +37,7 @@ args  = require('karg') """
 
 #{pkg.productName}
 
-    show      . ? open window on startup  . = true
+    show      . ? open window on startup  . = false
     prefs     . ? show preferences        . = false
     noprefs   . ? don't load preferences  . = false
     verbose   . ? log more                . = false
@@ -181,7 +181,7 @@ createWindow = (ipcMsg, ipcArg) ->
     win.on 'closed', -> win = null
     win.on 'close', -> app.dock.hide()
     win.on 'hide', -> app.dock.hide()
-    win.on 'ready-to-show', -> 
+    win.on 'ready-to-show', ->         
         win.show() 
         app.dock.show()
         win.webContents.send 'konradVersion', konradVersion if konradVersion
