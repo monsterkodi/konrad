@@ -84,8 +84,14 @@ ipc.on 'saveBounds',     -> saveBounds()
 ipc.on 'highlight',      -> highlight()
 ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
 
+# 000   000   0000000   000   000  00000000    0000000   0000000    
+# 000  000   000   000  0000  000  000   000  000   000  000   000  
+# 0000000    000   000  000 0 000  0000000    000000000  000   000  
+# 000  000   000   000  000  0000  000   000  000   000  000   000  
+# 000   000   0000000   000   000  000   000  000   000  0000000    
+
 startKonrad = ->
-    konrad = childp.spawn resolve('~/s/konrad/bin/konrad'), ['-v'], 
+    konrad = childp.spawn resolve('~/s/konrad/bin/konrad'), ['-vw'], 
         cwd:    resolve '~/s'
         shell: '/usr/local/bin/bash'
         
@@ -136,7 +142,7 @@ toggleWindow = ->
 
 showWindow = () ->
     if win?
-        win.show()
+        win.showInactive()
         app.dock.show()
     else
         createWindow()
@@ -182,7 +188,7 @@ createWindow = (ipcMsg, ipcArg) ->
     win.on 'close', -> app.dock.hide()
     win.on 'hide', -> app.dock.hide()
     win.on 'ready-to-show', ->         
-        win.show() 
+        win.showInactive() 
         app.dock.show()
         win.webContents.send 'konradVersion', konradVersion if konradVersion
         if ipcMsg
@@ -190,6 +196,8 @@ createWindow = (ipcMsg, ipcArg) ->
         else if konradLastTask.length
             for t in konradLastTask
                 win.webContents.send 'konradOutput', t
+        else
+            win.webContents.send 'clearLog'
         konradLastTask = []
     win
 
@@ -201,7 +209,14 @@ saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
 # 000   000  000   000  000   000  000   000     000   
 # 000   000  0000000     0000000    0000000      000   
 
-showAbout = -> about img: "#{__dirname}/../img/about.png", pkg: pkg
+showAbout = -> 
+    dark = 'dark' == prefs.get 'scheme', 'dark'
+    about 
+        img: "#{__dirname}/../img/about.png"
+        color:      dark and '#383838' or '#ddd'
+        background: dark and '#282828' or '#fff'
+        highlight:  dark and '#ff0'    or '#000'
+        pkg: pkg
 
 app.on 'window-all-closed', (event) -> event.preventDefault()
 
@@ -211,7 +226,7 @@ app.on 'window-all-closed', (event) -> event.preventDefault()
 #000   000  000       000   000  000   000     000   
 #000   000  00000000  000   000  0000000       000   
 
-app.on 'ready', -> 
+app.on 'ready', ->
     
     tray = new Tray "#{__dirname}/../img/menu.png"
     tray.on 'click', toggleWindow
@@ -255,9 +270,7 @@ app.on 'ready', ->
             ,
                 label:       'Quit'
                 accelerator: 'Command+Q'
-                click: -> 
-                    saveBounds()
-                    prefs.save -> app.exit 0
+                click:        -> app.quit()
             ]
         ,
             # 000   000  000  000   000  0000000     0000000   000   000

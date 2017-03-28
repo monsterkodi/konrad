@@ -1,23 +1,22 @@
-###
-000   000   0000000   000   000  00000000    0000000   0000000
-000  000   000   000  0000  000  000   000  000   000  000   000
-0000000    000   000  000 0 000  0000000    000000000  000   000
-000  000   000   000  000  0000  000   000  000   000  000   000
-000   000   0000000   000   000  000   000  000   000  0000000
-###
-
+# 000   000   0000000   000   000  00000000    0000000   0000000
+# 000  000   000   000  0000  000  000   000  000   000  000   000
+# 0000000    000   000  000 0 000  0000000    000000000  000   000
+# 000  000   000   000  000  0000  000   000  000   000  000   000
+# 000   000   0000000   000   000  000   000  000   000  0000000
+{
+dirExists,
+resolve,
+log
+}      = require 'kxk'
 fs     = require 'fs'
 os     = require 'os'
-fu     = require 'fs-utils'
 path   = require 'path'
 noon   = require 'noon'
 colors = require 'colors'
-chalk  = require 'chalk'
 childp = require 'child_process'
 _      = require 'lodash'
 
 pkg    = require "#{__dirname}/../package"
-log    = console.log
 
 args   = require('karg') """
 
@@ -28,19 +27,19 @@ konrad
     publish    . ? bump, commit & publish to npm   . = false
     update     . ? update npm packages             . = false
     test       . ? run tests                       . = false
+    watch      . ? watch directory for changes     . = false
     run        . ? build dirty or missing targets  . = false
     rebuild    . ? rebuild all targets             . = false . - R
     info       . ? show build status               . = false
     status     . ? show git status                 . = false
     diff       . ? show git diff                   . = false
-    notify     . ? notify on error                 . = false
     verbose    . ? log more                        . = false
     quiet      . ? log nothing                     . = false
     debug      . ? log debug                       . = false . - D
     logtime    . ? log with time                   . = true
 
 arguments
-    [no option]  directory to watch         #{'.'.magenta}
+    watch        directory to watch         #{'.'.magenta}
     info         directory to inspect       #{'.'.magenta}
     status       files or directory         #{'.'.magenta}
     diff         files or directory         #{'.'.magenta}
@@ -53,30 +52,32 @@ arguments
 version  #{pkg.version}
 """
 
-#0000000    00000000  00000000   0000000   000   000  000      000000000   0000000
-#000   000  000       000       000   000  000   000  000         000     000     
-#000   000  0000000   000000    000000000  000   000  000         000     0000000 
-#000   000  000       000       000   000  000   000  000         000          000
-#0000000    00000000  000       000   000   0000000   0000000     000     0000000 
+actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
+if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
+    args.run = true # makes run the default action if no other action is set
+
+# 0000000    00000000  00000000   0000000   000   000  000      000000000   0000000
+# 000   000  000       000       000   000  000   000  000         000     000     
+# 000   000  0000000   000000    000000000  000   000  000         000     0000000 
+# 000   000  000       000       000   000  000   000  000         000          000
+# 0000000    00000000  000       000   000   0000000   0000000     000     0000000 
 
 opt = noon.parse """
 ignore
     /.*-darwin-x64/
-coffee  . ext js  . replace .. /coffee/ /js/ .. ^coffee/ js/
+    /.*\.app$/
+coffee  . ext js   . replace .. /coffee/ /js/ .. ^coffee/ js/
 noon    . ext json
-json    . ext noon . filter .. package.json$
-styl    . ext css . replace .. /style/ /css/ .. /styl/ /js/css/
-jade    . ext html
+json    . ext noon . filter  .. package.json$
+styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
 pug     . ext html . replace .. /pug/ /js/
 """
 
-###
-00000000   00000000   0000000   0000000   000      000   000  00000000
-000   000  000       000       000   000  000      000   000  000
-0000000    0000000   0000000   000   000  000       000 000   0000000
-000   000  000            000  000   000  000         000     000
-000   000  00000000  0000000    0000000   0000000      0      00000000
-###
+# 00000000   00000000   0000000   0000000   000      000   000  00000000
+# 000   000  000       000       000   000  000      000   000  000
+# 0000000    0000000   0000000   000   000  000       000 000   0000000
+# 000   000  000            000  000   000  000         000     000
+# 000   000  00000000  0000000    0000000   0000000      0      00000000
 
 slashreg = new RegExp "\\\\", 'g'
 slashpath = (p) -> 
@@ -85,22 +86,13 @@ slashpath = (p) ->
     
 slashjoin = -> [].map.call(arguments, (p) -> slashpath p).join "/"
 
-resolve = (unresolved) ->
-    p = unresolved.replace /\~/, process.env.HOME
-    p = path.resolve p
-    p = path.normalize p
-    p = slashpath p
-    p
-
 dirname = (p) -> slashpath path.dirname p
 
-###
- 0000000   0000000   000   000  00000000  000   0000000
-000       000   000  0000  000  000       000  000
-000       000   000  000 0 000  000000    000  000  0000
-000       000   000  000  0000  000       000  000   000
- 0000000   0000000   000   000  000       000   0000000
-###
+#  0000000   0000000   000   000  00000000  000   0000000
+# 000       000   000  0000  000  000       000  000
+# 000       000   000  000 0 000  000000    000  000  0000
+# 000       000   000  000  0000  000       000  000   000
+#  0000000   0000000   000   000  000       000   0000000
 
 config = (p) ->
     while dirname(p).length and dirname(p) not in ['.', '/']
@@ -125,13 +117,11 @@ configPath = (key, p) ->
                 return resolve p
     null
 
-###
-000   0000000   000   000   0000000   00000000   00000000
-000  000        0000  000  000   000  000   000  000
-000  000  0000  000 0 000  000   000  0000000    0000000
-000  000   000  000  0000  000   000  000   000  000
-000   0000000   000   000   0000000   000   000  00000000
-###
+# 000   0000000   000   000   0000000   00000000   00000000
+# 000  000        0000  000  000   000  000   000  000
+# 000  000  0000  000 0 000  000   000  0000000    0000000
+# 000  000   000  000  0000  000   000  000   000  000
+# 000   0000000   000   000   0000000   000   000  00000000
 
 opt.ignore = [
     /gulpfile.coffee$/
@@ -150,13 +140,11 @@ wlk =
         /_misc/
     ]
 
-###
-00000000   00000000   00000000  000000000  000000000  000   000
-000   000  000   000  000          000        000      000 000
-00000000   0000000    0000000      000        000       00000
-000        000   000  000          000        000        000
-000        000   000  00000000     000        000        000
-###
+# 00000000   00000000   00000000  000000000  000000000  000   000
+# 000   000  000   000  000          000        000      000 000
+# 00000000   0000000    0000000      000        000       00000
+# 000        000   000  000          000        000        000
+# 000        000   000  00000000     000        000        000
 
 prettyPath = (p, c=colors.yellow) ->
     p.split('/').map((n) -> c(n)).join c('/').dim
@@ -183,21 +171,19 @@ prettyTime = () ->
     else
         ''
 
-###
- 0000000   00000000    0000000   0000000    000  00000000 
-000   000  000   000  000        000   000  000  000   000
-000000000  0000000    000  0000  000   000  000  0000000  
-000   000  000   000  000   000  000   000  000  000   000
-000   000  000   000   0000000   0000000    000  000   000
-###
+#  0000000   00000000    0000000   0000000    000  00000000 
+# 000   000  000   000  000        000   000  000  000   000
+# 000000000  0000000    000  0000  000   000  000  0000000  
+# 000   000  000   000  000   000  000   000  000  000   000
+# 000   000  000   000   0000000   0000000    000  000   000
 
 argDir = () ->
     if args.arguments[0]
         d = resolve args.arguments[0]
-        if fu.isDir d
+        if dirExists d
             return d
         d = slashpath path.parse(d).dir
-        if fu.isDir d
+        if dirExists d
             return d
     resolve '.'
     
@@ -206,26 +192,22 @@ argDirRel = () ->
         return ''
     relative argDir(), '.'
     
-###
-00000000   00000000  000       0000000   000000000  000  000   000  00000000
-000   000  000       000      000   000     000     000  000   000  000
-0000000    0000000   000      000000000     000     000   000 000   0000000
-000   000  000       000      000   000     000     000     000     000
-000   000  00000000  0000000  000   000     000     000      0      00000000
-###
+# 00000000   00000000  000       0000000   000000000  000  000   000  00000000
+# 000   000  000       000      000   000     000     000  000   000  000
+# 0000000    0000000   000      000000000     000     000   000 000   0000000
+# 000   000  000       000      000   000     000     000     000     000
+# 000   000  00000000  0000000  000   000     000     000      0      00000000
 
 relative = (absolute, to) ->
     d = to? and resolve(to) or argDir()
-    if not fu.isDir(d) then d = '.'
+    if not dirExists(d) then d = '.'
     r = slashpath path.relative d, absolute
 
-###
- 0000000  000   000   0000000   000   000  000      0000000  
-000       000   000  000   000  000   000  000      000   000
-0000000   000000000  000   000  000   000  000      000   000
-     000  000   000  000   000  000   000  000      000   000
-0000000   000   000   0000000    0000000   0000000  0000000  
-###
+#  0000000  000   000   0000000   000   000  000      0000000  
+# 000       000   000  000   000  000   000  000      000   000
+# 0000000   000000000  000   000  000   000  000      000   000
+#      000  000   000  000   000  000   000  000      000   000
+# 0000000   000   000   0000000    0000000   0000000  0000000  
 
 should = (k, o, p) ->
 
@@ -246,13 +228,11 @@ should = (k, o, p) ->
             return true
     false
     
-###
-000000000   0000000   00000000    0000000   00000000  000000000
-   000     000   000  000   000  000        000          000
-   000     000000000  0000000    000  0000  0000000      000
-   000     000   000  000   000  000   000  000          000
-   000     000   000  000   000   0000000   00000000     000
-###
+# 000000000   0000000   00000000    0000000   00000000  000000000
+#    000     000   000  000   000  000        000          000
+#    000     000000000  0000000    000  0000  0000000      000
+#    000     000   000  000   000  000   000  000          000
+#    000     000   000  000   000   0000000   00000000     000
 
 target = (sourceFile) ->
     ext = path.extname(sourceFile).substr(1)
@@ -277,13 +257,11 @@ target = (sourceFile) ->
     
     targetFile = slashjoin dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
 
-###
-0000000    000  00000000   000000000  000   000
-000   000  000  000   000     000      000 000
-000   000  000  0000000       000       00000
-000   000  000  000   000     000        000
-0000000    000  000   000     000        000
-###
+# 0000000    000  00000000   000000000  000   000
+# 000   000  000  000   000     000      000 000
+# 000   000  000  0000000       000       00000
+# 000   000  000  000   000     000        000
+# 0000000    000  000   000     000        000
 
 dirty = (sourceFile, targetFile) ->
     if not fs.existsSync targetFile then return true
@@ -291,13 +269,11 @@ dirty = (sourceFile, targetFile) ->
     ts = fs.statSync targetFile
     ss.mtime.getTime() > ts.mtime.getTime()
 
-###
-00000000  00000000   00000000    0000000   00000000
-000       000   000  000   000  000   000  000   000
-0000000   0000000    0000000    000   000  0000000
-000       000   000  000   000  000   000  000   000
-00000000  000   000  000   000   0000000   000   000
-###
+# 00000000  00000000   00000000    0000000   00000000
+# 000       000   000  000   000  000   000  000   000
+# 0000000   0000000    0000000    000   000  0000000
+# 000       000   000  000   000  000   000  000   000
+# 00000000  000   000  000   000   0000000   000   000
 
 error = (title, msg) ->
     stripped = String(msg).strip
@@ -310,42 +286,12 @@ error = (title, msg) ->
         log splitted.join '\n'
     else
         log "#{title.bold.yellow} #{String(stripped).red}"
-        
-    return if not args.notify
-    
-    try
-        subtitle = splitted.shift()
-        subtitle = title if subtitle.length == 0
-        message  = splitted.join '\n'
-        message  = subtitle if message.length == 0
-        if sourceFile
-            [file,line,clmn] = sourceFile.split ":" 
-            line = parseInt line
-            clmn = parseInt clmn
-            if file?.length and Number.isInteger(line) and Number.isInteger(clmn)
-                subtitle = "#{path.basename file} #{line}:#{clmn}"
-                execute  = "/usr/local/bin/ko \"#{file}:#{line}:#{clmn}\""
-        else
-            line = ''
-            file = ''
-            
-        require('osx-notifier')
-            type:     'fail'
-            group:    'konrad'
-            title:    colors.strip title
-            subtitle: colors.strip subtitle
-            message:  colors.strip message
-            execute:  execute
-    catch err
-        log "[ERROR] notification failed", err
 
-###
-0000000    000   000  000  000      0000000  
-000   000  000   000  000  000      000   000
-0000000    000   000  000  000      000   000
-000   000  000   000  000  000      000   000
-0000000     0000000   000  0000000  0000000  
-###
+# 0000000    000   000  000  000      0000000  
+# 000   000  000   000  000  000      000   000
+# 0000000    000   000  000  000      000   000
+# 000   000  000   000  000  000      000   000
+# 0000000     0000000   000  0000000  0000000  
 
 build = (sourceFile, cb) ->
 
@@ -369,13 +315,12 @@ build = (sourceFile, cb) ->
 
     log "target file".gray, targetFile if args.debug
 
-    ###
-    00000000   00000000   0000000   0000000
-    000   000  000       000   000  000   000
-    0000000    0000000   000000000  000   000
-    000   000  000       000   000  000   000
-    000   000  00000000  000   000  0000000
-    ###
+    # 00000000   00000000   0000000   0000000
+    # 000   000  000       000   000  000   000
+    # 0000000    0000000   000000000  000   000
+    # 000   000  000       000   000  000   000
+    # 000   000  00000000  000   000  0000000
+
     fs.readFile sourceFile, 'utf8', (err, data) ->
 
         if err
@@ -383,13 +328,12 @@ build = (sourceFile, cb) ->
             return
 
         try
-            ###
-             0000000   0000000   00     00  00000000   000  000      00000000
-            000       000   000  000   000  000   000  000  000      000
-            000       000   000  000000000  00000000   000  000      0000000
-            000       000   000  000 0 000  000        000  000      000
-             0000000   0000000   000   000  000        000  0000000  00000000
-            ###
+            #  0000000   0000000   00     00  00000000   000  000      00000000
+            # 000       000   000  000   000  000   000  000  000      000
+            # 000       000   000  000000000  00000000   000  000      0000000
+            # 000       000   000  000 0 000  000        000  000      000
+            #  0000000   0000000   000   000  000        000  0000000  00000000
+
             compiled = switch ext
                 when 'coffee'
                     coffee = require 'coffee-script'
@@ -401,9 +345,6 @@ build = (sourceFile, cb) ->
                         .set 'filename', sourceFile
                         .set 'paths', [dirname(sourceFile)]
                         .render()
-                when 'jade'
-                    jade = require 'jade'
-                    jade.render data, pretty: true
                 when 'pug'
                     pug = require 'pug'
                     pug.render data, pretty: true
@@ -421,13 +362,13 @@ build = (sourceFile, cb) ->
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 
             if compiled != targetData
-                ###
-                000   000  00000000   000  000000000  00000000
-                000 0 000  000   000  000     000     000
-                000000000  0000000    000     000     0000000
-                000   000  000   000  000     000     000
-                00     00  000   000  000     000     00000000
-                ###
+
+                # 000   000  00000000   000  000000000  00000000
+                # 000 0 000  000   000  000     000     000
+                # 000000000  0000000    000     000     0000000
+                # 000   000  000   000  000     000     000
+                # 00     00  000   000  000     000     00000000
+
                 require('mkpath').sync dirname targetFile
                 require('write-file-atomic') targetFile, compiled, (err) ->
                     if err
@@ -452,13 +393,11 @@ build = (sourceFile, cb) ->
                 if stat.mtime.getTime() != ttat.mtime.getTime()
                     fs.utimesSync resolve(targetFile), stat.atime, stat.mtime
 
-###
-000   000   0000000   000      000   000
-000 0 000  000   000  000      000  000
-000000000  000000000  000      0000000
-000   000  000   000  000      000  000
-00     00  000   000  0000000  000   000
-###
+# 000   000   0000000   000      000   000
+# 000 0 000  000   000  000      000  000
+# 000000000  000000000  000      0000000
+# 000   000  000   000  000      000  000
+# 00     00  000   000  0000000  000   000
 
 walk = (opt, cb) ->
 
@@ -494,18 +433,13 @@ walk = (opt, cb) ->
     catch err
         error 'walk error', err
 
-dowatch = true
-
-###
-000  000   000  00000000   0000000 
-000  0000  000  000       000   000
-000  000 0 000  000000    000   000
-000  000  0000  000       000   000
-000  000   000  000        0000000 
-###
+# 000  000   000  00000000   0000000 
+# 000  0000  000  000       000   000
+# 000  000 0 000  000000    000   000
+# 000  000  0000  000       000   000
+# 000  000   000  000        0000000 
 
 if args.info
-    dowatch = false
     log '○● info'.gray
 
     walk opt, (sourceFile, targetFile) ->
@@ -514,15 +448,12 @@ if args.info
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.yellow), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
             else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
-    true    
     
-###
- 0000000  000000000   0000000   000000000  000   000   0000000
-000          000     000   000     000     000   000  000     
-0000000      000     000000000     000     000   000  0000000 
-     000     000     000   000     000     000   000       000
-0000000      000     000   000     000      0000000   0000000 
-###
+#  0000000  000000000   0000000   000000000  000   000   0000000  
+# 000          000     000   000     000     000   000  000       
+# 0000000      000     000000000     000     000   000  0000000   
+#      000     000     000   000     000     000   000       000  
+# 0000000      000     000   000     000      0000000   0000000   
 
 gitStatus = (sourceFile) ->
     
@@ -573,7 +504,7 @@ gitStatus = (sourceFile) ->
                         diff = ""
                         c = '▼'.bold.blue
                         for l in res.split /\r?\n/
-                            ls = chalk.stripColor(l)
+                            ls = colors.strip(l)
                             if (ls[0] in ['+', '-', '@']) and (ls.substr(0,4) not in ['+++ ', '--- '])
                                 if ls[0] == '+'
                                     diff += "\n " + (ls.substr(1)).white
@@ -616,7 +547,6 @@ if args.diff
     args.verbose = true
         
 if args.status
-    dowatch = false    
     optall = _.defaults opt, all: true
     gitcount = 0
     
@@ -628,7 +558,7 @@ if args.status
                 gitStatus sourceFile
                 gitcount += 1
                 
-            if fu.isDir sourceFile
+            if dirExists sourceFile
                 for i in opt.ignore
                     if i.test sourceFile
                         return false
@@ -643,13 +573,11 @@ if args.status
                 break
             gitup = path.parse gitup.dir
 
-###
- 0000000  00     00  0000000  
-000       000   000  000   000
-000       000000000  000   000
-000       000 0 000  000   000
- 0000000  000   000  0000000  
-###
+#  0000000  00     00  0000000  
+# 000       000   000  000   000
+# 000       000000000  000   000
+# 000       000 0 000  000   000
+#  0000000  000   000  0000000  
 
 runcmd = (cmd, cmdargs, cwd) -> 
     try
@@ -666,16 +594,14 @@ runcmd = (cmd, cmdargs, cwd) ->
         return false
     true
 
-###
-00000000   000   000  000   000
-000   000  000   000  0000  000
-0000000    000   000  000 0 000
-000   000  000   000  000  0000
-000   000   0000000   000   000
-###
+# 00000000   000   000  000   000
+# 000   000  000   000  0000  000
+# 0000000    000   000  000 0 000
+# 000   000  000   000  000  0000
+# 000   000   0000000   000   000
 
 if args.run or args.rebuild
-    dowatch = false
+
     log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     walk opt, (sourceFile, targetFile) ->
         if targetFile
@@ -693,7 +619,6 @@ if args.run or args.rebuild
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
     if args[cmd]
-        dowatch = false
         
         if not runcmd cmd, args.arguments.join ' ', process.cwd()
             break
@@ -703,13 +628,11 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
         if args.arguments and cmd in ['commit', 'bump']
             break
 
-###
-00000000   00000000  000       0000000    0000000   0000000
-000   000  000       000      000   000  000   000  000   000
-0000000    0000000   000      000   000  000000000  000   000
-000   000  000       000      000   000  000   000  000   000
-000   000  00000000  0000000   0000000   000   000  0000000
-###
+# 00000000   00000000  000       0000000    0000000   0000000
+# 000   000  000       000      000   000  000   000  000   000
+# 0000000    0000000   000      000   000  000000000  000   000
+# 000   000  000       000      000   000  000   000  000   000
+# 000   000  00000000  0000000   0000000   000   000  0000000
 
 watcher = null
 
@@ -721,7 +644,6 @@ reload = ->
     arg += ' -v' if args.verbose
     arg += ' -D' if args.debug
     arg += ' -q' if args.quiet
-    arg += ' -n' if args.notify
     childp.execSync "/usr/bin/env node #{__filename} #{arg}",
         cwd:      process.cwd()
         encoding: 'utf8'
@@ -729,15 +651,13 @@ reload = ->
     log 'exit'.yellow.bold if not args.quiet
     process.exit 0
 
-if dowatch
+if args.watch
     
-    ###
-    000   000   0000000   000000000   0000000  000   000
-    000 0 000  000   000     000     000       000   000
-    000000000  000000000     000     000       000000000
-    000   000  000   000     000     000       000   000
-    00     00  000   000     000      0000000  000   000
-    ###
+    # 000   000   0000000   000000000   0000000  000   000
+    # 000 0 000  000   000     000     000       000   000
+    # 000000000  000000000     000     000       000000000
+    # 000   000  000   000     000     000       000   000
+    # 00     00  000   000     000      0000000  000   000
 
     watch = (cb) ->
 

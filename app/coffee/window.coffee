@@ -7,15 +7,18 @@
 unresolve,
 resolve,
 keyinfo,
+scheme,
 prefs,
 log,
 $}        = require 'kxk'
+_         = require 'lodash'
 childp    = require 'child_process'
 electron  = require 'electron'
 moment    = require 'moment'
 ipc       = electron.ipcRenderer
 
 prefs.init()
+scheme.set prefs.get 'scheme', 'dark'
 
 window.onresize = -> ipc.send 'saveBounds'
 
@@ -25,7 +28,7 @@ openFile = (f) ->
 
 tasks = {}
 
-clearLog   = -> $("main").innerHTML = ''
+clearLog   = -> $("main").innerHTML = "<img class='info' src='#{__dirname}/../img/about.png'>"
 clearTasks = -> clearLog(); tasks = {}
 
 # 000  00000000    0000000  
@@ -46,6 +49,10 @@ ipc.on "konradOutput", (event, s) ->
 
 taskDiv = (opt) ->
     
+    main =$ 'main'
+    if _.isEmpty tasks
+        main.innerHTML = ''
+    
     tasks[opt.key]?.remove()
     
     div = document.createElement 'div'
@@ -65,7 +72,7 @@ taskDiv = (opt) ->
     div.appendChild fil
     
     tasks[opt.key] = div
-    $('main').appendChild div
+    main.appendChild div
     
     div
 
@@ -141,6 +148,7 @@ document.onkeydown = (event) ->
     switch combo
         when 'k'                  then clearTasks()
         when 'esc'                then window.close()
+        when 'command+i', 'i'     then scheme.toggle()
         when 'command+c'          then document.execCommand 'copy' 
         when 'command+alt+i'      then ipc.send 'openDevTools'
         when 'command+alt+ctrl+l' then ipc.send 'reloadWin'
