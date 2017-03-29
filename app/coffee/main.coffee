@@ -24,6 +24,7 @@ ipc      = electron.ipcMain
 konrad   = null
 win      = null
 tray     = null
+showInactive   = false
 konradVersion  = null
 konradLastTask = []
 
@@ -79,7 +80,7 @@ if args.prefs
 
 ipc.on 'openDevTools',   -> win?.webContents.openDevTools()
 ipc.on 'reloadWin',      -> win?.webContents.reloadIgnoringCache()
-ipc.on 'showWin',        -> showWindow()
+ipc.on 'showWin',        -> showWindow true 
 ipc.on 'saveBounds',     -> saveBounds()
 ipc.on 'highlight',      -> highlight()
 ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
@@ -140,12 +141,16 @@ toggleWindow = ->
     else
         showWindow()
 
-showWindow = () ->
+showWindow = (inactive) ->
     if win?
-        win.showInactive()
-        app.dock.show()
+        if inactive
+            win.showInactive()
+        else
+            win.show()
     else
+        showInactive = inactive
         createWindow()
+    app.dock.show()
     
 screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
 
@@ -188,8 +193,12 @@ createWindow = (ipcMsg, ipcArg) ->
     win.on 'close', -> app.dock.hide()
     win.on 'hide', -> app.dock.hide()
     win.on 'ready-to-show', ->         
-        win.showInactive() 
         app.dock.show()
+        if showInactive
+            win.showInactive()
+            showInactive = false
+        else
+            win.show() 
         win.webContents.send 'konradVersion', konradVersion if konradVersion
         if ipcMsg
             win.webContents.send ipcMsg, ipcArg 
@@ -315,4 +324,6 @@ app.on 'ready', ->
         
     electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
 
+if app.makeSingleInstance( -> showWindow() )
+    app.quit()
     
