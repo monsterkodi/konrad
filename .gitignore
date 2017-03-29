@@ -3,3 +3,4 @@ Icon?
 notes.md
 node_modules
 bin/*.js
+yarn.lock

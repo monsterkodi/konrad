@@ -20,7 +20,7 @@ dependencies
               coffee-script   ^1.12.4
               colors          ^1.1.2
               karg            >=1.0.10
-              kxk             ^0.5.2
+              kxk             ^0.5.4
               lodash          ^4.17.4
               mkpath          ^1.0.0
               noon            >=1.0.14
