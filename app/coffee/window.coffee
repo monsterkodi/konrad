@@ -45,7 +45,7 @@ ipc.on "konradOutput", (event, s) ->
     if      / 😡 /.test s then onError   s
     else if / 👍 /.test s then onTask    s
     else if / 🔧 /.test s then onMessage s
-    else console.log 'konrad!!: ', s
+    else console.log 'konrad', s
 
 taskDiv = (opt) ->
     
