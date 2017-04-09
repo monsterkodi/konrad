@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 
 BIN=`npm bin`
-#$BIN/mocha --compilers coffee:coffee-script/register --bail
-$BIN/mocha -R dot --bail
+$BIN/mocha -R dot --compilers coffee:coffee-script/register --bail
