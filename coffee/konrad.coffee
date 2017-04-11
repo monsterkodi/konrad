@@ -342,11 +342,15 @@ build = (sourceFile, cb) ->
                     jsMap = coffee.compile data,
                         filename: sourceFile
                         sourceMap: true
-                    srcMap = jsMap.v3SourceMap
-                    mapFile = "#{targetFile}.map"
-                    atomic mapFile, srcMap, (err) ->
-                        if err then error "can't write sourceMap for #{targetFile}: #{err}"
-                    jsMap.js + "\n//# sourceMappingURL=#{mapFile}\n"
+                        inlineMap: true
+                        sourceRoot: sourceFile
+                        generatedFile: targetFile
+                    # srcMap = jsMap.v3SourceMap
+                    # mapFile = "#{targetFile}.map"
+                    # atomic mapFile, srcMap, (err) ->
+                        # if err then error "can't write sourceMap for #{targetFile}: #{err}"
+                    # jsMap.js + "\n//# sourceMappingURL=#{mapFile}\n"
+                    jsMap.js
                 when 'styl'
                     stylus = require 'stylus'
                     stylus data
