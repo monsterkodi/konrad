@@ -6,7 +6,9 @@
 {
 dirExists,
 resolve,
-log
+error,
+log,
+_
 }      = require 'kxk'
 fs     = require 'fs'
 os     = require 'os'
@@ -14,8 +16,8 @@ path   = require 'path'
 noon   = require 'noon'
 colors = require 'colors'
 childp = require 'child_process'
-_      = require 'lodash'
-
+atomic = require 'write-file-atomic' 
+mkpath = require 'mkpath'
 pkg    = require "#{__dirname}/../package"
 
 args   = require('karg') """
@@ -337,8 +339,14 @@ build = (sourceFile, cb) ->
             compiled = switch ext
                 when 'coffee'
                     coffee = require 'coffee-script'
-                    coffee.compile data,
+                    jsMap = coffee.compile data,
                         filename: sourceFile
+                        sourceMap: true
+                    srcMap = jsMap.v3SourceMap
+                    mapFile = "#{targetFile}.map"
+                    atomic mapFile, srcMap, (err) ->
+                        if err then error "can't write sourceMap for #{targetFile}: #{err}"
+                    jsMap.js + "\n//# sourceMappingURL=#{mapFile}\n"
                 when 'styl'
                     stylus = require 'stylus'
                     stylus data
@@ -369,8 +377,8 @@ build = (sourceFile, cb) ->
                 # 000   000  000   000  000     000     000
                 # 00     00  000   000  000     000     00000000
 
-                require('mkpath').sync dirname targetFile
-                require('write-file-atomic') targetFile, compiled, (err) ->
+                mkpath.sync dirname targetFile
+                atomic targetFile, compiled, (err) ->
                     if err
                         log "can't write #{targetFile.bold.yellow}".bold.red
                         return
