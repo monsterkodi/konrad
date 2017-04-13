@@ -1,10 +1,13 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.8.4",
+  "version": "0.9.0",
   "main": "js/konrad.js",
   "bin": {
     "konrad": "./bin/konrad"
+  },
+  "scripts": {
+    "compile": "coffee -o js -c coffee/konrad.coffee"
   },
   "repository": {
     "type": "git",
@@ -25,7 +28,7 @@
     "coffee-script": "^1.12.4",
     "colors": "^1.1.2",
     "karg": ">=1.0.10",
-    "kxk": "^0.8.1",
+    "kxk": "^0.10.0",
     "lodash": "^4.17.4",
     "mkpath": "^1.0.0",
     "noon": ">=1.0.14",

@@ -336,7 +336,7 @@ build = (sourceFile, cb) ->
                         sourceRoot     = toSource.slice 0, splitIndex - 4
                         relativeSource = toSource.substr splitIndex
                         cfg = 
-                            filename:      targetFile
+                            filename:      sourceFile
                             sourceMap:     true
                             generatedFile: path.basename targetFile
                             sourceRoot:    sourceRoot
