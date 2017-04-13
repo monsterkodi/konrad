@@ -4,12 +4,11 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ dirExists, resolve, fs, os, path, noon, error, log, _
+{ dirExists, resolve, fs, os, path, noon, log, _
 }      = require 'kxk'
 colors = require 'colors'
 childp = require 'child_process'
 atomic = require 'write-file-atomic' 
-mkpath = require 'mkpath'
 pkg    = require "#{__dirname}/../package"
 
 args   = require('karg') """
@@ -280,6 +279,7 @@ error = (title, msg) ->
         log splitted.join '\n'
     else
         log "#{title.bold.yellow} #{String(stripped).red}"
+    false
 
 # 0000000    000   000  000  000      0000000  
 # 000   000  000   000  000  000      000   000
@@ -317,9 +317,7 @@ build = (sourceFile, cb) ->
 
     fs.readFile sourceFile, 'utf8', (err, data) ->
 
-        if err
-            log "can't read #{sourceFile}"
-            return
+        if err then return error "can't read #{sourceFile}"
 
         try
             #  0000000   0000000   00     00  00000000   000  000      00000000
@@ -339,6 +337,7 @@ build = (sourceFile, cb) ->
                         relativeSource = toSource.substr splitIndex
                         cfg = 
                             filename:      targetFile
+                            sourceMap:     true
                             generatedFile: path.basename targetFile
                             sourceRoot:    sourceRoot
                             sourceFiles:   [relativeSource]
@@ -349,7 +348,6 @@ build = (sourceFile, cb) ->
                             jsMap = coffee.compile data, cfg
                             jsMap.js
                         when 'file'
-                            cfg.sourceMap = true
                             jsMap = coffee.compile data, cfg
                             srcMap = jsMap.v3SourceMap
                             mapFile = "#{targetFile}.map"
@@ -358,6 +356,7 @@ build = (sourceFile, cb) ->
                             jsMap.js + "\n//# sourceMappingURL=#{path.basename mapFile}\n"
                         else
                             coffee.compile data
+
                 when 'styl'
                     stylus = require 'stylus'
                     stylus data
@@ -374,35 +373,15 @@ build = (sourceFile, cb) ->
                 else 
                     throw "don't know how to build files with extname .#{ext.bold}!".yellow
                     
-        catch e
-            error "compile error", e
-            return
+        catch err
+            return error "compile error #{err}" 
 
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 
-            if compiled != targetData
+            if err or compiled != targetData
+                
+                writeCompiled sourceFile, targetFile, compiled, cb
 
-                # 000   000  00000000   000  000000000  00000000
-                # 000 0 000  000   000  000     000     000
-                # 000000000  0000000    000     000     0000000
-                # 000   000  000   000  000     000     000
-                # 00     00  000   000  000     000     00000000
-
-                mkpath.sync dirname targetFile
-                atomic targetFile, compiled, (err) ->
-                    if err
-                        log "can't write #{targetFile.bold.yellow}".bold.red
-                        return
-                    if not args.quiet
-                        if args.verbose
-                            log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
-                        else
-                            log prettyTime(), "👍  #{prettyFilePath targetFile}"
-
-                    if resolve(targetFile) == slashpath __filename
-                        reload()
-                    else if cb?
-                        cb sourceFile, targetFile
             else
                 log 'unchanged'.green.dim, prettyFilePath(relative(targetFile), colors.gray) if args.debug
                 if args.verbose
@@ -411,6 +390,32 @@ build = (sourceFile, cb) ->
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
                     fs.utimesSync resolve(targetFile), stat.atime, stat.mtime
+
+# 000   000  00000000   000  000000000  00000000
+# 000 0 000  000   000  000     000     000
+# 000000000  0000000    000     000     0000000
+# 000   000  000   000  000     000     000
+# 00     00  000   000  000     000     00000000
+
+writeCompiled = (sourceFile, targetFile, compiled, cb) ->
+    
+    fs.ensureDir path.dirname(targetFile), (err) ->
+        
+        if err then return error "can't create output directory #{path.dirname(targetFile).bold.yellow}".bold.red
+
+        atomic targetFile, compiled, (err) ->
+            if err then return error "can't write #{targetFile.bold.yellow}".bold.red
+            if not args.quiet
+                if args.verbose
+                    log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
+                else
+                    log prettyTime(), "👍  #{prettyFilePath targetFile}"
+        
+            if resolve(targetFile) == slashpath __filename
+                reload()
+            else if cb?
+                cb sourceFile, targetFile
+    
 
 # 000   000   0000000   000      000   000
 # 000 0 000  000   000  000      000  000
@@ -450,7 +455,7 @@ walk = (opt, cb) ->
                     if not cb p
                         @ignore wp
     catch err
-        error 'walk error', err
+        error "walk error #{err}"
 
 # 000  000   000  00000000   0000000 
 # 000  0000  000  000       000   000
@@ -479,9 +484,9 @@ gitStatus = (sourceFile) ->
     gitDir = dirname sourceFile
     git = require('simple-git') gitDir
     git.status (err,status) ->
-        if err
-            error 'git error', err
-            return
+        
+        if err then return error "git error #{err}"
+        
         changes = []
                 
         for k,v of _.clone status
