@@ -1,6 +1,6 @@
 name            konrad
 productName     konrad
-version         0.8.2
+version         0.8.4
 description     builds my stuff
 license         Unlicense
 main            js/main.js
