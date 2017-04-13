@@ -3,17 +3,9 @@
 # 0000000    000   000  000 0 000  0000000    000000000  000   000
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
-{
-dirExists,
-resolve,
-error,
-log,
-_
+
+{ dirExists, resolve, fs, os, path, noon, error, log, _
 }      = require 'kxk'
-fs     = require 'fs'
-os     = require 'os'
-path   = require 'path'
-noon   = require 'noon'
 colors = require 'colors'
 childp = require 'child_process'
 atomic = require 'write-file-atomic' 
@@ -339,18 +331,33 @@ build = (sourceFile, cb) ->
             compiled = switch ext
                 when 'coffee'
                     coffee = require 'coffee-script'
-                    jsMap = coffee.compile data,
-                        filename: sourceFile
-                        sourceMap: true
-                        inlineMap: true
-                        sourceRoot: sourceFile
-                        generatedFile: targetFile
-                    # srcMap = jsMap.v3SourceMap
-                    # mapFile = "#{targetFile}.map"
-                    # atomic mapFile, srcMap, (err) ->
-                        # if err then error "can't write sourceMap for #{targetFile}: #{err}"
-                    # jsMap.js + "\n//# sourceMappingURL=#{mapFile}\n"
-                    jsMap.js
+                    o = config sourceFile
+                    if o[ext]?.map in ['inline', 'file']
+                        toSource       = path.relative targetFile, sourceFile
+                        splitIndex     = toSource.lastIndexOf('./') + 2
+                        sourceRoot     = toSource.slice 0, splitIndex - 4
+                        relativeSource = toSource.substr splitIndex
+                        cfg = 
+                            filename:      targetFile
+                            generatedFile: path.basename targetFile
+                            sourceRoot:    sourceRoot
+                            sourceFiles:   [relativeSource]
+                        
+                    switch o[ext]?.map
+                        when 'inline'
+                            cfg.inlineMap = true
+                            jsMap = coffee.compile data, cfg
+                            jsMap.js
+                        when 'file'
+                            cfg.sourceMap = true
+                            jsMap = coffee.compile data, cfg
+                            srcMap = jsMap.v3SourceMap
+                            mapFile = "#{targetFile}.map"
+                            atomic mapFile, srcMap, (err) ->
+                                if err then error "can't write sourceMap for #{targetFile}: #{err}"
+                            jsMap.js + "\n//# sourceMappingURL=#{path.basename mapFile}\n"
+                        else
+                            coffee.compile data
                 when 'styl'
                     stylus = require 'stylus'
                     stylus data
