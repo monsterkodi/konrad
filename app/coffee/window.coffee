@@ -19,7 +19,8 @@ window.onresize = -> ipc.send 'saveBounds'
 openFile = (f) ->
     f = resolve f
     childp.spawn '/usr/local/bin/ko', [f]
-
+    # childp.spawn '~/s/ko/bin/ko', [f]
+    
 tasks = {}
 
 clearLog   = -> $("main").innerHTML = "<img class='info' src='#{__dirname}/../img/about.png'>"
@@ -105,6 +106,7 @@ onMessage = (s) ->
 # 00000000  000   000  000   000   0000000   000   000  
 
 onError = (s) ->
+
     ipc.send 'showWin'
     ipc.send 'highlight'
     clearTasks()

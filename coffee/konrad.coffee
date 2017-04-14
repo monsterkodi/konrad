@@ -4,7 +4,7 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ dirExists, resolve, fs, os, path, noon, log, _
+{ dirExists, resolve, fs, os, path, noon, error, log, _
 }      = require 'kxk'
 colors = require 'colors'
 childp = require 'child_process'
@@ -273,10 +273,10 @@ konradError = (title, msg) ->
     splitted = stripped.split '\n'
     
     if title == 'compile error'
-        [sourceFile, rest] = splitted[0].split(': ')
-        log prettyTime(), "😡  #{prettyFilePath sourceFile}"
+        [sourceFile, rest] = splitted[0].split ': ' 
         splitted[0] = rest.bold.yellow
-        log splitted.join '\n'
+        errStr = splitted.join '\n'
+        log prettyTime(), "😡  #{prettyFilePath sourceFile}\n#{errStr}"
     else
         log "#{title.bold.yellow} #{String(stripped).red}"
     false
@@ -373,8 +373,8 @@ build = (sourceFile, cb) ->
                 else 
                     throw "don't know how to build files with extname .#{ext.bold}!".yellow
                     
-        catch err
-            return konradError 'compile error', err
+        catch e
+            return konradError 'compile error', e
 
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 
