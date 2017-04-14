@@ -3,19 +3,13 @@
 # 000000000  000000000  000  000 0 000
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
-{
-fileExists,
-resolve,
-about,
-prefs,
-log
+
+{ fileExists, resolve, about, prefs, noon, fs, log
 }        = require 'kxk'
 pkg      = require '../package.json'
 childp   = require 'child_process'
 electron = require 'electron'
 colors   = require 'colors'
-noon     = require 'noon'
-fs       = require 'fs'
 app      = electron.app
 Window   = electron.BrowserWindow
 Tray     = electron.Tray

@@ -268,7 +268,7 @@ dirty = (sourceFile, targetFile) ->
 # 000       000   000  000   000  000   000  000   000
 # 00000000  000   000  000   000   0000000   000   000
 
-error = (title, msg) ->
+konradError = (title, msg) ->
     stripped = String(msg).strip
     splitted = stripped.split '\n'
     
@@ -374,7 +374,7 @@ build = (sourceFile, cb) ->
                     throw "don't know how to build files with extname .#{ext.bold}!".yellow
                     
         catch err
-            return error "compile error #{err}" 
+            return konradError 'compile error', err
 
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 
@@ -614,8 +614,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             encoding: 'utf8'
             stdio: 'inherit'
     catch err
-        error "command error", "command #{cmd.bold.yellow} #{'failed!'.red}"
-        return false
+        return konradError "command error", "command #{cmd.bold.yellow} #{'failed!'.red}"
     true
 
 # 00000000   000   000  000   000

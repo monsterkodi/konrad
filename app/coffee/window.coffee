@@ -3,15 +3,9 @@
 # 0000000    000   000  000 0 000  0000000    000000000  000   000  
 # 000  000   000   000  000  0000  000   000  000   000  000   000  
 # 000   000   0000000   000   000  000   000  000   000  0000000    
-{
-unresolve,
-resolve,
-keyinfo,
-scheme,
-prefs,
-log,
-$}        = require 'kxk'
-_         = require 'lodash'
+
+{ unresolve, resolve, keyinfo, scheme, prefs, log, $, _ 
+}         = require 'kxk'
 childp    = require 'child_process'
 electron  = require 'electron'
 moment    = require 'moment'
