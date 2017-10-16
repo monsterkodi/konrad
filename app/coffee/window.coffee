@@ -143,7 +143,7 @@ document.onkeydown = (event) ->
     {mod, key, combo} = keyinfo.forEvent event
     switch combo
         when 'k'                  then clearTasks()
-        when 'esc'                then window.close()
+        when 'esc', 'w'           then window.close()
         when 'command+i', 'i'     then scheme.toggle()
         when 'command+c'          then document.execCommand 'copy' 
         when 'command+alt+i'      then ipc.send 'openDevTools'
