@@ -4,8 +4,8 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{ fileExists, resolve, about, prefs, noon, fs, log
-}        = require 'kxk'
+{ fileExists, resolve, about, prefs, first, noon, fs, log } = require 'kxk'
+
 pkg      = require '../package.json'
 childp   = require 'child_process'
 electron = require 'electron'
@@ -15,6 +15,7 @@ Window   = electron.BrowserWindow
 Tray     = electron.Tray
 Menu     = electron.Menu
 ipc      = electron.ipcMain
+dialog   = electron.dialog
 konrad   = null
 win      = null
 tray     = null
@@ -59,7 +60,7 @@ if args.verbose
 # 000        000   000  000       000            000
 # 000        000   000  00000000  000       0000000 
 
-prefs.init shortcut: 'F5'
+prefs.init shortcut: 'command+F2'
 
 if args.prefs
     log colors.yellow.bold 'prefs'
@@ -85,9 +86,12 @@ ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else wi
 # 000  000   000   000  000  0000  000   000  000   000  000   000  
 # 000   000   0000000   000   000  000   000  000   000  0000000    
 
-startKonrad = ->
-    konrad = childp.spawn resolve('~/s/konrad/bin/konrad'), ['-vw'], 
-        cwd:    resolve '~/s'
+startKonrad = (rootDir) ->
+    
+    prefs.set 'rootDir', rootDir
+    
+    konrad = childp.spawn resolve('/usr/local/bin/konrad'), ['-vw'], 
+        cwd:    rootDir
         shell: '/usr/local/bin/bash'
         
     konrad.on 'close', (code) -> 
@@ -120,8 +124,19 @@ startKonrad = ->
                 log 'konrad output:', s
                 konradLastTask.push s
             
-    log 'konrad started'
+    log 'konrad started in', rootDir
 
+setRootDir = ->
+    
+    opts =         
+        title:      'Open'
+        properties: ['openDirectory']
+    
+    dialog.showOpenDialog opts, (dirs) => 
+        if dir = first dirs
+            konrad.kill()
+            startKonrad dir
+    
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
 #000000000  000  000 0 000  000   000  000   000  000000000
@@ -238,7 +253,9 @@ app.on 'ready', ->
     app.setName pkg.productName
     
     showWindow() if args.show
-    startKonrad()
+    
+    rootDir = prefs.get 'rootDir', resolve '~/s'
+    startKonrad rootDir
     
     # 00     00  00000000  000   000  000   000
     # 000   000  000       0000  000  000   000
@@ -254,6 +271,10 @@ app.on 'ready', ->
                 click:        showAbout
             ,
                 type: 'separator'
+            ,                
+                label:       'Set Dir...'
+                accelerator:  'Command+o'
+                click:        setRootDir
             ,
                 label:       'Clear Log'
                 accelerator: 'Command+K'

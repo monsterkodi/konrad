@@ -19,7 +19,6 @@ window.onresize = -> ipc.send 'saveBounds'
 openFile = (f) ->
     f = resolve f
     childp.spawn '/usr/local/bin/ko', [f]
-    # childp.spawn '~/s/ko/bin/ko', [f]
     
 tasks = {}
 
