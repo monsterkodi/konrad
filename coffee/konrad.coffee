@@ -9,7 +9,7 @@
 }      = require 'kxk'
 colors = require 'colors'
 childp = require 'child_process'
-atomic = require 'write-file-atomic' 
+atomic = require 'write-file-atomic'
 pkg    = require "#{__dirname}/../package"
 
 args   = require('karg') """
@@ -51,10 +51,10 @@ if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
     args.run = true # makes run the default action if no other action is set
 
 # 0000000    00000000  00000000   0000000   000   000  000      000000000   0000000
-# 000   000  000       000       000   000  000   000  000         000     000     
-# 000   000  0000000   000000    000000000  000   000  000         000     0000000 
+# 000   000  000       000       000   000  000   000  000         000     000
+# 000   000  0000000   000000    000000000  000   000  000         000     0000000
 # 000   000  000       000       000   000  000   000  000         000          000
-# 0000000    00000000  000       000   000   0000000   0000000     000     0000000 
+# 0000000    00000000  000       000   000   0000000   0000000     000     0000000
 
 opt = noon.parse """
 ignore
@@ -74,10 +74,10 @@ pug     . ext html . replace .. /pug/ /js/
 # 000   000  00000000  0000000    0000000   0000000      0      00000000
 
 slashreg = new RegExp "\\\\", 'g'
-slashpath = (p) -> 
-    p = p.replace slashreg, "/" if path.sep == "\\" 
+slashpath = (p) ->
+    p = p.replace slashreg, "/" if path.sep == "\\"
     p
-    
+
 slashjoin = -> [].map.call(arguments, (p) -> slashpath p).join "/"
 
 dirname = (p) -> slashpath path.dirname p
@@ -89,8 +89,9 @@ dirname = (p) -> slashpath path.dirname p
 #  0000000   0000000   000   000  000       000   0000000
 
 config = (p) ->
-    while dirname(p).length and dirname(p) not in ['.', '/']
+    while dirname(p).length and dirname(p) not in ['.', '/'] and not /^\w\:\/$/.test dirname(p)
         p = dirname p
+
         if fs.existsSync slashjoin p, '.konrad.noon'
             o = _.defaultsDeep noon.load(slashjoin p, '.konrad.noon'), opt
             if o.ignore?.map?
@@ -144,7 +145,7 @@ prettyPath = (p, c=colors.yellow) ->
     p.split('/').map((n) -> c(n)).join c('/').dim
 
 prettyFilePath = (p, c=colors.yellow) ->
-    p = p.replace os.homedir(), "~" 
+    p = p.replace os.homedir(), "~"
     if dirname(p) not in ['.', '/']
         "#{prettyPath dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
     else
@@ -165,9 +166,9 @@ prettyTime = () ->
     else
         ''
 
-#  0000000   00000000    0000000   0000000    000  00000000 
+#  0000000   00000000    0000000   0000000    000  00000000
 # 000   000  000   000  000        000   000  000  000   000
-# 000000000  0000000    000  0000  000   000  000  0000000  
+# 000000000  0000000    000  0000  000   000  000  0000000
 # 000   000  000   000  000   000  000   000  000  000   000
 # 000   000  000   000   0000000   0000000    000  000   000
 
@@ -180,12 +181,12 @@ argDir = () ->
         if dirExists d
             return d
     resolve '.'
-    
+
 argDirRel = () ->
     if argDir() == resolve '.'
         return ''
     relative argDir(), '.'
-    
+
 # 00000000   00000000  000       0000000   000000000  000  000   000  00000000
 # 000   000  000       000      000   000     000     000  000   000  000
 # 0000000    0000000   000      000000000     000     000   000 000   0000000
@@ -197,16 +198,16 @@ relative = (absolute, to) ->
     if not dirExists(d) then d = '.'
     r = slashpath path.relative d, absolute
 
-#  0000000  000   000   0000000   000   000  000      0000000  
+#  0000000  000   000   0000000   000   000  000      0000000
 # 000       000   000  000   000  000   000  000      000   000
 # 0000000   000000000  000   000  000   000  000      000   000
 #      000  000   000  000   000  000   000  000      000   000
-# 0000000   000   000   0000000    0000000   0000000  0000000  
+# 0000000   000   000   0000000    0000000   0000000  0000000
 
 should = (k, o, p) ->
 
-    return false if not o[k]? 
-    
+    return false if not o[k]?
+
     if _.isArray o[k]
         keys = o[k]
     else if _.isObject o[k]
@@ -221,7 +222,7 @@ should = (k, o, p) ->
             log prettyFilePath(relative(p), colors.gray), 'should '.blue+k.bold.blue if args.debug
             return true
     false
-    
+
 # 000000000   0000000   00000000    0000000   00000000  000000000
 #    000     000   000  000   000  000        000          000
 #    000     000000000  0000000    000  0000  0000000      000
@@ -246,9 +247,9 @@ target = (sourceFile) ->
     if o[ext]?.replace?
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
-        
+
     return if not o[ext]?.ext?
-    
+
     targetFile = slashjoin dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
 
 # 0000000    000  00000000   000000000  000   000
@@ -272,9 +273,9 @@ dirty = (sourceFile, targetFile) ->
 konradError = (title, msg) ->
     stripped = String(msg).strip
     splitted = stripped.split '\n'
-    
+
     if title == 'compile error'
-        [sourceFile, rest] = splitted[0].split ': ' 
+        [sourceFile, rest] = splitted[0].split ': '
         splitted[0] = rest.bold.yellow
         errStr = splitted.join '\n'
         log prettyTime(), "😡  #{prettyFilePath sourceFile}\n#{errStr}"
@@ -282,11 +283,11 @@ konradError = (title, msg) ->
         log "#{title.bold.yellow} #{String(stripped).red}"
     false
 
-# 0000000    000   000  000  000      0000000  
+# 0000000    000   000  000  000      0000000
 # 000   000  000   000  000  000      000   000
 # 0000000    000   000  000  000      000   000
 # 000   000  000   000  000  000      000   000
-# 0000000     0000000   000  0000000  0000000  
+# 0000000     0000000   000  0000000  0000000
 
 build = (sourceFile, cb) ->
 
@@ -336,13 +337,13 @@ build = (sourceFile, cb) ->
                         splitIndex     = toSource.lastIndexOf('./') + 2
                         sourceRoot     = toSource.slice 0, splitIndex - 4
                         relativeSource = toSource.substr splitIndex
-                        cfg = 
+                        cfg =
                             filename:      sourceFile
                             sourceMap:     true
                             generatedFile: path.basename targetFile
                             sourceRoot:    sourceRoot
                             sourceFiles:   [relativeSource]
-                        
+
                     switch o[ext]?.map
                         when 'inline'
                             cfg.inlineMap = true
@@ -371,16 +372,16 @@ build = (sourceFile, cb) ->
                     noon.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
                 when 'noon'
                     noon.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
-                else 
+                else
                     throw "don't know how to build files with extname .#{ext.bold}!".yellow
-                    
+
         catch e
             return konradError 'compile error', e
 
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 
             if err or compiled != targetData
-                
+
                 writeCompiled sourceFile, targetFile, compiled, cb
 
             else
@@ -399,9 +400,9 @@ build = (sourceFile, cb) ->
 # 00     00  000   000  000     000     00000000
 
 writeCompiled = (sourceFile, targetFile, compiled, cb) ->
-    
+
     fs.ensureDir path.dirname(targetFile), (err) ->
-        
+
         if err then return error "can't create output directory #{path.dirname(targetFile).bold.yellow}".bold.red
 
         atomic targetFile, compiled, (err) ->
@@ -411,12 +412,12 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
                     log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
                 else
                     log prettyTime(), "👍  #{prettyFilePath targetFile}"
-        
+
             if resolve(targetFile) == slashpath __filename
                 reload()
             else if cb?
                 cb sourceFile, targetFile
-    
+
 
 # 000   000   0000000   000      000   000
 # 000 0 000  000   000  000      000  000
@@ -433,7 +434,7 @@ walk = (opt, cb) ->
     walkdir = require 'walkdir'
     try
         walkdir.sync argDir(), (wp) ->
-            
+
             p = slashpath wp
             o = config p
 
@@ -446,7 +447,7 @@ walk = (opt, cb) ->
                 cb p if opt.all
                 @ignore wp
                 return
-                
+
             if path.extname(p).substr(1) in _.keys o
                 cb p, target p
             else
@@ -458,38 +459,40 @@ walk = (opt, cb) ->
     catch err
         error "walk error #{err}"
 
-# 000  000   000  00000000   0000000 
+# 000  000   000  00000000   0000000
 # 000  0000  000  000       000   000
 # 000  000 0 000  000000    000   000
 # 000  000  0000  000       000   000
-# 000  000   000  000        0000000 
+# 000  000   000  000        0000000
 
 if args.info
+
     log '○● info'.gray
 
     walk opt, (sourceFile, targetFile) ->
+
         if targetFile
             if dirty sourceFile, targetFile
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.yellow), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
             else if args.verbose
                 log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
-    
-#  0000000  000000000   0000000   000000000  000   000   0000000  
-# 000          000     000   000     000     000   000  000       
-# 0000000      000     000000000     000     000   000  0000000   
-#      000     000     000   000     000     000   000       000  
-# 0000000      000     000   000     000      0000000   0000000   
+
+#  0000000  000000000   0000000   000000000  000   000   0000000
+# 000          000     000   000     000     000   000  000
+# 0000000      000     000000000     000     000   000  0000000
+#      000     000     000   000     000     000   000       000
+# 0000000      000     000   000     000      0000000   0000000
 
 gitStatus = (sourceFile) ->
-    
+
     gitDir = dirname sourceFile
     git = require('simple-git') gitDir
     git.status (err,status) ->
-        
+
         if err then return error "git error #{err}"
-        
+
         changes = []
-                
+
         for k,v of _.clone status
             if _.isEmpty status[k]
                 delete status[k]
@@ -503,7 +506,7 @@ gitStatus = (sourceFile) ->
             if k in _.keys m
                 for f in status[k] ? []
                     d = argDir()
-                    
+
                     arglist = _.filter args.arguments, (a) -> a not in ['fetch']
                     if arglist.length
                         filtered = true
@@ -544,7 +547,7 @@ gitStatus = (sourceFile) ->
         relPath = relative gitDir, resolve '.'
         relPath = '.' if relPath == ''
         gitPath = prettyFilePath relPath, colors.white
-        
+
         aheadBehind = () ->
             if 'fetch' in args.arguments
                 childp.execSync "git fetch",
@@ -560,9 +563,9 @@ gitStatus = (sourceFile) ->
                 st = st.replace /ahead (.*)/, "▲ $1".yellow.bold.bgBlack
                 st = st.replace /behind (.*)/, "▼ $1".red.bold.bgBlack
                 st = _.padEnd st, 4
-            else 
+            else
                 ''
-            
+
         log ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
         for c in changes
             log c
@@ -570,25 +573,25 @@ gitStatus = (sourceFile) ->
 if args.diff
     args.status  = true
     args.verbose = true
-        
+
 if args.status
     optall = _.defaults opt, all: true
     gitcount = 0
-    
+
     walk optall, (sourceFile, targetFile) ->
 
         if not targetFile
-        
+
             if path.basename(sourceFile) == '.git'
                 gitStatus sourceFile
                 gitcount += 1
-                
+
             if dirExists sourceFile
                 for i in opt.ignore
                     if i.test sourceFile
                         return false
         true
-        
+
     if not gitcount
         gitup = path.parse argDir()
         while gitup.base
@@ -598,13 +601,13 @@ if args.status
                 break
             gitup = path.parse gitup.dir
 
-#  0000000  00     00  0000000  
+#  0000000  00     00  0000000
 # 000       000   000  000   000
 # 000       000000000  000   000
 # 000       000 0 000  000   000
-#  0000000  000   000  0000000  
+#  0000000  000   000  0000000
 
-runcmd = (cmd, cmdargs, cwd) -> 
+runcmd = (cmd, cmdargs, cwd) ->
     try
         cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
         command = "#{cmdpath} #{cmdargs}"
@@ -643,7 +646,7 @@ if args.run or args.rebuild
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
     if args[cmd]
-        
+
         if not runcmd cmd, args.arguments.join ' ', process.cwd()
             break
 
@@ -676,7 +679,7 @@ reload = ->
     process.exit 0
 
 if args.watch
-    
+
     # 000   000   0000000   000000000   0000000  000   000
     # 000 0 000  000   000     000     000       000   000
     # 000000000  000000000     000     000       000000000
@@ -690,7 +693,7 @@ if args.watch
         d = args.arguments[0] ? '.'
         v = " ● v#{pkg.version}".dim.gray
         log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
-        watcher = require('chokidar').watch d, 
+        watcher = require('chokidar').watch d,
             ignored:        wlk.ignore
             ignoreInitial:  true
             usePolling:     false
@@ -713,4 +716,3 @@ if args.watch
             build sourceFile, test
         else
             test sourceFile
-
