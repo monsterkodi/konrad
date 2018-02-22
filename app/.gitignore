@@ -3,8 +3,7 @@ css
 bin/*.js
 bin/*.json
 node_modules
-*-darwin-x64
+*-x64
 *.json
 *.html
 *.dmg
-yarn.lock

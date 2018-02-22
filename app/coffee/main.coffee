@@ -64,8 +64,9 @@ prefs.init shortcut: 'command+F2'
 
 if args.prefs
     log colors.yellow.bold 'prefs'
-    if fileExists prefs.file
-        log noon.stringify noon.load(prefs.file), colors:true
+    log colors.green.bold prefs.store.file
+    if fileExists prefs.store.file
+        log noon.stringify noon.load(prefs.store.file), colors:true
 
 # 000  00000000    0000000
 # 000  000   000  000     
@@ -90,9 +91,9 @@ startKonrad = (rootDir) ->
     
     prefs.set 'rootDir', rootDir
     
-    konrad = childp.spawn resolve('/usr/local/bin/konrad'), ['-vw'], 
+    konrad = childp.spawn "konrad -vw",
         cwd:    rootDir
-        shell: '/usr/local/bin/bash'
+        shell:  true
         
     konrad.on 'close', (code) -> 
         log "konrad exit code: #{code}"
@@ -192,6 +193,7 @@ createWindow = (ipcMsg, ipcArg) ->
         useContentSize:  true
         fullscreenable:  false
         show:            false
+        autoHideMenuBar: true
         
     bounds = prefs.get 'bounds'
     win.setBounds bounds if bounds?
@@ -219,7 +221,9 @@ createWindow = (ipcMsg, ipcArg) ->
         konradLastTask = []
     win
 
-saveBounds = -> if win? then prefs.set 'bounds', win.getBounds()
+saveBounds = -> 
+  if win? 
+      prefs.set 'bounds', win.getBounds()
     
 #  0000000   0000000     0000000   000   000  000000000
 # 000   000  000   000  000   000  000   000     000   
@@ -246,7 +250,8 @@ app.on 'window-all-closed', (event) -> event.preventDefault()
 
 app.on 'ready', ->
     
-    tray = new Tray path.join __dirname, '..', 'img', 'menu.png'
+    icon = os.platform() == 'win32' and 'menu@2x.png' or 'menu.png'
+    tray = new Tray path.join __dirname, '..', 'img', icon
     tray.on 'click', toggleWindow
     app.dock?.hide()
     
@@ -256,6 +261,8 @@ app.on 'ready', ->
     
     rootDir = prefs.get 'rootDir', resolve '~/s'
     startKonrad rootDir
+
+    electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
     
     # 00     00  00000000  000   000  000   000
     # 000   000  000       0000  000  000   000
@@ -263,82 +270,132 @@ app.on 'ready', ->
     # 000 0 000  000       000  0000  000   000
     # 000   000  00000000  000   000   0000000 
     
-    Menu.setApplicationMenu Menu.buildFromTemplate [
-            label: app.getName()
-            submenu: [
-                label:        "About #{pkg.name}"
-                accelerator:  'Command+.'
-                click:        showAbout
+    if os.platform() != 'win32'
+        Menu.setApplicationMenu Menu.buildFromTemplate [
+                label: app.getName()
+                submenu: [
+                    label:        "About #{pkg.name}"
+                    accelerator:  'Command+.'
+                    click:        showAbout
+                ,
+                    type: 'separator'
+                ,                
+                    label:       'Set Dir...'
+                    accelerator:  'Command+o'
+                    click:        setRootDir
+                ,
+                    label:       'Clear Log'
+                    accelerator: 'Command+K'
+                    click:        -> win?.webContents.send 'clearLog'
+                ,
+                    type: 'separator'
+                ,
+                    label:       "Hide #{pkg.productName}"
+                    accelerator: 'Cmd+H'
+                    role:        'hide'
+                ,
+                    label:       'Hide Others'
+                    accelerator: 'Cmd+Alt+H'
+                    role:        'hideothers'
+                ,
+                    type: 'separator'
+                ,
+                    label:       'Quit'
+                    accelerator: 'Command+Q'
+                    click:        -> app.quit()
+                ]
             ,
-                type: 'separator'
-            ,                
-                label:       'Set Dir...'
-                accelerator:  'Command+o'
-                click:        setRootDir
-            ,
-                label:       'Clear Log'
-                accelerator: 'Command+K'
-                click:        -> win?.webContents.send 'clearLog'
-            ,
-                type: 'separator'
-            ,
-                label:       "Hide #{pkg.productName}"
-                accelerator: 'Cmd+H'
-                role:        'hide'
-            ,
-                label:       'Hide Others'
-                accelerator: 'Cmd+Alt+H'
-                role:        'hideothers'
-            ,
-                type: 'separator'
-            ,
-                label:       'Quit'
-                accelerator: 'Command+Q'
-                click:        -> app.quit()
+                # 000   000  000  000   000  0000000     0000000   000   000
+                # 000 0 000  000  0000  000  000   000  000   000  000 0 000
+                # 000000000  000  000 0 000  000   000  000   000  000000000
+                # 000   000  000  000  0000  000   000  000   000  000   000
+                # 00     00  000  000   000  0000000     0000000   00     00
+                
+                label: 'Window'
+                submenu: [
+                    label:       'Minimize'
+                    accelerator: 'Alt+Cmd+M'
+                    click:       -> win?.minimize()
+                ,
+                    type: 'separator'
+                ,                            
+                    label:       'Close Window'
+                    accelerator: 'Cmd+W'
+                    click:       -> win?.close()
+                ,
+                    type: 'separator'
+                ,                            
+                    label:       'Bring All to Front'
+                    accelerator: 'Alt+Cmd+`'
+                    click:       -> win?.show()
+                ,
+                    type: 'separator'
+                ,   
+                    label:       'Reload Window'
+                    accelerator: 'Ctrl+Alt+Cmd+L'
+                    click:       -> win?.webContents.reloadIgnoringCache()
+                ,                
+                    label:       'Toggle DevTools'
+                    accelerator: 'Cmd+Alt+I'
+                    click:       -> win?.webContents.openDevTools()
+                ]
             ]
-        ,
-            # 000   000  000  000   000  0000000     0000000   000   000
-            # 000 0 000  000  0000  000  000   000  000   000  000 0 000
-            # 000000000  000  000 0 000  000   000  000   000  000000000
-            # 000   000  000  000  0000  000   000  000   000  000   000
-            # 00     00  000  000   000  0000000     0000000   00     00
             
-            label: 'Window'
-            submenu: [
-                label:       'Minimize'
-                accelerator: 'Alt+Cmd+M'
-                click:       -> win?.minimize()
+    else
+        Menu.setApplicationMenu Menu.buildFromTemplate [
+                label: app.getName()
+                submenu: [
+                    label:        "About #{pkg.name}"
+                    accelerator:  'Ctrl+.'
+                    click:        showAbout
+                ,
+                    type: 'separator'
+                ,                
+                    label:       'Set Dir...'
+                    accelerator:  'Ctrl+o'
+                    click:        setRootDir
+                ,
+                    label:       'Clear Log'
+                    accelerator: 'Ctrl+K'
+                    click:        -> win?.webContents.send 'clearLog'
+                ,
+                    type: 'separator'
+                ,
+                    label:       'Quit'
+                    accelerator: 'Ctrl+Q'
+                    click:        -> app.quit()
+                ]
             ,
-                label:       'Maximize'
-                accelerator: 'Cmd+Shift+m'
-                click:       -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
-            ,
-                type: 'separator'
-            ,                            
-                label:       'Close Window'
-                accelerator: 'Cmd+W'
-                click:       -> win?.close()
-            ,
-                type: 'separator'
-            ,                            
-                label:       'Bring All to Front'
-                accelerator: 'Alt+Cmd+`'
-                click:       -> win?.show()
-            ,
-                type: 'separator'
-            ,   
-                label:       'Reload Window'
-                accelerator: 'Ctrl+Alt+Cmd+L'
-                click:       -> win?.webContents.reloadIgnoringCache()
-            ,                
-                label:       'Toggle DevTools'
-                accelerator: 'Cmd+Alt+I'
-                click:       -> win?.webContents.openDevTools()
+                # 000   000  000  000   000  0000000     0000000   000   000
+                # 000 0 000  000  0000  000  000   000  000   000  000 0 000
+                # 000000000  000  000 0 000  000   000  000   000  000000000
+                # 000   000  000  000  0000  000   000  000   000  000   000
+                # 00     00  000  000   000  0000000     0000000   00     00
+                
+                label: 'Window'
+                submenu: [
+                    label:       'Minimize'
+                    accelerator: 'Ctrl+Alt+M'
+                    click:       -> win?.minimize()
+                ,
+                    type: 'separator'
+                ,                            
+                    label:       'Close Window'
+                    accelerator: 'Ctrl+W'
+                    click:       -> win?.close()
+                ,
+                    type: 'separator'
+                ,   
+                    label:       'Reload Window'
+                    accelerator: 'Ctrl+Alt+L'
+                    click:       -> win?.webContents.reloadIgnoringCache()
+                ,                
+                    label:       'Toggle DevTools'
+                    accelerator: 'Ctrl+Alt+I'
+                    click:       -> win?.webContents.openDevTools()
+                ]
             ]
-        ]
         
-    electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
-
 if app.makeSingleInstance( -> showWindow() )
     app.quit()
     
