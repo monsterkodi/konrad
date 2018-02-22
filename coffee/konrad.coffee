@@ -610,7 +610,10 @@ if args.status
 runcmd = (cmd, cmdargs, cwd) ->
     try
         cmdpath = resolve path.join __dirname, '..', 'bin', cmd
-        command = "\"C:\\Program\ Files\\Git\\bin\\bash.exe\" \"#{cmdpath}\" #{cmdargs}"
+        if os.platform() == 'win32'
+            command = "\"C:\\Program\ Files\\Git\\bin\\bash.exe\" \"#{cmdpath}\" #{cmdargs}"
+        else
+            command = "#{cmdpath} #{cmdargs}"
         if args.verbose
             log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
         childp.execSync command,
