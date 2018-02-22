@@ -330,7 +330,7 @@ build = (sourceFile, cb) ->
 
             compiled = switch ext
                 when 'coffee'
-                    coffee = require 'coffee-script'
+                    coffee = require 'coffeescript'
                     o = config sourceFile
                     if o[ext]?.map in ['inline', 'file']
                         toSource       = path.relative targetFile, sourceFile
