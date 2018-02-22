@@ -609,16 +609,17 @@ if args.status
 
 runcmd = (cmd, cmdargs, cwd) ->
     try
-        cmdpath = resolve "#{__dirname}/../bin/#{cmd}"
-        command = "#{cmdpath} #{cmdargs}"
+        cmdpath = resolve path.join __dirname, '..', 'bin', cmd
+        command = "\"C:\\Program\ Files\\Git\\bin\\bash.exe\" \"#{cmdpath}\" #{cmdargs}"
         if args.verbose
             log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
         childp.execSync command,
             cwd: cwd
             encoding: 'utf8'
-            stdio: 'inherit'
+            stdio:    'inherit'
+            shell:    true
     catch err
-        return konradError "command error", "command #{cmd.bold.yellow} #{'failed!'.red}"
+        return konradError "command error", "command '#{cmd.bold.yellow}' (#{command.bold.blue}) #{'failed!'.red} #{err}"
     true
 
 # 00000000   000   000  000   000

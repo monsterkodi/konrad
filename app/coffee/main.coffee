@@ -4,7 +4,7 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{ fileExists, resolve, about, prefs, first, noon, fs, log } = require 'kxk'
+{ fileExists, resolve, about, prefs, first, noon, os, path, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 childp   = require 'child_process'
@@ -146,7 +146,7 @@ setRootDir = ->
 toggleWindow = ->
     if win?.isVisible() and win?.isFocused()
         win.hide()    
-        app.dock.hide()        
+        app.dock?.hide()        
     else
         showWindow()
 
@@ -159,7 +159,7 @@ showWindow = (inactive) ->
     else
         showInactive = inactive
         createWindow()
-    app.dock.show()
+    app.dock?.show()
     
 screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
 
@@ -199,10 +199,10 @@ createWindow = (ipcMsg, ipcArg) ->
     win.loadURL "file://#{__dirname}/index.html"
     win.webContents.openDevTools() if args.DevTools
     win.on 'closed', -> win = null
-    win.on 'close', -> app.dock.hide()
-    win.on 'hide', -> app.dock.hide()
+    win.on 'close', -> app.dock?.hide()
+    win.on 'hide', -> app.dock?.hide()
     win.on 'ready-to-show', ->         
-        app.dock.show()
+        app.dock?.show()
         if showInactive
             win.showInactive()
             showInactive = false
@@ -246,9 +246,9 @@ app.on 'window-all-closed', (event) -> event.preventDefault()
 
 app.on 'ready', ->
     
-    tray = new Tray "#{__dirname}/../img/menu.png"
+    tray = new Tray path.join __dirname, '..', 'img', 'menu.png'
     tray.on 'click', toggleWindow
-    app.dock.hide() if app.dock
+    app.dock?.hide()
     
     app.setName pkg.productName
     
