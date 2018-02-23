@@ -5,7 +5,7 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ dirExists, resolve, fs, os, path, noon, error, log, _
+{ dirExists, fileExists, swapExt, resolve, fs, os, path, noon, error, log, _ 
 }      = require 'kxk'
 colors = require 'colors'
 childp = require 'child_process'
@@ -67,6 +67,8 @@ styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
 pug     . ext html . replace .. /pug/ /js/
 """
 
+# log "default config:", opt
+
 # 00000000   00000000   0000000   0000000   000      000   000  00000000
 # 000   000  000       000       000   000  000      000   000  000
 # 0000000    0000000   0000000   000   000  000       000 000   0000000
@@ -91,7 +93,6 @@ dirname = (p) -> slashpath path.dirname p
 config = (p) ->
     while dirname(p).length and dirname(p) not in ['.', '/'] and not /^\w\:\/$/.test dirname(p)
         p = dirname p
-
         if fs.existsSync slashjoin p, '.konrad.noon'
             o = _.defaultsDeep noon.load(slashjoin p, '.konrad.noon'), opt
             if o.ignore?.map?
@@ -413,7 +414,7 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
                 else
                     log prettyTime(), "👍  #{prettyFilePath targetFile}"
 
-            if resolve(targetFile) == slashpath __filename
+            if slashpath(resolve(targetFile)) == slashpath __filename
                 reload()
             else if cb?
                 cb sourceFile, targetFile
@@ -668,18 +669,24 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 watcher = null
 
 reload = ->
+    
     return if not watcher?
     watcher.close()
+    
     log prettyTime(), '🔧  reload'.gray if not args.quiet
-    arg = ''
+    
+    arg = '-w'
     arg += ' -v' if args.verbose
     arg += ' -D' if args.debug
     arg += ' -q' if args.quiet
-    childp.execSync "/usr/bin/env node #{__filename} #{arg}",
+    
+    childp.execSync "node #{__filename} #{arg}",
         cwd:      process.cwd()
         encoding: 'utf8'
         stdio:    'inherit'
+        shell:    true
     log 'exit'.yellow.bold if not args.quiet
+    
     process.exit 0
 
 if args.watch
@@ -709,7 +716,7 @@ if args.watch
 
     watch (sourceFile) ->
 
-        sourceFile = resolve sourceFile
+        sourceFile = slashpath resolve sourceFile
         o = config sourceFile
 
         test = (source) ->
