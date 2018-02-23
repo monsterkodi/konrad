@@ -5,8 +5,7 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ dirExists, fileExists, swapExt, resolve, fs, os, path, noon, error, log, _ 
-}      = require 'kxk'
+{ dirExists, fileExists, swapExt, resolve, fs, os, path, noon, error, log, _ } = require 'kxk'
 colors = require 'colors'
 childp = require 'child_process'
 atomic = require 'write-file-atomic'

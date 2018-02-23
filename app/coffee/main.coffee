@@ -10,6 +10,7 @@ pkg      = require '../package.json'
 childp   = require 'child_process'
 electron = require 'electron'
 colors   = require 'colors'
+treekill = require 'tree-kill'
 app      = electron.app
 Window   = electron.BrowserWindow
 Tray     = electron.Tray
@@ -60,7 +61,7 @@ if args.verbose
 # 000        000   000  000       000            000
 # 000        000   000  00000000  000       0000000 
 
-prefs.init shortcut: 'command+F2'
+prefs.init shortcut: 'CmdOrCtrl+F2'
 
 if args.prefs
     log colors.yellow.bold 'prefs'
@@ -91,16 +92,21 @@ startKonrad = (rootDir) ->
     
     prefs.set 'rootDir', rootDir
     
-    konrad = childp.spawn "konrad -vw",
-        cwd:    rootDir
-        shell:  true
+    if konrad?
+        treekill konrad.pid, 'SIGKILL'
+    
+    konrad = childp.spawn "konrad", ['-vw'],
+        cwd:      rootDir
+        shell:    true
+        detached: false
         
-    konrad.on 'close', (code) -> 
-        log "konrad exit code: #{code}"
+    konrad.on 'exit', (code, signal) -> 
+        if not konrad
+            app.exit()
+        
+    konrad.on 'close', (code, signal) -> 
         if win?
             win.webContents.send 'konradExit', "konrad exit code: #{code}"
-        else
-            createWindow 'konradExit', "konrad exit code: #{code}"
     
     konrad.stderr.on 'data', (data) ->
         s = data.toString()
@@ -127,6 +133,13 @@ startKonrad = (rootDir) ->
             
     log 'konrad started in', rootDir
 
+quitKonrad = ->
+    
+    if konrad?
+        log 'killing konrad', konrad?.pid
+        treekill konrad.pid, 'SIGKILL'
+        konrad = null
+
 setRootDir = ->
     
     opts =         
@@ -135,7 +148,6 @@ setRootDir = ->
     
     dialog.showOpenDialog opts, (dirs) => 
         if dir = first dirs
-            konrad.kill()
             startKonrad dir
     
 #000   000  000  000   000  0000000     0000000   000   000
@@ -257,8 +269,6 @@ app.on 'ready', ->
     
     app.setName pkg.productName
     
-    showWindow() if args.show
-    
     rootDir = prefs.get 'rootDir', resolve '~/s'
     startKonrad rootDir
 
@@ -302,7 +312,7 @@ app.on 'ready', ->
                 ,
                     label:       'Quit'
                     accelerator: 'Command+Q'
-                    click:        -> app.quit()
+                    click:        quitKonrad
                 ]
             ,
                 # 000   000  000  000   000  0000000     0000000   000   000
@@ -363,7 +373,7 @@ app.on 'ready', ->
                 ,
                     label:       'Quit'
                     accelerator: 'Ctrl+Q'
-                    click:        -> app.quit()
+                    click:        quitKonrad
                 ]
             ,
                 # 000   000  000  000   000  0000000     0000000   000   000
@@ -395,6 +405,8 @@ app.on 'ready', ->
                     click:       -> win?.webContents.openDevTools()
                 ]
             ]
+        
+    showWindow() if args.show
         
 if app.makeSingleInstance( -> showWindow() )
     app.quit()

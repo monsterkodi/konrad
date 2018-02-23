@@ -1,6 +1,6 @@
 name            konrad
 productName     konrad
-version         0.13.3
+version         0.14.0
 description     builds my stuff
 license         Unlicense
 main            js/main.js
@@ -18,10 +18,12 @@ devDependencies
 dependencies
                 colors          ^1.1.2
                 font-awesome    ^4.7.0
+                karg            ^1.0.10
                 keycode         ^2.1.9
                 kxk             ^0.20.0
                 lodash          ^4.17.5
                 moment          ^2.19.1
                 noon            ^1.1.0
                 opener          ^1.4.3
+                tree-kill       ^1.2.0
                 write-file-atomic  ^2.3.0
