@@ -7,7 +7,7 @@
     "konrad": "./bin/konrad"
   },
   "scripts": {
-    "compile": "coffee -o js -c coffee/konrad.coffee"
+    "build": "coffee -o js -c coffee/konrad.coffee"
   },
   "repository": {
     "type": "git",

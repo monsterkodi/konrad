@@ -5,7 +5,7 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ fs, os, slash, atomic, noon, error, childp, log, _ } = require 'kxk'
+{ atomic, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
 
 colors = require 'colors'
 pkg    = require "#{__dirname}/../package"
@@ -137,7 +137,7 @@ prettyFilePath = (p, c=colors.yellow) ->
         "#{prettyFile slash.basename(p), c}"
 
 prettyFile = (f, c=colors.yellow) ->
-    "#{c(slash.basename(f, slash.extname(f))).bold}#{prettyExt slash.extname(f), c}"
+    "#{c(slash.fileName(f)).bold}#{prettyExt slash.extname(f), c}"
 
 prettyExt = (e, c=colors.yellow) ->
     if e.length then c('.').dim + c(e.substr 1) else ''
@@ -205,7 +205,8 @@ should = (k, o, p) ->
 #    000     000   000  000   000   0000000   00000000     000
 
 target = (sourceFile) ->
-    ext = slash.extname(sourceFile).substr(1)
+    
+    ext = slash.ext sourceFile
     o = config sourceFile
 
     if o[ext]?.filter?
@@ -225,7 +226,7 @@ target = (sourceFile) ->
 
     return if not o[ext]?.ext?
 
-    targetFile = slash.join slash.dirname(targetFile), slash.basename(targetFile, slash.extname(targetFile)) + '.' + o[ext].ext
+    targetFile = slash.join slash.dirname(targetFile), slash.fileName(targetFile) + '.' + o[ext].ext
 
 # 0000000    000  00000000   000000000  000   000
 # 000   000  000  000   000     000      000 000
@@ -234,6 +235,7 @@ target = (sourceFile) ->
 # 0000000    000  000   000     000        000
 
 dirty = (sourceFile, targetFile) ->
+    
     if not fs.existsSync targetFile then return true
     ss = fs.statSync sourceFile
     ts = fs.statSync targetFile
@@ -246,6 +248,7 @@ dirty = (sourceFile, targetFile) ->
 # 00000000  000   000  000   000   0000000   000   000
 
 konradError = (title, msg) ->
+    
     stripped = String(msg).strip
     splitted = stripped.split '\n'
 
@@ -384,11 +387,11 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
             if err then return error "can't write #{targetFile.bold.yellow}".bold.red
             if not args.quiet
                 if args.verbose
-                    log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
+                    log prettyTime(), "👍  #{prettyFilePath slash.tilde sourceFile} #{'►'.bold.yellow} #{prettyFilePath slash.tilde targetFile}"
                 else
-                    log prettyTime(), "👍  #{prettyFilePath targetFile}"
+                    log prettyTime(), "👍  #{prettyFilePath slash.tilde targetFile}"
 
-            if slash.samePath targetFile, __filename
+            if slash.samePath slash.resolve(targetFile), __filename
                 reload()
             else if cb?
                 cb sourceFile, targetFile
@@ -423,7 +426,7 @@ walk = (opt, cb) ->
                 @ignore wp
                 return
 
-            if slash.extname(p).substr(1) in _.keys o
+            if slash.ext(p) in _.keys o
                 cb p, target p
             else
                 if opt.all
@@ -548,6 +551,7 @@ if args.diff
     args.verbose = true
 
 if args.status
+    
     optall = _.defaults opt, all: true
     gitcount = 0
 
@@ -581,6 +585,7 @@ if args.status
 #  0000000  000   000  0000000
 
 runcmd = (cmd, cmdargs, cwd) ->
+    
     try
         cmdpath = slash.resolve slash.join __dirname, '..', 'bin', cmd
         if os.platform() == 'win32'
@@ -612,13 +617,13 @@ if args.run or args.rebuild
         if targetFile
             isDirty = dirty sourceFile, targetFile
             if args.rebuild or isDirty
-                src = prettyFilePath(_.padEnd(slash.relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
-                tgt = prettyFilePath(slash.relative(targetFile), colors.green)
+                src = prettyFilePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
+                tgt = prettyFilePath(slash.relative(targetFile, argDir()), colors.green)
                 log src, "🔧  ", tgt
                 build sourceFile, (sourceFile, targetFile) ->
                     o = config targetFile
                     if should 'browserify', o, targetFile
-                        log prettyFilePath(_.padEnd(slash.relative(o.browserify.main), 40), colors.yellow), "🔧  ", prettyFilePath(slash.relative(o.browserify.out, argDir()), colors.blue)
+                        log prettyFilePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", prettyFilePath(slash.relative(o.browserify.out, argDir()), colors.blue)
                         runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", configPath 'browserify', slash.resolve targetFile
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
