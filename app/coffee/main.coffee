@@ -192,7 +192,7 @@ createWindow = (ipcMsg, ipcArg) ->
         bounds.x = parseInt (w-bounds.width)/2
         bounds.y = 0
 
-    win = new Window
+    cfg = 
         x:               bounds.x
         y:               bounds.y
         width:           bounds.width
@@ -207,10 +207,15 @@ createWindow = (ipcMsg, ipcArg) ->
         show:            false
         autoHideMenuBar: true
         
+    if os.platform() == 'win32'
+        cfg.icon = slash.path __dirname + '/../img/konrad.ico'
+        
+    win = new Window cfg
+        
     bounds = prefs.get 'bounds'
     win.setBounds bounds if bounds?
         
-    win.loadURL "file://#{__dirname}/index.html"
+    win.loadURL slash.fileUrl "#{__dirname}/index.html"
     win.webContents.openDevTools() if args.DevTools
     win.on 'closed', -> win = null
     win.on 'close', -> app.dock?.hide()
