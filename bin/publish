@@ -14,21 +14,7 @@ fi
 
 set -e
 
-# `dirname $0`/bump
-# `dirname $0`/commit
-
 VERSION=`sds version`
 
-# echo "tagging $VERSION"               | colorcat -sx
-# git tag -f -a -m "v$VERSION" $VERSION
-
-# echo 'pushing tag'                    | colorcat -sx
-# git push --tags -q
-
-echo 'npm publish'                    | colorcat -sx
-npm publish                           | colorcat -P `dirname $0`/../cc/npm.noon
-
-if [ -e `npm -g bin`/`sds name` -o  -e `yarn global bin`/`sds name` ]; then
-    echo "installing `sds name` globally" | colorcat -sp "(.*)( .* )(.*)  . x . fy . x"
-    npm install -g `sds -rp name`         | colorcat -sP `dirname $0`/../cc/npm.noon
-fi
+echo 'npm publish' | colorcat -sx
+npm publish        | colorcat -P `dirname $0`/../cc/npm.noon
