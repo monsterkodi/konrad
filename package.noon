@@ -1,6 +1,6 @@
 name          konrad
 description   builds my stuff
-version       0.14.0
+version       0.17.0
 main          js/konrad.js
 bin
               konrad  ./bin/konrad
@@ -22,7 +22,7 @@ dependencies
               coffeescript    ^2.2.2
               colors          ^1.1.2
               karg            >=1.0.10
-              kxk             ^0.20.0
+              kxk             ^0.23.2
               lodash          ^4.17.5
               mkpath          ^1.0.0
               noon            ^1.1.0

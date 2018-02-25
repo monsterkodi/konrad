@@ -4,7 +4,8 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000  
 # 000   000   0000000   000   000  000   000  000   000  0000000    
 
-{ unresolve, resolve, keyinfo, scheme, prefs, log, $, _ } = require 'kxk'
+{ slash, keyinfo, scheme, prefs, log, $, _ } = require 'kxk'
+
 childp    = require 'child_process'
 electron  = require 'electron'
 moment    = require 'moment'
@@ -16,12 +17,16 @@ scheme.set prefs.get 'scheme', 'dark'
 window.onresize = -> ipc.send 'saveBounds'
 
 openFile = (f) ->
-    f = resolve f
+    f = slash.resolve f
     childp.spawn '/usr/local/bin/ko', [f]
     
 tasks = {}
 
-clearLog   = -> $("main").innerHTML = "<img class='info' src='#{__dirname}/../img/about.png'>"
+clearLog = ->
+    
+    img = slash.fileUrl __dirname+'/../img/about.png'
+    $("main").innerHTML = "<img class='info' src='#{img}'>"
+    
 clearTasks = -> clearLog(); tasks = {}
 
 # 000  00000000    0000000  
@@ -76,12 +81,13 @@ taskDiv = (opt) ->
 #    000     000   000  0000000   000   000  
 
 onTask = (s) ->
+    
     ipc.send 'highlight'
     
     [time, sourceTarget] = s.split ' 👍 '
     [source, target] = sourceTarget.split ' ► '
     
-    source = source.trim()
+    source = slash.tilde(source).trim()
     div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
 
@@ -124,8 +130,9 @@ onError = (s) ->
     div.scrollIntoViewIfNeeded()
     
 setTitleBar = (s) ->
+    
     [path, version] = s.split ' ● '
-    html  = "<span class='titlebarPath'>#{unresolve path}</span>"
+    html  = "<span class='titlebarPath'>#{slash.tilde path}</span>"
     html += "<span class='titlebarDot'> ● </span>"
     html += "<span class='titlebarVersion'>#{version}</span>"
     $('titlebar').innerHTML = html
@@ -138,8 +145,10 @@ setTitleBar = (s) ->
 # 000   000  00000000     000   
 
 document.onkeydown = (event) ->
+    
     {mod, key, combo} = keyinfo.forEvent event
     switch combo
+        when 'q'                  then electron.remote.app.quit()
         when 'k'                  then clearTasks()
         when 'esc', 'w'           then window.close()
         when 'command+i', 'i'     then scheme.toggle()

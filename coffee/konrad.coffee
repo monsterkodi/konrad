@@ -5,10 +5,9 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ dirExists, fileExists, swapExt, resolve, fs, os, path, noon, error, log, _ } = require 'kxk'
+{ fs, os, slash, atomic, noon, error, childp, log, _ } = require 'kxk'
+
 colors = require 'colors'
-childp = require 'child_process'
-atomic = require 'write-file-atomic'
 pkg    = require "#{__dirname}/../package"
 
 args   = require('karg') """
@@ -46,6 +45,7 @@ version  #{pkg.version}
 """
 
 actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
+
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
     args.run = true # makes run the default action if no other action is set
 
@@ -68,21 +68,6 @@ pug     . ext html . replace .. /pug/ /js/
 
 # log "default config:", opt
 
-# 00000000   00000000   0000000   0000000   000      000   000  00000000
-# 000   000  000       000       000   000  000      000   000  000
-# 0000000    0000000   0000000   000   000  000       000 000   0000000
-# 000   000  000            000  000   000  000         000     000
-# 000   000  00000000  0000000    0000000   0000000      0      00000000
-
-slashreg = new RegExp "\\\\", 'g'
-slashpath = (p) ->
-    p = p.replace slashreg, "/" if path.sep == "\\"
-    p
-
-slashjoin = -> [].map.call(arguments, (p) -> slashpath p).join "/"
-
-dirname = (p) -> slashpath path.dirname p
-
 #  0000000   0000000   000   000  00000000  000   0000000
 # 000       000   000  0000  000  000       000  000
 # 000       000   000  000 0 000  000000    000  000  0000
@@ -90,10 +75,10 @@ dirname = (p) -> slashpath path.dirname p
 #  0000000   0000000   000   000  000       000   0000000
 
 config = (p) ->
-    while dirname(p).length and dirname(p) not in ['.', '/'] and not /^\w\:\/$/.test dirname(p)
-        p = dirname p
-        if fs.existsSync slashjoin p, '.konrad.noon'
-            o = _.defaultsDeep noon.load(slashjoin p, '.konrad.noon'), opt
+    while slash.dirname(p).length and slash.dirname(p) not in ['.', '/'] and not /^\w\:\/$/.test slash.dirname(p)
+        p = slash.dirname p
+        if fs.existsSync slash.join p, '.konrad.noon'
+            o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt
             if o.ignore?.map?
                 o.ignore = o.ignore.map (i) ->
                     if _.isString i
@@ -104,12 +89,12 @@ config = (p) ->
     opt
 
 configPath = (key, p) ->
-    while dirname(p).length and dirname(p) not in ['.', '/']
-        p = dirname p
-        if fs.existsSync slashjoin p, '.konrad.noon'
-            o = _.defaultsDeep noon.load(slashjoin p, '.konrad.noon'), opt
+    while slash.dirname(p).length and slash.dirname(p) not in ['.', '/']
+        p = slash.dirname p
+        if fs.existsSync slash.join p, '.konrad.noon'
+            o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt
             if o[key]?
-                return resolve p
+                return slash.resolve p
     null
 
 # 000   0000000   000   000   0000000   00000000   00000000
@@ -146,13 +131,13 @@ prettyPath = (p, c=colors.yellow) ->
 
 prettyFilePath = (p, c=colors.yellow) ->
     p = p.replace os.homedir(), "~"
-    if dirname(p) not in ['.', '/']
-        "#{prettyPath dirname(p), c}#{prettyPath '/', c}#{prettyFile path.basename(p), c}"
+    if slash.dirname(p) not in ['.', '/']
+        "#{prettyPath slash.dirname(p), c}#{prettyPath '/', c}#{prettyFile slash.basename(p), c}"
     else
-        "#{prettyFile path.basename(p), c}"
+        "#{prettyFile slash.basename(p), c}"
 
 prettyFile = (f, c=colors.yellow) ->
-    "#{c(path.basename(f, path.extname(f))).bold}#{prettyExt path.extname(f), c}"
+    "#{c(slash.basename(f, slash.extname(f))).bold}#{prettyExt slash.extname(f), c}"
 
 prettyExt = (e, c=colors.yellow) ->
     if e.length then c('.').dim + c(e.substr 1) else ''
@@ -172,31 +157,21 @@ prettyTime = () ->
 # 000   000  000   000  000   000  000   000  000  000   000
 # 000   000  000   000   0000000   0000000    000  000   000
 
-argDir = () ->
+argDir = ->
+    
     if args.arguments[0]
-        d = resolve args.arguments[0]
-        if dirExists d
+        d = slash.resolve args.arguments[0]
+        if slash.dirExists d
             return d
-        d = slashpath path.parse(d).dir
-        if dirExists d
+        d = slash.dirname d # ???
+        if slash.dirExists d
             return d
-    resolve '.'
+    slash.resolve '.'
 
-argDirRel = () ->
-    if argDir() == resolve '.'
+argDirRel = ->
+    if argDir() == slash.resolve '.'
         return ''
-    relative argDir(), '.'
-
-# 00000000   00000000  000       0000000   000000000  000  000   000  00000000
-# 000   000  000       000      000   000     000     000  000   000  000
-# 0000000    0000000   000      000000000     000     000   000 000   0000000
-# 000   000  000       000      000   000     000     000     000     000
-# 000   000  00000000  0000000  000   000     000     000      0      00000000
-
-relative = (absolute, to) ->
-    d = to? and resolve(to) or argDir()
-    if not dirExists(d) then d = '.'
-    r = slashpath path.relative d, absolute
+     slash.relative argDir(), '.'
 
 #  0000000  000   000   0000000   000   000  000      0000000
 # 000       000   000  000   000  000   000  000      000   000
@@ -219,7 +194,7 @@ should = (k, o, p) ->
         r = i
         r = new RegExp i if _.isString i
         if r.test p
-            log prettyFilePath(relative(p), colors.gray), 'should '.blue+k.bold.blue if args.debug
+            log prettyFilePath(slash.relative(p, argDir()), colors.gray), 'should '.blue+k.bold.blue if args.debug
             return true
     false
 
@@ -230,7 +205,7 @@ should = (k, o, p) ->
 #    000     000   000  000   000   0000000   00000000     000
 
 target = (sourceFile) ->
-    ext = path.extname(sourceFile).substr(1)
+    ext = slash.extname(sourceFile).substr(1)
     o = config sourceFile
 
     if o[ext]?.filter?
@@ -239,7 +214,7 @@ target = (sourceFile) ->
             if new RegExp(r).test(sourceFile)
                 matches = true
         if not matches
-            log prettyFilePath relative(sourceFile), colors.blue if args.debug
+            log prettyFilePath slash.relative(sourceFile, argDir()), colors.blue if args.debug
             return
 
     targetFile = _.clone sourceFile
@@ -250,7 +225,7 @@ target = (sourceFile) ->
 
     return if not o[ext]?.ext?
 
-    targetFile = slashjoin dirname(targetFile), path.basename(targetFile, path.extname(targetFile)) + '.' + o[ext].ext
+    targetFile = slash.join slash.dirname(targetFile), slash.basename(targetFile, slash.extname(targetFile)) + '.' + o[ext].ext
 
 # 0000000    000  00000000   000000000  000   000
 # 000   000  000  000   000     000      000 000
@@ -293,16 +268,16 @@ build = (sourceFile, cb) ->
 
     log "source file".gray, sourceFile if args.debug
 
-    ext = path.extname(sourceFile).substr(1)
+    ext = slash.extname(sourceFile).substr(1)
 
     o = config sourceFile
 
     if ext == 'js' and should 'browserify', o, sourceFile
         main = o.browserify.main
         out  = o.browserify.out
-        pwd  = configPath 'browserify', resolve sourceFile
-        if out != relative sourceFile, pwd
-            log prettyFilePath(_.padEnd(relative(main), 40), colors.yellow), "🔧  ", prettyFilePath(relative(out), colors.blue)
+        pwd  = configPath 'browserify', slash.resolve sourceFile
+        if out != slash.relative sourceFile, pwd
+            log prettyFilePath(_.padEnd(slash.relative(main, argDir()), 40), colors.yellow), "🔧  ", prettyFilePath(slash.relative(out, argDir()), colors.blue)
             runcmd 'browserify', "#{main} #{out}", pwd
         return
 
@@ -333,14 +308,14 @@ build = (sourceFile, cb) ->
                     coffee = require 'coffeescript'
                     o = config sourceFile
                     if o[ext]?.map in ['inline', 'file']
-                        toSource       = path.relative targetFile, sourceFile
+                        toSource       = slash.relative targetFile, sourceFile
                         splitIndex     = toSource.lastIndexOf('./') + 2
                         sourceRoot     = toSource.slice 0, splitIndex - 4
                         relativeSource = toSource.substr splitIndex
                         cfg =
                             filename:      sourceFile
                             sourceMap:     true
-                            generatedFile: path.basename targetFile
+                            generatedFile: slash.basename targetFile
                             sourceRoot:    sourceRoot
                             sourceFiles:   [relativeSource]
 
@@ -355,7 +330,7 @@ build = (sourceFile, cb) ->
                             mapFile = "#{targetFile}.map"
                             atomic mapFile, srcMap, (err) ->
                                 if err then error "can't write sourceMap for #{targetFile}: #{err}"
-                            jsMap.js + "\n//# sourceMappingURL=#{path.basename mapFile}\n"
+                            jsMap.js + "\n//# sourceMappingURL=#{slash.basename mapFile}\n"
                         else
                             coffee.compile data
 
@@ -363,7 +338,7 @@ build = (sourceFile, cb) ->
                     stylus = require 'stylus'
                     stylus data
                         .set 'filename', sourceFile
-                        .set 'paths', [dirname(sourceFile)]
+                        .set 'paths', [slash.dirname(sourceFile)]
                         .render()
                 when 'pug'
                     pug = require 'pug'
@@ -385,13 +360,13 @@ build = (sourceFile, cb) ->
                 writeCompiled sourceFile, targetFile, compiled, cb
 
             else
-                log 'unchanged'.green.dim, prettyFilePath(relative(targetFile), colors.gray) if args.debug
+                log 'unchanged'.green.dim, prettyFilePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
                 if args.verbose
                     log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
-                    fs.utimesSync resolve(targetFile), stat.atime, stat.mtime
+                    fs.utimesSync slash.resolve(targetFile), stat.atime, stat.mtime
 
 # 000   000  00000000   000  000000000  00000000
 # 000 0 000  000   000  000     000     000
@@ -401,9 +376,9 @@ build = (sourceFile, cb) ->
 
 writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
-    fs.ensureDir path.dirname(targetFile), (err) ->
+    fs.ensureDir slash.dirname(targetFile), (err) ->
 
-        if err then return error "can't create output directory #{path.dirname(targetFile).bold.yellow}".bold.red
+        if err then return error "can't create output directory #{slash.dirname(targetFile).bold.yellow}".bold.red
 
         atomic targetFile, compiled, (err) ->
             if err then return error "can't write #{targetFile.bold.yellow}".bold.red
@@ -413,7 +388,7 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
                 else
                     log prettyTime(), "👍  #{prettyFilePath targetFile}"
 
-            if slashpath(resolve(targetFile)) == slashpath __filename
+            if slash.samePath targetFile, __filename
                 reload()
             else if cb?
                 cb sourceFile, targetFile
@@ -435,7 +410,7 @@ walk = (opt, cb) ->
     try
         walkdir.sync argDir(), (wp) ->
 
-            p = slashpath wp
+            p = slash.path wp
             o = config p
 
             if should 'ignore', o, p
@@ -448,16 +423,14 @@ walk = (opt, cb) ->
                 @ignore wp
                 return
 
-            if path.extname(p).substr(1) in _.keys o
+            if slash.extname(p).substr(1) in _.keys o
                 cb p, target p
             else
-                if args.debug
-                    log prettyFilePath relative(p), colors.gray
                 if opt.all
                     if not cb p
                         @ignore wp
     catch err
-        error "walk error #{err}"
+        console.log "walk [ERROR]: #{err}"
 
 # 000  000   000  00000000   0000000
 # 000  0000  000  000       000   000
@@ -473,9 +446,9 @@ if args.info
 
         if targetFile
             if dirty sourceFile, targetFile
-                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.yellow), " ► ".red.dim, prettyFilePath(relative(targetFile), colors.red)
+                log prettyFilePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, prettyFilePath(slash.relative(targetFile, argDir()), colors.red)
             else if args.verbose
-                log prettyFilePath(_.padEnd(relative(sourceFile), 40), colors.magenta), " ► ".green.dim, prettyFilePath(relative(targetFile), colors.green)
+                log prettyFilePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, prettyFilePath(slash.relative(targetFile, argDir()), colors.green)
 
 #  0000000  000000000   0000000   000000000  000   000   0000000
 # 000          000     000   000     000     000   000  000
@@ -485,7 +458,7 @@ if args.info
 
 gitStatus = (sourceFile) ->
 
-    gitDir = dirname sourceFile
+    gitDir = slash.dirname sourceFile
     git = require('simple-git') gitDir
     git.status (err,status) ->
 
@@ -511,18 +484,18 @@ gitStatus = (sourceFile) ->
                     if arglist.length
                         filtered = true
                         for a in arglist
-                            if slashjoin(gitDir, f).indexOf(resolve a) == 0
+                            if slash.join(gitDir, f).indexOf(slash.resolve a) == 0
                                 filtered = false
                                 break
                         if filtered
-                            log 'filtered', resolve(a), f, slashjoin(gitDir, f) if args.debug
+                            log 'filtered', slash.resolve(a), f, slash.join(gitDir, f) if args.debug
                             continue
 
                     prfx    = "    "
                     prfx    = m[k] "█   "
-                    gitFile = slashjoin gitDir, f
-                    relPath = relative gitFile, '.'
-                    lame    = path.extname(gitFile) == '.js' or path.basename(gitFile) == 'package.json'
+                    gitFile = slash.join gitDir, f
+                    relPath = slash.relative gitFile, '.'
+                    lame    = slash.extname(gitFile) == '.js' or slash.basename(gitFile) == 'package.json'
                     change  = prfx + prettyFilePath(relPath, (lame and m[k].dim or m[k]))
                     if k in ['modified', 'created'] and args.verbose
                         continue if lame
@@ -544,7 +517,7 @@ gitStatus = (sourceFile) ->
                         change += diff+"\n"+"▲".blue.dim if diff.length
                     changes.push change
 
-        relPath = relative gitDir, resolve '.'
+        relPath = slash.relative gitDir, '.'
         relPath = '.' if relPath == ''
         gitPath = prettyFilePath relPath, colors.white
 
@@ -582,24 +555,24 @@ if args.status
 
         if not targetFile
 
-            if path.basename(sourceFile) == '.git'
+            if slash.basename(sourceFile) == '.git'
                 gitStatus sourceFile
                 gitcount += 1
 
-            if dirExists sourceFile
+            if slash.dirExists sourceFile
                 for i in opt.ignore
                     if i.test sourceFile
                         return false
         true
 
     if not gitcount
-        gitup = path.parse argDir()
+        gitup = slash.parse argDir()
         while gitup.base
-            dotGit = slashjoin slashpath(gitup.dir), '.git'
+            dotGit = slash.join gitup.dir, '.git'
             if fs.existsSync dotGit
                 gitStatus dotGit
                 break
-            gitup = path.parse gitup.dir
+            gitup = slash.parse gitup.dir
 
 #  0000000  00     00  0000000
 # 000       000   000  000   000
@@ -609,7 +582,7 @@ if args.status
 
 runcmd = (cmd, cmdargs, cwd) ->
     try
-        cmdpath = resolve path.join __dirname, '..', 'bin', cmd
+        cmdpath = slash.resolve slash.join __dirname, '..', 'bin', cmd
         if os.platform() == 'win32'
             command = "\"C:\\Program\ Files\\Git\\bin\\bash.exe\" \"#{cmdpath}\" #{cmdargs}"
         else
@@ -634,18 +607,19 @@ runcmd = (cmd, cmdargs, cwd) ->
 if args.run or args.rebuild
 
     log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+    
     walk opt, (sourceFile, targetFile) ->
         if targetFile
             isDirty = dirty sourceFile, targetFile
             if args.rebuild or isDirty
-                src = prettyFilePath(_.padEnd(relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
-                tgt = prettyFilePath(relative(targetFile), colors.green)
+                src = prettyFilePath(_.padEnd(slash.relative(sourceFile), 40), isDirty and colors.red or colors.yellow)
+                tgt = prettyFilePath(slash.relative(targetFile), colors.green)
                 log src, "🔧  ", tgt
                 build sourceFile, (sourceFile, targetFile) ->
                     o = config targetFile
                     if should 'browserify', o, targetFile
-                        log prettyFilePath(_.padEnd(relative(o.browserify.main), 40), colors.yellow), "🔧  ", prettyFilePath(relative(o.browserify.out), colors.blue)
-                        runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", configPath 'browserify', resolve targetFile
+                        log prettyFilePath(_.padEnd(slash.relative(o.browserify.main), 40), colors.yellow), "🔧  ", prettyFilePath(slash.relative(o.browserify.out, argDir()), colors.blue)
+                        runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", configPath 'browserify', slash.resolve targetFile
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
@@ -698,11 +672,11 @@ if args.watch
 
     watch = (cb) ->
 
-        pass = (p) -> if path.extname(p).substr(1) in _.keys(opt) then true
+        pass = (p) -> if slash.extname(p).substr(1) in _.keys(opt) then true
 
         d = args.arguments[0] ? '.'
         v = " ● v#{pkg.version}".dim.gray
-        log prettyTime(), "🔧  watching #{prettyFilePath resolve(d), colors.white}#{v}".gray
+        log prettyTime(), "🔧  watching #{prettyFilePath slash.resolve(d), colors.white}#{v}".gray
         watcher = require('chokidar').watch d,
             ignored:        wlk.ignore
             ignoreInitial:  true
@@ -710,17 +684,17 @@ if args.watch
             useFsEvents:    true
 
         watcher
-            .on 'add',    (p) -> if pass p then cb slashpath p
-            .on 'change', (p) -> if pass p then cb slashpath p
+            .on 'add',    (p) -> if pass p then cb slash.path p
+            .on 'change', (p) -> if pass p then cb slash.path p
 
     watch (sourceFile) ->
 
-        sourceFile = slashpath resolve sourceFile
+        sourceFile = slash.resolve sourceFile
         o = config sourceFile
 
         test = (source) ->
             if should 'test', o, source
-                runcmd 'test', source, configPath 'test', resolve source
+                runcmd 'test', source, configPath 'test', slash.resolve source
 
         if not should 'ignore', o, sourceFile
             build sourceFile, test

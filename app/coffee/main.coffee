@@ -4,7 +4,7 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{ fileExists, resolve, about, prefs, first, noon, os, path, fs, log } = require 'kxk'
+{ about, prefs, first, noon, os, slash, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 childp   = require 'child_process'
@@ -34,7 +34,7 @@ args  = require('karg') """
 
 #{pkg.productName}
 
-    show      . ? open window on startup  . = false
+    show      . ? open window on startup  . = true
     prefs     . ? show preferences        . = false
     noprefs   . ? don't load preferences  . = false
     verbose   . ? log more                . = false
@@ -66,7 +66,7 @@ prefs.init shortcut: 'CmdOrCtrl+F2'
 if args.prefs
     log colors.yellow.bold 'prefs'
     log colors.green.bold prefs.store.file
-    if fileExists prefs.store.file
+    if slash.fileExists prefs.store.file
         log noon.stringify noon.load(prefs.store.file), colors:true
 
 # 000  00000000    0000000
@@ -263,13 +263,13 @@ app.on 'window-all-closed', (event) -> event.preventDefault()
 app.on 'ready', ->
     
     icon = os.platform() == 'win32' and 'menu@2x.png' or 'menu.png'
-    tray = new Tray path.join __dirname, '..', 'img', icon
+    tray = new Tray slash.join __dirname, '..', 'img', icon
     tray.on 'click', toggleWindow
     app.dock?.hide()
     
     app.setName pkg.productName
     
-    rootDir = prefs.get 'rootDir', resolve '~/s'
+    rootDir = prefs.get 'rootDir', slash.resolve '~/s'
     startKonrad rootDir
 
     electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
