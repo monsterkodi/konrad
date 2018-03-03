@@ -9,4 +9,4 @@ elif [ -e "test" ] ; then
     TEST="test/*.coffee"
 fi
 
-$BIN/mocha -R dot --require coffee-script/register --bail "$TEST"
+$BIN/mocha --require coffeescript/register --bail "$TEST"

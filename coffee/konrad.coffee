@@ -137,7 +137,7 @@ prettyFilePath = (p, c=colors.yellow) ->
         "#{prettyFile slash.basename(p), c}"
 
 prettyFile = (f, c=colors.yellow) ->
-    "#{c(slash.fileName(f)).bold}#{prettyExt slash.extname(f), c}"
+    "#{c(slash.base(f)).bold}#{prettyExt slash.extname(f), c}"
 
 prettyExt = (e, c=colors.yellow) ->
     if e.length then c('.').dim + c(e.substr 1) else ''
@@ -226,7 +226,7 @@ target = (sourceFile) ->
 
     return if not o[ext]?.ext?
 
-    targetFile = slash.join slash.dirname(targetFile), slash.fileName(targetFile) + '.' + o[ext].ext
+    targetFile = slash.join slash.dirname(targetFile), slash.base(targetFile) + '.' + o[ext].ext
 
 # 0000000    000  00000000   000000000  000   000
 # 000   000  000  000   000     000      000 000
@@ -589,13 +589,13 @@ runcmd = (cmd, cmdargs, cwd) ->
     try
         cmdpath = slash.resolve slash.join __dirname, '..', 'bin', cmd
         if os.platform() == 'win32'
-            command = "\"C:\\Program\ Files\\Git\\bin\\bash.exe\" \"#{cmdpath}\" #{cmdargs}"
+            command = "bash #{cmdpath} #{cmdargs}"
         else
             command = "#{cmdpath} #{cmdargs}"
         if args.verbose
             log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
         childp.execSync command,
-            cwd: cwd
+            cwd:      cwd
             encoding: 'utf8'
             stdio:    'inherit'
             shell:    true

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-echo -n "git diff -U0 --ignore-space-at-eol $*" | bash | colorcat -sP "`dirname $0`/../cc/diff.noon"
+echo -n "git diff -U0 --ignore-space-at-eol $*" | bash | colorcat -saP "`dirname $0`/../cc/diff.noon"
