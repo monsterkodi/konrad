@@ -17,6 +17,6 @@ devDependencies
 dependencies
                 colors  ^1.1.2
                 karg    >=1.1.1
-                kxk     ^0.31.0
+                kxk     ^0.33.0
 optionalDependencies
                 tree-kill  ^1.2.0
