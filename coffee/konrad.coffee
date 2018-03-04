@@ -5,7 +5,7 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ atomic, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
+{ atomic, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
 
 colors = require 'colors'
 pkg    = require "#{__dirname}/../package"
@@ -409,7 +409,6 @@ walk = (opt, cb) ->
         cb = opt
         opt = {}
 
-    walkdir = require 'walkdir'
     try
         walkdir.sync argDir(), (wp) ->
 

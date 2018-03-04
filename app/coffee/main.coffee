@@ -4,13 +4,13 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{ about, prefs, first, noon, os, slash, fs, log } = require 'kxk'
+{ about, prefs, first, noon, os, slash, childp, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
-childp   = require 'child_process'
 electron = require 'electron'
 colors   = require 'colors'
 treekill = require 'tree-kill'
+
 app      = electron.app
 Window   = electron.BrowserWindow
 Tray     = electron.Tray
@@ -25,10 +25,10 @@ konradVersion  = null
 konradLastTask = []
 
 #  0000000   00000000    0000000    0000000
-# 000   000  000   000  000        000     
-# 000000000  0000000    000  0000  0000000 
+# 000   000  000   000  000        000
+# 000000000  0000000    000  0000  0000000
 # 000   000  000   000  000   000       000
-# 000   000  000   000   0000000   0000000 
+# 000   000  000   000   0000000   0000000
 
 args  = require('karg') """
 
@@ -39,7 +39,7 @@ args  = require('karg') """
     noprefs   . ? don't load preferences  . = false
     verbose   . ? log more                . = false
     DevTools  . ? open developer tools    . = false
-    
+
 version  #{pkg.version}
 
 """, dontExit: true
@@ -56,10 +56,10 @@ if args.verbose
     log ''
 
 # 00000000   00000000   00000000  00000000   0000000
-# 000   000  000   000  000       000       000     
-# 00000000   0000000    0000000   000000    0000000 
+# 000   000  000   000  000       000       000
+# 00000000   0000000    0000000   000000    0000000
 # 000        000   000  000       000            000
-# 000        000   000  00000000  000       0000000 
+# 000        000   000  00000000  000       0000000
 
 prefs.init shortcut: 'CmdOrCtrl+F2'
 
@@ -70,44 +70,44 @@ if args.prefs
         log noon.stringify noon.load(prefs.store.file), colors:true
 
 # 000  00000000    0000000
-# 000  000   000  000     
-# 000  00000000   000     
-# 000  000        000     
+# 000  000   000  000
+# 000  00000000   000
+# 000  000        000
 # 000  000         0000000
 
 ipc.on 'openDevTools',   -> win?.webContents.openDevTools()
 ipc.on 'reloadWin',      -> win?.webContents.reloadIgnoringCache()
-ipc.on 'showWin',        -> showWindow true 
+ipc.on 'showWin',        -> showWindow true
 ipc.on 'saveBounds',     -> saveBounds()
 ipc.on 'highlight',      -> highlight()
 ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
 
-# 000   000   0000000   000   000  00000000    0000000   0000000    
-# 000  000   000   000  0000  000  000   000  000   000  000   000  
-# 0000000    000   000  000 0 000  0000000    000000000  000   000  
-# 000  000   000   000  000  0000  000   000  000   000  000   000  
-# 000   000   0000000   000   000  000   000  000   000  0000000    
+# 000   000   0000000   000   000  00000000    0000000   0000000
+# 000  000   000   000  0000  000  000   000  000   000  000   000
+# 0000000    000   000  000 0 000  0000000    000000000  000   000
+# 000  000   000   000  000  0000  000   000  000   000  000   000
+# 000   000   0000000   000   000  000   000  000   000  0000000
 
 startKonrad = (rootDir) ->
-    
+
     prefs.set 'rootDir', rootDir
-    
+
     if konrad?
         treekill konrad.pid, 'SIGKILL'
-    
+
     konrad = childp.spawn "konrad", ['-vw'],
         cwd:      rootDir
         shell:    true
         detached: false
-        
-    konrad.on 'exit', (code, signal) -> 
+
+    konrad.on 'exit', (code, signal) ->
         if not konrad
             app.exit()
-        
-    konrad.on 'close', (code, signal) -> 
+
+    konrad.on 'close', (code, signal) ->
         if win?
             win.webContents.send 'konradExit', "konrad exit code: #{code}"
-    
+
     konrad.stderr.on 'data', (data) ->
         s = data.toString()
         log "konrad error: #{s}"
@@ -115,41 +115,41 @@ startKonrad = (rootDir) ->
             win.webContents.send 'konradError', "konrad error: #{s}"
         else
             createWindow 'konradError', "konrad error: #{s}"
-    
-    konrad.stdout.on 'data', (data) -> 
+
+    konrad.stdout.on 'data', (data) ->
         s = data.toString()
-        if /\ watching\ /.test s 
+        if /\ watching\ /.test s
             konradVersion = s.split('watching ')[1]
             win?.send 'konradVersion', konradVersion
         else if win?
             win.webContents.send 'konradOutput', s
         else
-            if / 😡 /.test s 
+            if / 😡 /.test s
                 createWindow 'konradOutput', s
             else
                 highlight()
                 log 'konrad output:', s
                 konradLastTask.push s
-            
-    log 'konrad started in', rootDir
+
+    # log 'konrad started in', rootDir
 
 quitKonrad = ->
-    
+
     if konrad?
         log 'killing konrad', konrad?.pid
         treekill konrad.pid, 'SIGKILL'
         konrad = null
 
 setRootDir = ->
-    
-    opts =         
+
+    opts =
         title:      'Open'
         properties: ['openDirectory']
-    
-    dialog.showOpenDialog opts, (dirs) => 
+
+    dialog.showOpenDialog opts, (dirs) =>
         if dir = first dirs
             startKonrad dir
-    
+
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
 #000000000  000  000 0 000  000   000  000   000  000000000
@@ -158,8 +158,8 @@ setRootDir = ->
 
 toggleWindow = ->
     if win?.isVisible() and win?.isFocused()
-        win.hide()    
-        app.dock?.hide()        
+        win.hide()
+        app.dock?.hide()
     else
         showWindow()
 
@@ -173,16 +173,16 @@ showWindow = (inactive) ->
         showInactive = inactive
         createWindow()
     app.dock?.show()
-    
+
 screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
 
 highlight = ->
-    tray.setHighlightMode 'always' 
-    unhighlight = -> tray.setHighlightMode 'never' 
+    tray.setHighlightMode 'always'
+    unhighlight = -> tray.setHighlightMode 'never'
     setTimeout unhighlight, 1000
 
 createWindow = (ipcMsg, ipcArg) ->
-    
+
     bounds = prefs.get 'bounds', null
     if not bounds
         {w, h} = screenSize()
@@ -192,7 +192,7 @@ createWindow = (ipcMsg, ipcArg) ->
         bounds.x = parseInt (w-bounds.width)/2
         bounds.y = 0
 
-    cfg = 
+    cfg =
         x:               bounds.x
         y:               bounds.y
         width:           bounds.width
@@ -206,30 +206,35 @@ createWindow = (ipcMsg, ipcArg) ->
         fullscreenable:  false
         show:            false
         autoHideMenuBar: true
-        
+
     if os.platform() == 'win32'
         cfg.icon = slash.path __dirname + '/../img/konrad.ico'
-        
+
     win = new Window cfg
-        
+
     bounds = prefs.get 'bounds'
     win.setBounds bounds if bounds?
-        
+
     win.loadURL slash.fileUrl "#{__dirname}/index.html"
     win.webContents.openDevTools() if args.DevTools
     win.on 'closed', -> win = null
     win.on 'close', -> app.dock?.hide()
     win.on 'hide', -> app.dock?.hide()
-    win.on 'ready-to-show', ->         
+    win.on 'ready-to-show', ->
+
         app.dock?.show()
-        if showInactive
-            win.showInactive()
-            showInactive = false
-        else
-            win.show() 
+        if slash.win()
+            win.show()
+        else        
+            if showInactive
+                win.showInactive()
+                showInactive = false
+            else
+                win.show()
+                
         win.webContents.send 'konradVersion', konradVersion if konradVersion
         if ipcMsg
-            win.webContents.send ipcMsg, ipcArg 
+            win.webContents.send ipcMsg, ipcArg
         else if konradLastTask.length
             for t in konradLastTask
                 win.webContents.send 'konradOutput', t
@@ -238,19 +243,19 @@ createWindow = (ipcMsg, ipcArg) ->
         konradLastTask = []
     win
 
-saveBounds = -> 
-  if win? 
+saveBounds = ->
+  if win?
       prefs.set 'bounds', win.getBounds()
-    
-#  0000000   0000000     0000000   000   000  000000000
-# 000   000  000   000  000   000  000   000     000   
-# 000000000  0000000    000   000  000   000     000   
-# 000   000  000   000  000   000  000   000     000   
-# 000   000  0000000     0000000    0000000      000   
 
-showAbout = -> 
+#  0000000   0000000     0000000   000   000  000000000
+# 000   000  000   000  000   000  000   000     000
+# 000000000  0000000    000   000  000   000     000
+# 000   000  000   000  000   000  000   000     000
+# 000   000  0000000     0000000    0000000      000
+
+showAbout = ->
     dark = 'dark' == prefs.get 'scheme', 'dark'
-    about 
+    about
         img: "#{__dirname}/../img/about.png"
         color:      dark and '#383838' or '#ddd'
         background: dark and '#282828' or '#fff'
@@ -260,31 +265,34 @@ showAbout = ->
 app.on 'window-all-closed', (event) -> event.preventDefault()
 
 #00000000   00000000   0000000   0000000    000   000
-#000   000  000       000   000  000   000   000 000 
-#0000000    0000000   000000000  000   000    00000  
-#000   000  000       000   000  000   000     000   
-#000   000  00000000  000   000  0000000       000   
+#000   000  000       000   000  000   000   000 000
+#0000000    0000000   000000000  000   000    00000
+#000   000  000       000   000  000   000     000
+#000   000  00000000  000   000  0000000       000
 
 app.on 'ready', ->
-    
+
     icon = os.platform() == 'win32' and 'menu@2x.png' or 'menu.png'
     tray = new Tray slash.join __dirname, '..', 'img', icon
     tray.on 'click', toggleWindow
     app.dock?.hide()
-    
+
     app.setName pkg.productName
-    
+
     rootDir = prefs.get 'rootDir', slash.resolve '~/s'
     startKonrad rootDir
 
-    electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
-    
+    try
+        electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
+    catch err
+        log 'error setting shortcut', err
+
     # 00     00  00000000  000   000  000   000
     # 000   000  000       0000  000  000   000
     # 000000000  0000000   000 0 000  000   000
     # 000 0 000  000       000  0000  000   000
-    # 000   000  00000000  000   000   0000000 
-    
+    # 000   000  00000000  000   000   0000000
+
     if os.platform() != 'win32'
         Menu.setApplicationMenu Menu.buildFromTemplate [
                 label: app.getName()
@@ -294,7 +302,7 @@ app.on 'ready', ->
                     click:        showAbout
                 ,
                     type: 'separator'
-                ,                
+                ,
                     label:       'Set Dir...'
                     accelerator:  'Command+o'
                     click:        setRootDir
@@ -325,7 +333,7 @@ app.on 'ready', ->
                 # 000000000  000  000 0 000  000   000  000   000  000000000
                 # 000   000  000  000  0000  000   000  000   000  000   000
                 # 00     00  000  000   000  0000000     0000000   00     00
-                
+
                 label: 'Window'
                 submenu: [
                     label:       'Minimize'
@@ -333,29 +341,29 @@ app.on 'ready', ->
                     click:       -> win?.minimize()
                 ,
                     type: 'separator'
-                ,                            
+                ,
                     label:       'Close Window'
                     accelerator: 'Cmd+W'
                     click:       -> win?.close()
                 ,
                     type: 'separator'
-                ,                            
+                ,
                     label:       'Bring All to Front'
                     accelerator: 'Alt+Cmd+`'
                     click:       -> win?.show()
                 ,
                     type: 'separator'
-                ,   
+                ,
                     label:       'Reload Window'
                     accelerator: 'Ctrl+Alt+Cmd+L'
                     click:       -> win?.webContents.reloadIgnoringCache()
-                ,                
+                ,
                     label:       'Toggle DevTools'
                     accelerator: 'Cmd+Alt+I'
                     click:       -> win?.webContents.openDevTools()
                 ]
             ]
-            
+
     else
         Menu.setApplicationMenu Menu.buildFromTemplate [
                 label: app.getName()
@@ -365,7 +373,7 @@ app.on 'ready', ->
                     click:        showAbout
                 ,
                     type: 'separator'
-                ,                
+                ,
                     label:       'Set Dir...'
                     accelerator:  'Ctrl+o'
                     click:        setRootDir
@@ -386,7 +394,7 @@ app.on 'ready', ->
                 # 000000000  000  000 0 000  000   000  000   000  000000000
                 # 000   000  000  000  0000  000   000  000   000  000   000
                 # 00     00  000  000   000  0000000     0000000   00     00
-                
+
                 label: 'Window'
                 submenu: [
                     label:       'Minimize'
@@ -394,25 +402,24 @@ app.on 'ready', ->
                     click:       -> win?.minimize()
                 ,
                     type: 'separator'
-                ,                            
+                ,
                     label:       'Close Window'
                     accelerator: 'Ctrl+W'
                     click:       -> win?.close()
                 ,
                     type: 'separator'
-                ,   
+                ,
                     label:       'Reload Window'
                     accelerator: 'Ctrl+Alt+L'
                     click:       -> win?.webContents.reloadIgnoringCache()
-                ,                
+                ,
                     label:       'Toggle DevTools'
                     accelerator: 'Ctrl+Alt+I'
                     click:       -> win?.webContents.openDevTools()
                 ]
             ]
-        
+
     showWindow() if args.show
-        
+
 if app.makeSingleInstance( -> showWindow() )
     app.quit()
-    

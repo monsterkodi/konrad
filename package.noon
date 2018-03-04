@@ -1,6 +1,6 @@
 name          konrad
 description   builds my stuff
-version       0.19.0
+version       0.20.0
 main          js/konrad.js
 bin
               konrad  ./bin/konrad
@@ -18,17 +18,13 @@ bugs
               url  https://github.com/monsterkodi/konrad/issues
 homepage      https://github.com/monsterkodi/konrad
 dependencies
-              chokidar        ^2.0.2
-              coffeescript    ^2.2.2
-              colors          ^1.1.2
-              karg            >=1.1.1
-              kxk             ^0.30.0
-              lodash          ^4.17.5
-              mkpath          ^1.0.0
-              noon            >=1.1.1
-              pug             ^2.0.0-rc.4
-              semver          ^5.5.0
-              simple-git      ^1.91.0
-              stylus          ^0.54.5
-              walkdir         0.0.12
-              write-file-atomic  ^2.3.0
+              chokidar      ^2.0.2
+              coffeescript  ^2.2.2
+              colors        ^1.1.2
+              karg          >=1.1.1
+              kxk           ^0.33.0
+              mkpath        ^1.0.0
+              pug           ^2.0.0-rc.4
+              semver        ^5.5.0
+              simple-git    ^1.91.0
+              stylus        ^0.54.5

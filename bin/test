@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-BIN=`npm bin`
-
 TEST=test
 if [ -e "coffee/test" ] ; then
     TEST="coffee/test/*.coffee"
@@ -9,4 +7,4 @@ elif [ -e "test" ] ; then
     TEST="test/*.coffee"
 fi
 
-$BIN/mocha --require coffeescript/register --bail "$TEST"
+mocha --require coffeescript/register --bail "$TEST"
