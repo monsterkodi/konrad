@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-TEST=`sds scripts.test`
-if [ -n "$TEST" ] ; then
-    if ! npm test ; then
-        echo '[ERROR] test failed!' | colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
-        exit 1
-    fi
-fi
+# TEST=`sds scripts.test`
+# if [ -n "$TEST" ] ; then
+    # if ! npm test ; then
+        # echo '[ERROR] test failed!' | colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
+        # exit 1
+    # fi
+# fi
+
+konrad --test
 
 if [ $# -ne 0 ]; then
     `dirname $0`/commit "$*"

@@ -1,6 +1,6 @@
 name            konrad
 productName     konrad
-version         0.20.0
+version         0.22.0
 description     builds my stuff
 license         Unlicense
 main            js/main.js
@@ -15,8 +15,6 @@ devDependencies
                 electron-packager  ^11.0.1
                 electron-rebuild  ^1.7.3
 dependencies
-                colors  ^1.1.2
-                karg    >=1.1.1
-                kxk     ^0.33.0
+                kxk  ^0.34.0
 optionalDependencies
                 tree-kill  ^1.2.0

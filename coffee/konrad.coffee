@@ -5,12 +5,11 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ atomic, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
+{ atomic, colors, karg, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
 
-colors = require 'colors'
 pkg    = require "#{__dirname}/../package"
 
-args   = require('karg') """
+args   = karg """
 
 konrad
     arguments  . ? see arguments                   . **

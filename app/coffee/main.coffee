@@ -4,11 +4,10 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{ about, prefs, first, noon, os, slash, childp, fs, log } = require 'kxk'
+{ about, karg, colors, prefs, first, noon, os, slash, childp, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
-colors   = require 'colors'
 treekill = require 'tree-kill'
 
 app      = electron.app
@@ -30,7 +29,7 @@ konradLastTask = []
 # 000   000  000   000  000   000       000
 # 000   000  000   000   0000000   0000000
 
-args  = require('karg') """
+args  = karg """
 
 #{pkg.productName}
 

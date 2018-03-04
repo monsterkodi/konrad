@@ -1,10 +1,9 @@
 #!/usr/bin/env coffee
 
-{ slash, noon, fs } = require 'kxk'
+{ slash, karg, noon, colors, fs } = require 'kxk'
 
-colors = require 'colors'
 semver = require 'semver'
-args   = require('karg') """
+args   = karg """
 
 bump
     semver     . ? semver or increment type . *
