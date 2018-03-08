@@ -27,6 +27,8 @@ clearLog = ->
 
 clearTasks = -> clearLog(); tasks = {}
 
+clearTimer = null
+
 # 000  00000000    0000000
 # 000  000   000  000
 # 000  00000000   000
@@ -72,6 +74,11 @@ taskDiv = (opt) ->
 
     div
 
+delayClear = ->
+    
+    clearTimeout clearTimer
+    clearTimer = setTimeout clearTasks, prefs.get 'timeout', 20000
+    
 # 000000000   0000000    0000000  000   000
 #    000     000   000  000       000  000
 #    000     000000000  0000000   0000000
@@ -88,6 +95,8 @@ onTask = (s) ->
     source = slash.tilde(source).trim()
     div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
+    
+    delayClear()
 
 # 00     00  00000000   0000000   0000000   0000000    0000000   00000000
 # 000   000  000       000       000       000   000  000        000
@@ -100,6 +109,8 @@ onMessage = (s) ->
     [time, msg] = s.split ' 🔧 '
 
     div = taskDiv time: time, message: msg, key: 'msg', icon: '🔧'
+    
+    delayClear()
 
 # 00000000  00000000   00000000    0000000   00000000
 # 000       000   000  000   000  000   000  000   000
@@ -109,8 +120,12 @@ onMessage = (s) ->
 
 onError = (s) ->
 
+    clearTimeout clearTimer
+    del clearTimer
+    
     ipc.send 'showWin'
     ipc.send 'highlight'
+    
     clearTasks()
 
     lines = s.split '\n'
@@ -126,7 +141,7 @@ onError = (s) ->
         div.appendChild pre
 
     div.scrollIntoViewIfNeeded()
-
+    
 setTitleBar = (s) ->
 
     if slash.win()

@@ -156,6 +156,7 @@ setRootDir = ->
 #00     00  000  000   000  0000000     0000000   00     00
 
 toggleWindow = ->
+    
     if win?.isVisible() and win?.isFocused()
         win.hide()
         app.dock?.hide()
@@ -163,6 +164,7 @@ toggleWindow = ->
         showWindow()
 
 showWindow = (inactive) ->
+    
     if win?
         if inactive
             win.showInactive()
@@ -171,6 +173,7 @@ showWindow = (inactive) ->
     else
         showInactive = inactive
         createWindow()
+        
     app.dock?.show()
 
 screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
