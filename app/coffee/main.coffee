@@ -167,6 +167,11 @@ showWindow = (inactive) ->
     
     if win?
         if inactive
+            if slash.win()
+                log 'foreground argv[0]', process.argv[0]
+                { foreground } = require 'wxw'
+                log 'foreground foreground', foreground?
+                foreground process.argv[0]
             win.showInactive()
         else
             win.show()

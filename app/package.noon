@@ -15,6 +15,8 @@ devDependencies
                 electron-packager  ^11.0.1
                 electron-rebuild  ^1.7.3
 dependencies
-                kxk  ^0.34.0
+                kxk       ^0.34.0
+                node-gyp  ^3.6.2
+                wxw       0.0.4
 optionalDependencies
                 tree-kill  ^1.2.0

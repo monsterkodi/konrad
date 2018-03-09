@@ -121,7 +121,7 @@ onMessage = (s) ->
 onError = (s) ->
 
     clearTimeout clearTimer
-    del clearTimer
+    clearTimer = null
     
     ipc.send 'showWin'
     ipc.send 'highlight'

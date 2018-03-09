@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 cd `dirname $0`/..
 
-rm -rf konrad-win32-x64
+if rm -rf konrad-win32-x64; then
 
-konrad
+    konrad
+    
+    node_modules/.bin/electron-rebuild
+    
+    IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
+    
+    node_modules/electron-packager/cli.js . --overwrite --icon=img/konrad.ico --no-prune --ignore=$IGNORE
 
-node_modules/.bin/electron-rebuild
-
-IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
-
-node_modules/electron-packager/cli.js . --overwrite --icon=img/konrad.ico --no-prune --ignore=$IGNORE
-
+else
+    handle64 -nobanner konrad-win32-x64\\resources\\electron.asar
+fi
