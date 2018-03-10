@@ -261,6 +261,7 @@ saveBounds = ->
 # 000   000  0000000     0000000    0000000      000
 
 showAbout = ->
+    
     dark = 'dark' == prefs.get 'scheme', 'dark'
     about
         img: "#{__dirname}/../img/about.png"
@@ -282,6 +283,15 @@ app.on 'ready', ->
     icon = os.platform() == 'win32' and 'menu@2x.png' or 'menu.png'
     tray = new Tray slash.join __dirname, '..', 'img', icon
     tray.on 'click', toggleWindow
+    
+    tray.setContextMenu Menu.buildFromTemplate [
+        label: "Quit"
+        click: -> app.exit 0; process.exit 0
+    ,
+        label: "About"
+        click: showAbout
+    ]
+    
     app.dock?.hide()
 
     app.setName pkg.productName
