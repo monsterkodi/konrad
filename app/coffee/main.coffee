@@ -108,7 +108,7 @@ startKonrad = (rootDir) ->
             win.webContents.send 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
-        s = data.toString()
+        s = colors.strip data.toString()
         log "konrad error: #{s}"
         if win?
             win.webContents.send 'konradError', "konrad error: #{s}"
@@ -116,7 +116,7 @@ startKonrad = (rootDir) ->
             createWindow 'konradError', "konrad error: #{s}"
 
     konrad.stdout.on 'data', (data) ->
-        s = data.toString()
+        s = colors.strip data.toString()
         if /\ watching\ /.test s
             konradVersion = s.split('watching ')[1]
             win?.send 'konradVersion', konradVersion
