@@ -1,6 +1,6 @@
 name          konrad
 description   builds my stuff
-version       0.23.0
+version       0.24.0
 main          js/konrad.js
 bin
               konrad  ./bin/konrad
@@ -20,7 +20,7 @@ homepage      https://github.com/monsterkodi/konrad
 dependencies
               chokidar      ^2.0.2
               coffeescript  ^2.2.2
-              kxk           ^0.34.0
+              kxk           ^0.40.0
               mkpath        ^1.0.0
               pug           ^2.0.0-rc.4
               semver        ^5.5.0
