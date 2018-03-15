@@ -8,7 +8,6 @@
 
 pkg      = require '../package.json'
 electron = require 'electron'
-treekill = require 'tree-kill'
 
 app      = electron.app
 Window   = electron.BrowserWindow
@@ -92,6 +91,7 @@ startKonrad = (rootDir) ->
     prefs.set 'rootDir', rootDir
 
     if konrad?
+        treekill = require 'tree-kill'
         treekill konrad.pid, 'SIGKILL'
 
     konrad = childp.spawn "konrad", ['-vw'],
@@ -136,6 +136,7 @@ quitKonrad = ->
 
     if konrad?
         log 'killing konrad', konrad?.pid
+        treekill = require 'tree-kill'
         treekill konrad.pid, 'SIGKILL'
         konrad = null
 

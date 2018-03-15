@@ -1,12 +1,12 @@
 name            konrad
 productName     konrad
-version         0.24.1
+version         0.25.0
 description     builds my stuff
 license         Unlicense
 main            js/main.js
 scripts
-                build   ./bin/build.sh
-                win     bash ./bin/buildwin.sh
+                mac   ./bin/buildmac.sh
+                win   bash ./bin/buildwin.sh
 repository
                 type  git
                 url   git+https://github.com/monsterkodi/konrad.git
@@ -15,8 +15,5 @@ devDependencies
                 electron-packager  ^11.0.1
                 electron-rebuild  ^1.7.3
 dependencies
-                kxk       ^0.40.0
-                node-gyp  ^3.6.2
-                wxw       ^0.2.4
-optionalDependencies
-                tree-kill  ^1.2.0
+                kxk         ^0.40.0
+                tree-kill   ^1.2.0
