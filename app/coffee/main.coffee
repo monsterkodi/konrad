@@ -4,7 +4,7 @@
 # 000 0 000  000   000  000  000  0000
 # 000   000  000   000  000  000   000
 
-{ about, karg, colors, prefs, first, noon, os, slash, childp, fs, log } = require 'kxk'
+{ about, karg, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -140,6 +140,14 @@ quitKonrad = ->
         treekill konrad.pid, 'SIGKILL'
         konrad = null
 
+post.on 'quitKonrad', quitKonrad
+        
+# 00000000    0000000    0000000   000000000  
+# 000   000  000   000  000   000     000     
+# 0000000    000   000  000   000     000     
+# 000   000  000   000  000   000     000     
+# 000   000   0000000    0000000      000     
+
 setRootDir = ->
 
     opts =
@@ -149,6 +157,8 @@ setRootDir = ->
     dialog.showOpenDialog opts, (dirs) =>
         if dir = first dirs
             startKonrad dir
+
+post.on 'setRootDir', setRootDir
 
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -271,6 +281,8 @@ showAbout = ->
         highlight:  dark and '#ff0'    or '#000'
         pkg: pkg
 
+post.on 'showAbout',  showAbout
+
 app.on 'window-all-closed', (event) -> event.preventDefault()
 
 #00000000   00000000   0000000   0000000    000   000
@@ -372,10 +384,10 @@ app.on 'ready', ->
                 ,
                     type: 'separator'
                 ,
-                    label:       'Reload Window'
-                    accelerator: 'Ctrl+Alt+Cmd+L'
-                    click:       -> win?.webContents.reloadIgnoringCache()
-                ,
+                    # label:       'Reload Window'
+                    # accelerator: 'Ctrl+Alt+Cmd+L'
+                    # click:       -> win?.webContents.reloadIgnoringCache()
+                # ,
                     label:       'Toggle DevTools'
                     accelerator: 'Cmd+Alt+I'
                     click:       -> win?.webContents.openDevTools()
@@ -426,10 +438,10 @@ app.on 'ready', ->
                     click:       -> win?.close()
                 ,
                     type: 'separator'
-                ,
-                    label:       'Reload Window'
-                    accelerator: 'Ctrl+Alt+L'
-                    click:       -> win?.webContents.reloadIgnoringCache()
+                # ,
+                    # label:       'Reload Window'
+                    # accelerator: 'Ctrl+Alt+L'
+                    # click:       -> win?.webContents.reloadIgnoringCache()
                 ,
                     label:       'Toggle DevTools'
                     accelerator: 'Ctrl+Alt+I'

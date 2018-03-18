@@ -4,7 +4,7 @@
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
-{ slash, keyinfo, childp, scheme, prefs, log, $, _ } = require 'kxk'
+{ slash, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
 electron  = require 'electron'
 ipc       = electron.ipcRenderer
@@ -145,7 +145,7 @@ onError = (s) ->
 setTitleBar = (s) ->
 
     if slash.win()
-        $('titlebar').remove()
+        $('titlebar')?.remove()
         $('main').style.top = '0px'
         win = electron.remote.getCurrentWindow()
         win.setTitle 'konrad ● ' + s
@@ -165,14 +165,47 @@ setTitleBar = (s) ->
 
 document.onkeydown = (event) ->
 
-    {mod, key, combo} = keyinfo.forEvent event
+    { mod, key, combo } = keyinfo.forEvent event
+    
     switch combo
-        when 'q'                  then electron.remote.app.quit()
-        when 'k'                  then clearTasks()
-        when 'esc', 'w'           then window.close()
-        when 'command+i', 'i'     then scheme.toggle()
-        when 'command+c'          then document.execCommand 'copy'
-        when 'command+alt+i'      then ipc.send 'openDevTools'
-        when 'command+alt+ctrl+l' then ipc.send 'reloadWin'
+        when 'q'                                then electron.remote.app.quit()
+        when 'k'                                then clearTasks()
+        when 'esc', 'w'                         then window.close()
+        when 'command+i', 'i', 'ctrl+i'         then scheme.toggle()
+        when 'command+c', 'ctrl+c'              then document.execCommand 'copy'
+        when 'command+alt+i', 'ctrl+alt+i'      then ipc.send 'openDevTools'
+        when 'command+alt+ctrl+l', 'ctrl+alt+l' then ipc.send 'reloadWin'
 
+$('main').addEventListener "contextmenu", (event) ->
+    
+    absPos = pos event
+    if not absPos?
+        absPos = pos $('main').getBoundingClientRect().left, $('main').getBoundingClientRect().top
+    
+    opt = items: [
+        text:   'Set Dir...'
+        combo:  'ctrl+o'
+        cb:      -> post.toMain 'setRootDir'
+    ,
+        text:   'Clear'
+        combo:  'k' 
+        cb:     clearTasks
+    ,
+        text:   'Show Menu'
+        combo:  'alt'
+        cb:     -> electron.remote.getCurrentWindow().setMenuBarVisibility true
+    ,
+        text:   'About'
+        combo:  'ctrl+.'
+        cb:      -> post.toMain 'showAbout'
+    ,
+        text:   'Quit'
+        combo:  'ctrl+q' 
+        cb:     -> post.toMain 'quitKonrad'
+    ]
+    
+    opt.x = absPos.x
+    opt.y = absPos.y
 
+    popup.menu opt
+    
