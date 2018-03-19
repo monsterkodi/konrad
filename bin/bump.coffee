@@ -7,7 +7,7 @@ args   = karg """
 
 bump
     semver     . ? semver or increment type . *
-    increment  . ? increment type: major, minor or . = patch
+    increment  . ? increment type: major, minor or patch . = minor
 """
 
 if args.semver? and not semver.valid args.semver
