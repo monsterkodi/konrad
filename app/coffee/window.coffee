@@ -176,6 +176,12 @@ document.onkeydown = (event) ->
         when 'command+alt+i', 'ctrl+alt+i'      then ipc.send 'openDevTools'
         when 'command+alt+ctrl+l', 'ctrl+alt+l' then ipc.send 'reloadWin'
 
+# 00000000    0000000   00000000   000   000  00000000   
+# 000   000  000   000  000   000  000   000  000   000  
+# 00000000   000   000  00000000   000   000  00000000   
+# 000        000   000  000        000   000  000        
+# 000         0000000   000         0000000   000        
+
 $('main').addEventListener "contextmenu", (event) ->
     
     absPos = pos event
