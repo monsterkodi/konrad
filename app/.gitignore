@@ -1,9 +1,0 @@
-js
-css
-bin/*.js
-bin/*.json
-node_modules
-*-x64
-*.json
-*.html
-*.dmg
