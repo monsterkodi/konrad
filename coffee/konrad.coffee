@@ -8,7 +8,10 @@
 
 { atomic, colors, karg, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
 
-pkg    = require "#{__dirname}/../package"
+pkg         = require "#{__dirname}/../package"
+pretty      = require './pretty'
+compile     = require './compile'
+konradError = require './error'
 
 args   = karg """
 
@@ -126,30 +129,7 @@ wlk =
 # 000        000   000  000          000        000        000
 # 000        000   000  00000000     000        000        000
 
-prettyPath = (p, c=colors.yellow) ->
-    p.split('/').map((n) -> c(n)).join c('/').dim
-
-prettyFilePath = (p, c=colors.yellow) ->
-    p = p.replace os.homedir(), "~"
-    if slash.dirname(p) not in ['.', '/']
-        "#{prettyPath slash.dirname(p), c}#{prettyPath '/', c}#{prettyFile slash.basename(p), c}"
-    else
-        "#{prettyFile slash.basename(p), c}"
-
-prettyFile = (f, c=colors.yellow) ->
-    "#{c(slash.base(f)).bold}#{prettyExt slash.extname(f), c}"
-
-prettyExt = (e, c=colors.yellow) ->
-    if e.length then c('.').dim + c(e.substr 1) else ''
-
-prettyTime = () ->
-    if args.logtime
-        d = new Date()
-        ["#{_.padStart(String(d.getHours()),   2, '0').gray}#{':'.dim.gray}"
-         "#{_.padStart(String(d.getMinutes()), 2, '0').gray}#{':'.dim.gray}"
-         "#{_.padStart(String(d.getSeconds()), 2, '0').gray}"].join('')
-    else
-        ''
+prettyTime = () -> pretty.time args.logtime
 
 #  0000000   00000000    0000000   0000000    000  00000000
 # 000   000  000   000  000        000   000  000  000   000
@@ -194,7 +174,7 @@ should = (k, o, p) ->
         r = i
         r = new RegExp i if _.isString i
         if r.test p
-            log prettyFilePath(slash.relative(p, argDir()), colors.gray), 'should '.blue+k.bold.blue if args.debug
+            log pretty.filePath(slash.relative(p, argDir()), colors.gray), 'should '.blue+k.bold.blue if args.debug
             return true
     false
 
@@ -215,7 +195,7 @@ target = (sourceFile) ->
             if new RegExp(r).test(sourceFile)
                 matches = true
         if not matches
-            log prettyFilePath slash.relative(sourceFile, argDir()), colors.blue if args.debug
+            log pretty.filePath slash.relative(sourceFile, argDir()), colors.blue if args.debug
             return
 
     targetFile = _.clone sourceFile
@@ -241,26 +221,6 @@ dirty = (sourceFile, targetFile) ->
     ts = fs.statSync targetFile
     ss.mtime.getTime() > ts.mtime.getTime()
 
-# 00000000  00000000   00000000    0000000   00000000
-# 000       000   000  000   000  000   000  000   000
-# 0000000   0000000    0000000    000   000  0000000
-# 000       000   000  000   000  000   000  000   000
-# 00000000  000   000  000   000   0000000   000   000
-
-konradError = (title, msg) ->
-    
-    stripped = String(msg).strip
-    splitted = stripped.split '\n'
-
-    if title == 'compile error'
-        [sourceFile, rest] = splitted[0].split ': '
-        splitted[0] = rest.bold.yellow
-        errStr = splitted.join '\n'
-        log prettyTime(), "😡  #{prettyFilePath sourceFile}\n#{errStr}"
-    else
-        log "#{title.bold.yellow} #{String(stripped).red}"
-    false
-
 # 0000000    000   000  000  000      0000000
 # 000   000  000   000  000  000      000   000
 # 0000000    000   000  000  000      000   000
@@ -273,14 +233,14 @@ build = (sourceFile, cb) ->
 
     ext = slash.extname(sourceFile).substr(1)
 
-    o = config sourceFile
+    cfg = config sourceFile
 
-    if ext == 'js' and should 'browserify', o, sourceFile
-        main = o.browserify.main
-        out  = o.browserify.out
+    if ext == 'js' and should 'browserify', cfg, sourceFile
+        main = cfg.browserify.main
+        out  = cfg.browserify.out
         pwd  = configPath 'browserify', slash.resolve sourceFile
         if out != slash.relative sourceFile, pwd
-            log prettyFilePath(_.padEnd(slash.relative(main, argDir()), 40), colors.yellow), "🔧  ", prettyFilePath(slash.relative(out, argDir()), colors.blue)
+            log pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), colors.blue)
             runcmd 'browserify', "#{main} #{out}", pwd
         return
 
@@ -295,67 +255,18 @@ build = (sourceFile, cb) ->
     # 000   000  000       000   000  000   000
     # 000   000  00000000  000   000  0000000
 
-    fs.readFile sourceFile, 'utf8', (err, data) ->
+    fs.readFile sourceFile, 'utf8', (err, sourceText) ->
 
         if err then return error "can't read #{sourceFile}"
-
-        try
-            #  0000000   0000000   00     00  00000000   000  000      00000000
-            # 000       000   000  000   000  000   000  000  000      000
-            # 000       000   000  000000000  00000000   000  000      0000000
-            # 000       000   000  000 0 000  000        000  000      000
-            #  0000000   0000000   000   000  000        000  0000000  00000000
-
-            compiled = switch ext
-                when 'coffee'
-                    coffee = require 'coffeescript'
-                    o = config sourceFile
-                    if o[ext]?.map in ['inline', 'file']
-                        toSource       = slash.relative targetFile, sourceFile
-                        splitIndex     = toSource.lastIndexOf('./') + 2
-                        sourceRoot     = toSource.slice 0, splitIndex - 4
-                        relativeSource = toSource.substr splitIndex
-                        cfg =
-                            filename:      sourceFile
-                            sourceMap:     true
-                            generatedFile: slash.basename targetFile
-                            sourceRoot:    sourceRoot
-                            sourceFiles:   [relativeSource]
-
-                    switch o[ext]?.map
-                        when 'inline'
-                            cfg.inlineMap = true
-                            jsMap = coffee.compile data, cfg
-                            jsMap.js
-                        when 'file'
-                            jsMap = coffee.compile data, cfg
-                            srcMap = jsMap.v3SourceMap
-                            mapFile = "#{targetFile}.map"
-                            atomic mapFile, srcMap, (err) ->
-                                if err then error "can't write sourceMap for #{targetFile}: #{err}"
-                            jsMap.js + "\n//# sourceMappingURL=#{slash.basename mapFile}\n"
-                        else
-                            coffee.compile data
-
-                when 'styl'
-                    stylus = require 'stylus'
-                    stylus data
-                        .set 'filename', sourceFile
-                        .set 'paths', [slash.dirname(sourceFile)]
-                        .render()
-                when 'pug'
-                    pug = require 'pug'
-                    pug.render data, pretty: true
-                when 'json'
-                    noon.stringify JSON.parse(data), ext: '.'+o[ext].ext, indent: '  ', maxalign: 16
-                when 'noon'
-                    noon.stringify noon.parse(data), ext: '.'+o[ext].ext, indent: '  '
-                else
-                    throw "don't know how to build files with extname .#{ext.bold}!".yellow
-
-        catch e
-            return konradError 'compile error', e
-
+        
+        #  0000000   0000000   00     00  00000000   000  000      00000000  
+        # 000       000   000  000   000  000   000  000  000      000       
+        # 000       000   000  000000000  00000000   000  000      0000000   
+        # 000       000   000  000 0 000  000        000  000      000       
+        #  0000000   0000000   000   000  000        000  0000000  00000000  
+        
+        compiled = compile sourceText, ext, sourceFile, targetFile, cfg
+        
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 
             if err or compiled != targetData
@@ -363,9 +274,9 @@ build = (sourceFile, cb) ->
                 writeCompiled sourceFile, targetFile, compiled, cb
 
             else
-                log 'unchanged'.green.dim, prettyFilePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
+                log 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
                 if args.verbose
-                    log prettyTime(), "👍  #{prettyFilePath sourceFile} #{'►'.bold.yellow} #{prettyFilePath targetFile}"
+                    log prettyTime(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
@@ -387,9 +298,9 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
             if err then return error "can't write #{targetFile.bold.yellow}".bold.red
             if not args.quiet
                 if args.verbose
-                    log prettyTime(), "👍  #{prettyFilePath slash.tilde sourceFile} #{'►'.bold.yellow} #{prettyFilePath slash.tilde targetFile}"
+                    log prettyTime(), "👍  #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
                 else
-                    log prettyTime(), "👍  #{prettyFilePath slash.tilde targetFile}"
+                    log prettyTime(), "👍  #{pretty.filePath slash.tilde targetFile}"
 
             if slash.samePath slash.resolve(targetFile), __filename
                 reload()
@@ -448,9 +359,9 @@ if args.info
 
         if targetFile
             if dirty sourceFile, targetFile
-                log prettyFilePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, prettyFilePath(slash.relative(targetFile, argDir()), colors.red)
+                log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.red)
             else if args.verbose
-                log prettyFilePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, prettyFilePath(slash.relative(targetFile, argDir()), colors.green)
+                log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
 
 #  0000000  000000000   0000000   000000000  000   000   0000000
 # 000          000     000   000     000     000   000  000
@@ -498,7 +409,7 @@ gitStatus = (sourceFile) ->
                     gitFile = slash.join gitDir, f
                     relPath = slash.relative gitFile, '.'
                     lame    = slash.extname(gitFile) == '.js' or slash.basename(gitFile) == 'package.json'
-                    change  = prfx + prettyFilePath(relPath, (lame and m[k].dim or m[k]))
+                    change  = prfx + pretty.filePath(relPath, (lame and m[k].dim or m[k]))
                     if k in ['modified', 'created'] and args.verbose
                         continue if lame
                         res = childp.execSync "git diff -U0 --ignore-space-at-eol #{gitFile}",
@@ -521,7 +432,7 @@ gitStatus = (sourceFile) ->
 
         relPath = slash.relative gitDir, '.'
         relPath = '.' if relPath == ''
-        gitPath = prettyFilePath relPath, colors.white
+        gitPath = pretty.filePath relPath, colors.white
 
         aheadBehind = () ->
             if 'fetch' in args.arguments
@@ -592,7 +503,7 @@ runcmd = (cmd, cmdargs, cwd) ->
         else
             command = "#{cmdpath} #{cmdargs}"
         if args.verbose
-            log "🔧 ", cmd.gray.reset, prettyFilePath(cmdpath), cmdargs.green
+            log "🔧 ", cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
         childp.execSync command,
             cwd:      cwd
             encoding: 'utf8'
@@ -616,13 +527,13 @@ if args.run or args.rebuild
         if targetFile
             isDirty = dirty sourceFile, targetFile
             if args.rebuild or isDirty
-                src = prettyFilePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
-                tgt = prettyFilePath(slash.relative(targetFile, argDir()), colors.green)
+                src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
+                tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
                 log src, "🔧  ", tgt
                 build sourceFile, (sourceFile, targetFile) ->
                     o = config targetFile
                     if should 'browserify', o, targetFile
-                        log prettyFilePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", prettyFilePath(slash.relative(o.browserify.out, argDir()), colors.blue)
+                        log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)
                         runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", configPath 'browserify', slash.resolve targetFile
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
@@ -680,8 +591,7 @@ if args.watch
 
         d = args.arguments[0] ? '.'
         v = "#{pkg.version} ●".dim.gray
-        # log prettyTime(), "🔧  watching #{prettyFilePath slash.resolve(d), colors.white}#{v}".gray
-        log prettyTime(), "👁  #{v} #{prettyFilePath slash.resolve(d), colors.white}".gray
+        log prettyTime(), "👁  #{v} #{pretty.filePath slash.resolve(d), colors.white}".gray
         watcher = require('chokidar').watch d,
             ignored:        wlk.ignore
             ignoreInitial:  true

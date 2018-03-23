@@ -132,8 +132,6 @@ startKonrad = (rootDir) ->
                 log 'konrad output:', s
                 konradLastTask.push s
 
-    # log 'konrad started in', rootDir
-
 quitKonrad = ->
 
     if konrad?
