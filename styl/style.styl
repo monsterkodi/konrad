@@ -122,10 +122,18 @@ body
     animation-timing-function   ease-in-out
     animation-iteration-count   1
 
+#overlay
+    fill-abs()
+    
+.fade-in
+    animation                   fadeIn 60s
+    animation-timing-function   ease-in-out
+    
 .info
-    width       50%
-    padding-left 25%
-    padding-top  12%
+    pointer-events              none
+    width                       50%
+    padding-left                25%
+    padding-top                 12%
 
 //    0000000   000   000  000  00     00   0000000   000000000  000   0000000   000   000
 //   000   000  0000  000  000  000   000  000   000     000     000  000   000  0000  000
@@ -138,6 +146,12 @@ body
         font-size       14px
     50%  
         font-size       12px
+        
+@keyframes fadeIn
+    0%
+        opacity         0
+    100%  
+        opacity         1
 
 //  0000000   0000000  00000000    0000000   000      000      0000000     0000000   00000000 
 // 000       000       000   000  000   000  000      000      000   000  000   000  000   000

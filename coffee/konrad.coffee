@@ -37,7 +37,7 @@ arguments
     diff         files or directory         #{'.'.magenta}
     run          directory to build         #{'.'.magenta}
     rebuild      directory to rebuild       #{'.'.magenta}
-    bump         semver version             #{'patch'.magenta}
+    bump         semver version             #{'minor'.magenta}
     commit       commit message
     publish      commit message
 

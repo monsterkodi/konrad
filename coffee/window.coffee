@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ slash, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
+{ slash, elem, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
 electron  = require 'electron'
 ipc       = electron.ipcRenderer
@@ -18,18 +18,28 @@ window.onresize = -> ipc.send 'saveBounds'
 
 openFile = (f) ->
     f = slash.resolve f
-    childp.spawn '/usr/local/bin/ko', [f]
+    if slash.win()
+        childp.spawn 'bash', ['ko', f]
+    else
+        childp.spawn '/usr/local/bin/ko', [f]
 
 tasks = {}
 
-clearLog = ->
+showOverlay = ->
 
     img = slash.fileUrl __dirname+'/../img/about.png'
-    $("main").innerHTML = "<img class='info' src='#{img}'>"
+    $("#overlay")?.remove() 
+    overlay = elem id:'overlay'
+    overlay.appendChild elem 'img', class:'info', src:img
+    overlay.addEventListener 'click', (event) -> event.target.remove()
+    $("main").appendChild overlay
 
-clearTasks = -> clearLog(); tasks = {}
-
-clearTimer = null
+fadeOverlay = ->
+    
+    showOverlay()
+    $("#overlay").classList.add 'fade-in'
+    
+clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
 
 # 000  00000000    0000000
 # 000  000   000  000
@@ -37,7 +47,7 @@ clearTimer = null
 # 000  000        000
 # 000  000         0000000
 
-ipc.on "clearLog", clearLog
+ipc.on "clearLog", clearTasks
 ipc.on "konradExit", (event, s) ->
 ipc.on "konradError", (event, s) ->
 ipc.on "konradVersion", (event, s) -> setTitleBar s
@@ -75,11 +85,6 @@ taskDiv = (opt) ->
     main.appendChild div
 
     div
-
-delayClear = ->
-    
-    clearTimeout clearTimer
-    clearTimer = setTimeout clearTasks, prefs.get 'timeout', 20000
     
 # 000000000   0000000    0000000  000   000
 #    000     000   000  000       000  000
@@ -98,7 +103,7 @@ onTask = (s) ->
     div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
     
-    delayClear()
+    fadeOverlay()
 
 # 00     00  00000000   0000000   0000000   0000000    0000000   00000000
 # 000   000  000       000       000       000   000  000        000
@@ -122,13 +127,11 @@ onMessage = (s) ->
 
 onError = (s) ->
 
-    clearTimeout clearTimer
-    clearTimer = null
-    
     ipc.send 'showWin'
     ipc.send 'highlight'
     
-    clearTasks()
+    $("main").innerHTML = ''
+    tasks = {}
 
     lines = s.split '\n'
     [time, file] = lines.shift().split ' 😡 '
