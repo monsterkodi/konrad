@@ -1,8 +1,10 @@
-# 00     00   0000000   000  000   000
-# 000   000  000   000  000  0000  000
-# 000000000  000000000  000  000 0 000
-# 000 0 000  000   000  000  000  0000
-# 000   000  000   000  000  000   000
+###
+00     00   0000000   000  000   000
+000   000  000   000  000  0000  000
+000000000  000000000  000  000 0 000
+000 0 000  000   000  000  000  0000
+000   000  000   000  000  000   000
+###
 
 { about, karg, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
 
@@ -30,7 +32,7 @@ konradLastTask = []
 
 args  = karg """
 
-#{pkg.productName}
+#{pkg.name}
 
     show      . ? open window on startup  . = true
     prefs     . ? show preferences        . = false
@@ -45,7 +47,7 @@ version  #{pkg.version}
 app.exit 0 if not args?
 
 if args.verbose
-    log colors.white.bold "\n#{pkg.productName}", colors.gray "v#{pkg.version}\n"
+    log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
     log colors.yellow.bold 'process'
     p = cwd: process.cwd()
     log noon.stringify p, colors:true
@@ -117,8 +119,8 @@ startKonrad = (rootDir) ->
 
     konrad.stdout.on 'data', (data) ->
         s = colors.strip data.toString()
-        if /\ watching\ /.test s
-            konradVersion = s.split('watching ')[1]
+        if /\ 👁\ \ /.test s
+            konradVersion = s.split('👁  ')[1]
             win?.send 'konradVersion', konradVersion
         else if win?
             win.webContents.send 'konradOutput', s
@@ -307,7 +309,7 @@ app.on 'ready', ->
     
     app.dock?.hide()
 
-    app.setName pkg.productName
+    app.setName pkg.name
 
     rootDir = prefs.get 'rootDir', slash.resolve '~/s'
     startKonrad rootDir
@@ -343,7 +345,7 @@ app.on 'ready', ->
                 ,
                     type: 'separator'
                 ,
-                    label:       "Hide #{pkg.productName}"
+                    label:       "Hide #{pkg.name}"
                     accelerator: 'Cmd+H'
                     role:        'hide'
                 ,
@@ -384,10 +386,6 @@ app.on 'ready', ->
                 ,
                     type: 'separator'
                 ,
-                    # label:       'Reload Window'
-                    # accelerator: 'Ctrl+Alt+Cmd+L'
-                    # click:       -> win?.webContents.reloadIgnoringCache()
-                # ,
                     label:       'Toggle DevTools'
                     accelerator: 'Cmd+Alt+I'
                     click:       -> win?.webContents.openDevTools()
@@ -438,10 +436,6 @@ app.on 'ready', ->
                     click:       -> win?.close()
                 ,
                     type: 'separator'
-                # ,
-                    # label:       'Reload Window'
-                    # accelerator: 'Ctrl+Alt+L'
-                    # click:       -> win?.webContents.reloadIgnoringCache()
                 ,
                     label:       'Toggle DevTools'
                     accelerator: 'Ctrl+Alt+I'
@@ -453,3 +447,5 @@ app.on 'ready', ->
 
 if app.makeSingleInstance( -> showWindow() )
     app.quit()
+
+module.exports = app

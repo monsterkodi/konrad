@@ -1,13 +1,15 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.27.0",
-  "main": "js/konrad.js",
+  "version": "0.29.0",
+  "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
   },
   "scripts": {
-    "build": "coffee -o js -c coffee/konrad.coffee"
+    "build": "coffee -o js -c coffee/konrad.coffee",
+    "mac": "./bin/buildmac.sh",
+    "win": "bash ./bin/buildwin.sh"
   },
   "repository": {
     "type": "git",
@@ -26,11 +28,17 @@
   "dependencies": {
     "chokidar": "^2.0.2",
     "coffeescript": "^2.2.2",
-    "kxk": "^0.40.0",
+    "kxk": "^0.50.0",
     "mkpath": "^1.0.0",
     "pug": "^2.0.0-rc.4",
     "semver": "^5.5.0",
     "simple-git": "^1.91.0",
-    "stylus": "^0.54.5"
+    "stylus": "^0.54.5",
+    "tree-kill": "^1.2.0"
+  },
+  "devDependencies": {
+    "electron": "^1.8.2",
+    "electron-packager": "^11.0.1",
+    "electron-rebuild": "^1.7.3"
   }
 }

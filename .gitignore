@@ -3,3 +3,7 @@ Icon?
 notes.md
 node_modules
 bin/*.js
+bin/*.json
+node_modules
+*-x64
+*.dmg

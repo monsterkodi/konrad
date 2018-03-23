@@ -1,9 +1,10 @@
-
-# 000   000   0000000   000   000  00000000    0000000   0000000
-# 000  000   000   000  0000  000  000   000  000   000  000   000
-# 0000000    000   000  000 0 000  0000000    000000000  000   000
-# 000  000   000   000  000  0000  000   000  000   000  000   000
-# 000   000   0000000   000   000  000   000  000   000  0000000
+###
+000   000   0000000   000   000  00000000    0000000   0000000
+000  000   000   000  0000  000  000   000  000   000  000   000
+0000000    000   000  000 0 000  0000000    000000000  000   000
+000  000   000   000  000  0000  000   000  000   000  000   000
+000   000   0000000   000   000  000   000  000   000  0000000
+###
 
 { atomic, colors, karg, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
 
@@ -678,8 +679,9 @@ if args.watch
         pass = (p) -> if slash.extname(p).substr(1) in _.keys(opt) then true
 
         d = args.arguments[0] ? '.'
-        v = " ● v#{pkg.version}".dim.gray
-        log prettyTime(), "🔧  watching #{prettyFilePath slash.resolve(d), colors.white}#{v}".gray
+        v = "#{pkg.version} ●".dim.gray
+        # log prettyTime(), "🔧  watching #{prettyFilePath slash.resolve(d), colors.white}#{v}".gray
+        log prettyTime(), "👁  #{v} #{prettyFilePath slash.resolve(d), colors.white}".gray
         watcher = require('chokidar').watch d,
             ignored:        wlk.ignore
             ignoreInitial:  true
