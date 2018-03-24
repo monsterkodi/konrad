@@ -19,7 +19,9 @@ window.onresize = -> ipc.send 'saveBounds'
 openFile = (f) ->
     f = slash.resolve f
     if slash.win()
-        childp.spawn 'bash', ['ko', f]
+        log f
+        # childp.spawn 'bash', ['ko', f]
+        childp.spawn slash.unslash slash.resolve('~/s/ko/ko-win32-x64/ko.exe'), ['ko', slash.unslash slash.path f]
     else
         childp.spawn '/usr/local/bin/ko', [f]
 

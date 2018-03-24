@@ -20,7 +20,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 coffee = require 'coffeescript'
                 
                 if cfg[ext]?.map in ['inline', 'file']
-                    toSource       = slash.relative targetFile, sourceFile
+                    toSource       = slash.relative sourceFile, targetFile
                     splitIndex     = toSource.lastIndexOf('./') + 2
                     sourceRoot     = toSource.slice 0, splitIndex - 4
                     relativeSource = toSource.substr splitIndex
