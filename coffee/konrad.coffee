@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ atomic, colors, karg, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
+{ atomic, colors, karg, walkdir, empty, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
 
 pkg         = require "#{__dirname}/../package"
 pretty      = require './pretty'
@@ -266,6 +266,10 @@ build = (sourceFile, cb) ->
         #  0000000   0000000   000   000  000        000  0000000  00000000  
         
         compiled = compile sourceText, ext, sourceFile, targetFile, cfg
+        
+        if empty compiled
+            if args.verbose then error "compile failed for #{sourceFile}"
+            return
         
         fs.readFile targetFile, 'utf8', (err, targetData) ->
 

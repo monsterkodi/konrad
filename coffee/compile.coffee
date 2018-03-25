@@ -70,7 +70,8 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 throw "don't know how to build files with extname .#{ext.bold}!".yellow
 
     catch e
-        return konradError 'compile error', e
+        konradError 'compile error', e
+        return null
         
     compiled
     
