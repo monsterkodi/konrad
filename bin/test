@@ -5,6 +5,8 @@ if [ -e "coffee/test" ] ; then
     TEST="coffee/test/*.coffee"
 elif [ -e "test" ] ; then
     TEST="test/*.coffee"
+elif [ -e "coffee" ] ; then
+    TEST="coffee/test.coffee"
 fi
 
 mocha --require coffeescript/register --bail "$TEST"
