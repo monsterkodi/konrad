@@ -60,21 +60,26 @@ watch = (wlk, opt) ->
 watch.reload = ->
     
     return if not watcher?
+    
     watcher.close()
     
-    log pretty.time(), '🔧  reload '.gray if not args.quiet
-    
-    arg = '-w'
-    arg += ' -v' if args.verbose
-    arg += ' -D' if args.debug
-    arg += ' -q' if args.quiet
-    
+    log pretty.time(), '🔧  reload '.gray, process.cwd() if not args.quiet
+
     konrad = slash.resolve slash.join __dirname, 'konrad.js'
-    childp.execSync "node #{konrad} #{arg}",
-        cwd:      process.cwd()
-        encoding: 'utf8'
-        stdio:    'inherit'
-        shell:    true
+    
+    args = [konrad]
+    args.push '-w'
+    args.push '-v' if args.verbose
+    args.push '-D' if args.debug
+    args.push '-q' if args.quiet
+        
+    childp.spawn 'node', args,
+        cwd:         process.cwd()
+        encoding:    'utf8'
+        detached:    true
+        shell:       true
+        windowsHide: true
+        
     log 'exit'.yellow.bold if not args.quiet
     
     process.exit 0

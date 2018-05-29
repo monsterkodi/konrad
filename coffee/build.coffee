@@ -101,9 +101,7 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
                 else
                     log pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 
-            konrad = slash.resolve slash.join __dirname, 'konrad.js'
-            log slash.resolve(targetFile), konrad
-            if slash.samePath slash.resolve(targetFile), konrad
+            if slash.samePath slash.dir(targetFile), __dirname
                 watch = require './watch'
                 watch.reload()
             else if cb?
