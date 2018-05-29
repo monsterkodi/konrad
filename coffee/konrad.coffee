@@ -378,14 +378,13 @@ gitStatus = (sourceFile) ->
 
     gitDir = slash.dirname sourceFile
     git = require('simple-git') gitDir
-    doFetch git,sourceFile
+    doFetch git, gitDir, sourceFile
     
 doFetch = (git, gitDir, sourceFile) ->
     
     git.fetch (err,status) ->
         
         if err then return error "git fetch error #{err}"
-        log 'fetch status:', status
         doStatus git, gitDir, sourceFile
         
 doStatus = (git, gitDir, sourceFile) ->
@@ -394,13 +393,11 @@ doStatus = (git, gitDir, sourceFile) ->
 
         if err then return error "git status error #{err}"
 
-        log 'status status:', status
-        
         changes = []
 
-        for k,v of _.clone status
-            if _.isEmpty status[k]
-                delete status[k]
+        fileLists = _.omitBy status, (v,k) -> _.isEmpty v
+
+        for k,v of fileLists
             m =
                 not_added:  colors.gray
                 conflicted: colors.yellow
@@ -454,27 +451,13 @@ doStatus = (git, gitDir, sourceFile) ->
         gitPath = pretty.filePath relPath, colors.white
 
         aheadBehind = () ->
-            # if 'fetch' in args.arguments
-                # childp.execSync "git fetch",
-                    # cwd: gitDir
-                    # encoding: 'utf8'
-            # log 'aheadBehind', slash.dir gitDir
-            # st = childp.execSync "git status -sb",
-                # cwd: slash.dir gitDir
-                # encoding: 'utf8'
-            # st = st.split(/\r?\n/)[0].split '['
-            # if st.length > 1
-                # st = st[1].substr(0,st[1].length-1)
-                # st = st.replace ', ', ' '
-                # st = st.replace /ahead (.*)/, "▲ $1".yellow.bold.bgBlack
-                # st = st.replace /behind (.*)/, "▼ $1".red.bold.bgBlack
-                # st = _.padEnd st, 4
             if status.ahead or status.behind
                 st = ''
                 if status.ahead
-                    st += _.padEnd "▲ #{status.ahead}".yellow.bold.bgBlack, 4
+                    st += "▲ #{status.ahead}".gray.bold.bgBlack
                 if status.behind
-                    st += _.padEnd "▲ #{status.behind}".red.bold.bgBlack, 4
+                    st += "▼ #{status.behind}".red.bold.bgBlack
+                st = _.padEnd st, 4
             else
                 ''
 
