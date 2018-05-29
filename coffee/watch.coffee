@@ -12,6 +12,8 @@ args   = require './args'
 pretty = require './pretty'
 should = require './should'
 runcmd = require './runcmd'
+config = require './config'
+build  = require './build'
 pkg    = require '../package.json'
 
 watcher = null
@@ -67,7 +69,8 @@ watch.reload = ->
     arg += ' -D' if args.debug
     arg += ' -q' if args.quiet
     
-    childp.execSync "node #{__filename} #{arg}",
+    konrad = slash.resolve slash.join __dirname, 'konrad.js'
+    childp.execSync "node #{konrad} #{arg}",
         cwd:      process.cwd()
         encoding: 'utf8'
         stdio:    'inherit'

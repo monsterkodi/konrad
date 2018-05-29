@@ -321,123 +321,49 @@ app.on 'ready', ->
     # 000 0 000  000       000  0000  000   000
     # 000   000  00000000  000   000   0000000
 
-    if os.platform() != 'win32'
-        Menu.setApplicationMenu Menu.buildFromTemplate [
-                label: app.getName()
-                submenu: [
-                    label:        "About #{pkg.name}"
-                    accelerator:  'Command+.'
-                    click:        showAbout
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Set Dir...'
-                    accelerator:  'Command+o'
-                    click:        setRootDir
-                ,
-                    label:       'Clear Log'
-                    accelerator: 'Command+K'
-                    click:        -> win?.webContents.send 'clearLog'
-                ,
-                    type: 'separator'
-                ,
-                    label:       "Hide #{pkg.name}"
-                    accelerator: 'Cmd+H'
-                    role:        'hide'
-                ,
-                    label:       'Hide Others'
-                    accelerator: 'Cmd+Alt+H'
-                    role:        'hideothers'
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Quit'
-                    accelerator: 'Command+Q'
-                    click:        quitKonrad
-                ]
-            ,
-                # 000   000  000  000   000  0000000     0000000   000   000
-                # 000 0 000  000  0000  000  000   000  000   000  000 0 000
-                # 000000000  000  000 0 000  000   000  000   000  000000000
-                # 000   000  000  000  0000  000   000  000   000  000   000
-                # 00     00  000  000   000  0000000     0000000   00     00
+    Menu.setApplicationMenu Menu.buildFromTemplate [
+        label: app.getName()
+        submenu: [
+            label:        "About #{pkg.name}"
+            accelerator:  'ctrl+.'
+            click:        showAbout
+        ,
+            type: 'separator'
+        ,
+            label:       'Set Dir...'
+            accelerator:  'ctrl+o'
+            click:        setRootDir
+        ,
+            label:       'Clear Log'
+            accelerator: 'ctrl+k'
+            click:        -> win?.webContents.send 'clearLog'
+        ,
+            type: 'separator'
+        ,
+            label:       'Quit'
+            accelerator: 'ctrl+q'
+            click:        quitKonrad
+        ]
+    ,
+        # 000   000  000  000   000  0000000     0000000   000   000
+        # 000 0 000  000  0000  000  000   000  000   000  000 0 000
+        # 000000000  000  000 0 000  000   000  000   000  000000000
+        # 000   000  000  000  0000  000   000  000   000  000   000
+        # 00     00  000  000   000  0000000     0000000   00     00
 
-                label: 'Window'
-                submenu: [
-                    label:       'Minimize'
-                    accelerator: 'Alt+Cmd+M'
-                    click:       -> win?.minimize()
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Close Window'
-                    accelerator: 'Cmd+W'
-                    click:       -> win?.close()
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Bring All to Front'
-                    accelerator: 'Alt+Cmd+`'
-                    click:       -> win?.show()
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Toggle DevTools'
-                    accelerator: 'Cmd+Alt+I'
-                    click:       -> win?.webContents.toggleDevTools()
-                ]
-            ]
-
-    else
-        Menu.setApplicationMenu Menu.buildFromTemplate [
-                label: app.getName()
-                submenu: [
-                    label:        "About #{pkg.name}"
-                    accelerator:  'Ctrl+.'
-                    click:        showAbout
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Set Dir...'
-                    accelerator:  'Ctrl+o'
-                    click:        setRootDir
-                ,
-                    label:       'Clear Log'
-                    accelerator: 'Ctrl+K'
-                    click:        -> win?.webContents.send 'clearLog'
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Quit'
-                    accelerator: 'Ctrl+Q'
-                    click:        quitKonrad
-                ]
-            ,
-                # 000   000  000  000   000  0000000     0000000   000   000
-                # 000 0 000  000  0000  000  000   000  000   000  000 0 000
-                # 000000000  000  000 0 000  000   000  000   000  000000000
-                # 000   000  000  000  0000  000   000  000   000  000   000
-                # 00     00  000  000   000  0000000     0000000   00     00
-
-                label: 'Window'
-                submenu: [
-                    label:       'Minimize'
-                    accelerator: 'Ctrl+Alt+M'
-                    click:       -> win?.minimize()
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Close Window'
-                    accelerator: 'Ctrl+W'
-                    click:       -> win?.close()
-                ,
-                    type: 'separator'
-                ,
-                    label:       'Toggle DevTools'
-                    accelerator: 'Ctrl+Alt+I'
-                    click:       -> win?.webContents.openDevTools()
-                ]
-            ]
+        label: 'Window'
+        submenu: [
+            label:       'Close Window'
+            accelerator: 'ctrl+w'
+            click:       -> win?.close()
+        ,
+            type: 'separator'
+        ,
+            label:       'Toggle DevTools'
+            accelerator: 'alt+ctrl+i'
+            click:       -> win?.webContents.toggleDevTools()
+        ]
+    ]
 
     showWindow() if args.show
 

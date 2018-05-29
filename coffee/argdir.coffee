@@ -6,7 +6,7 @@
 000   000  000   000   0000000   0000000    000  000   000
 ###
 
-{ slash, log, _ } = require 'kxk'
+{ slash } = require 'kxk'
 
 args = require './args'
 
@@ -20,10 +20,5 @@ argDir = ->
         if slash.dirExists d
             return d
     slash.resolve '.'
-
-argDirRel = ->
-    if argDir() == slash.resolve '.'
-        return ''
-     slash.relative argDir(), '.'
 
 module.exports = argDir

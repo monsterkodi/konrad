@@ -16,7 +16,6 @@ should  = require './should'
 target  = require './target'
 compile = require './compile'
 runcmd  = require './runcmd'
-watch   = require './watch'
 
 build = (sourceFile, opt, cb) ->
 
@@ -102,7 +101,10 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
                 else
                     log pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 
-            if slash.samePath slash.resolve(targetFile), __filename
+            konrad = slash.resolve slash.join __dirname, 'konrad.js'
+            log slash.resolve(targetFile), konrad
+            if slash.samePath slash.resolve(targetFile), konrad
+                watch = require './watch'
                 watch.reload()
             else if cb?
                 cb sourceFile, targetFile
