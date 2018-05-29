@@ -1,11 +1,11 @@
 name            konrad
 description     builds my stuff
-version         0.38.0
+version         0.42.0
 main            js/index.js
 bin
                 konrad  ./bin/konrad
 scripts
-                build   coffee -o js -c coffee/konrad.coffee
+                build   bash ./bin/compile.sh
                 mac     ./bin/buildmac.sh
                 win     bash ./bin/buildwin.sh
 repository

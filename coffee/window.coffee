@@ -119,7 +119,7 @@ onMessage = (s) ->
 
     div = taskDiv time: time, message: msg, key: 'msg', icon: '🔧'
     
-    delayClear()
+    # delayClear()
 
 # 00000000  00000000   00000000    0000000   00000000
 # 000       000   000  000   000  000   000  000   000

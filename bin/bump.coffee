@@ -23,7 +23,7 @@ pack         = require file
 oldversion   = pack.version
 oldversion   = "0.0.0" if not semver.valid oldversion
 pack.version = args.semver ? semver.inc oldversion, args.increment
-console.log slash.basename(slash.dirname file).green, oldversion.gray, '►'.gray.dim, pack.version.bold.red
+console.log slash.basename(slash.dir file).green, oldversion.gray, '►'.gray.dim, pack.version.bold.red
 
 # write package.json
 fs.writeFileSync file, JSON.stringify(pack, null, '  '), encoding: 'utf8'

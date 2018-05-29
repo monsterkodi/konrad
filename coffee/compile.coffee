@@ -51,7 +51,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 stylus = require 'stylus'
                 stylus sourceText
                     .set 'filename', sourceFile
-                    .set 'paths', [slash.dirname(sourceFile)]
+                    .set 'paths', [slash.dir sourceFile]
                     .render()
                     
             when 'pug'

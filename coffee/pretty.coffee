@@ -8,6 +8,8 @@
 
 { colors, slash, os, _ } = require 'kxk'
 
+args = require './args'
+
 pretty = {}
 
 pretty.path = (p, c=colors.yellow) ->
@@ -21,13 +23,14 @@ pretty.file = (f, c=colors.yellow) ->
     
 pretty.filePath = (p, c=colors.yellow) ->
     p = p.replace os.homedir(), "~"
-    if slash.dirname(p) not in ['.', '/']
-        "#{pretty.path slash.dirname(p), c}#{pretty.path '/', c}#{pretty.file slash.basename(p), c}"
+    if slash.dir(p) not in ['.', '/']
+        "#{pretty.path slash.dir(p), c}#{pretty.path '/', c}#{pretty.file slash.basename(p), c}"
     else
         "#{pretty.file slash.basename(p), c}"
 
-pretty.time = (enabled=true) ->
-    if enabled
+pretty.time = ->
+    
+    if args.logtime
         d = new Date()
         ["#{_.padStart(String(d.getHours()),   2, '0').gray}#{':'.dim.gray}"
          "#{_.padStart(String(d.getMinutes()), 2, '0').gray}#{':'.dim.gray}"
