@@ -64,7 +64,7 @@ doStatus = (git, gitDir, sourceFile) ->
                     relPath = slash.relative gitFile, '.'
                     lame    = slash.extname(gitFile) == '.js' or slash.basename(gitFile) == 'package.json'
                     change  = prfx + pretty.filePath(relPath, (lame and m[k].dim or m[k]))
-                    if k in ['modified', 'created'] and args.verbose
+                    if k in ['modified', 'created'] and args.diff
                         continue if lame
                         res = childp.execSync "git diff -U0 --ignore-space-at-eol #{gitFile}",
                             encoding: 'utf8'

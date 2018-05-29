@@ -6,20 +6,19 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ atomic, colors, karg, walkdir, noon, childp, slash, error, log, fs, os, _ } = require 'kxk'
+{ colors, karg, slash, noon, log, fs, _ } = require 'kxk'
 
-pkg         = require "#{__dirname}/../package"
-pretty      = require './pretty'
-konradError = require './error'
 args        = require './args'
 argDir      = require './argdir'
 build       = require './build'
-should      = require './should'
-target      = require './target'
 config      = require './config'
+pretty      = require './pretty'
+runcmd      = require './runcmd'
+should      = require './should'
 status      = require './status'
 watch       = require './watch'
-runcmd      = require './runcmd'
+walk        = require './walk'
+pkg         = require "#{__dirname}/../package"
 
 actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
 
@@ -82,43 +81,6 @@ dirty = (sourceFile, targetFile) ->
     ts = fs.statSync targetFile
     ss.mtime.getTime() > ts.mtime.getTime()
 
-# 000   000   0000000   000      000   000
-# 000 0 000  000   000  000      000  000
-# 000000000  000000000  000      0000000
-# 000   000  000   000  000      000  000
-# 00     00  000   000  0000000  000   000
-
-walk = (wopt, cb) ->
-    
-    if _.isFunction wopt
-        cb = wopt
-        wopt = {}
-
-    try
-        walkdir.sync argDir(), (wp) ->
-
-            p = slash.path wp
-            o = config.obj p, wopt
-
-            if should 'ignore', o, p
-                cb p if wopt.all
-                @ignore wp
-                return
-
-            if should 'ignore', wlk, p
-                cb p if wopt.all
-                @ignore wp
-                return
-
-            if slash.ext(p) in _.keys o
-                cb p, target p, wopt
-            else
-                if wopt.all
-                    if not cb p
-                        @ignore wp
-    catch err
-        console.log "walk [ERROR]: #{err}"
-
 # 000  000   000  00000000   0000000
 # 000  0000  000  000       000   000
 # 000  000 0 000  000000    000   000
@@ -129,7 +91,7 @@ if args.info
 
     log '○● info'.gray
 
-    walk opt, (sourceFile, targetFile) ->
+    walk wlk, opt, (sourceFile, targetFile) ->
 
         log "source: #{sourceFile} target: #{targetFile}" if args.verbose
         if dirty sourceFile, targetFile
@@ -138,15 +100,15 @@ if args.info
             log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
 
 if args.diff
+    
     args.status  = true
-    args.verbose = true
 
 if args.status
     
     optall = _.defaults opt, all: true
     gitcount = 0
 
-    walk optall, (sourceFile, targetFile) ->
+    walk wlk, optall, (sourceFile, targetFile) ->
 
         if not targetFile
 
@@ -179,7 +141,7 @@ if args.run or args.rebuild
 
     log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     
-    walk opt, (sourceFile, targetFile) ->
+    walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile
             isDirty = dirty sourceFile, targetFile
             if args.rebuild or isDirty
