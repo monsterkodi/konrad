@@ -196,13 +196,13 @@ $('main').addEventListener "contextmenu", (event) ->
         absPos = pos $('main').getBoundingClientRect().left, $('main').getBoundingClientRect().top
     
     opt = items: [
-        text:   'Set Dir...'
-        combo:  'ctrl+o'
-        cb:      -> post.toMain 'setRootDir'
-    ,
         text:   'Clear'
         combo:  'k' 
         cb:     clearTasks
+    ,
+        text:   'Set Dir...'
+        combo:  'ctrl+o'
+        cb:      -> post.toMain 'setRootDir'
     ,
         text:   'Show Menu'
         combo:  'alt'

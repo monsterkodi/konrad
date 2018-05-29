@@ -75,7 +75,7 @@ if args.prefs
 # 000  000        000
 # 000  000         0000000
 
-ipc.on 'openDevTools',   -> win?.webContents.openDevTools()
+ipc.on 'openDevTools',   -> win?.webContents.toggleDevTools()
 ipc.on 'reloadWin',      -> win?.webContents.reloadIgnoringCache()
 ipc.on 'showWin',        -> showWindow true
 ipc.on 'saveBounds',     -> saveBounds()
@@ -384,7 +384,7 @@ app.on 'ready', ->
                 ,
                     label:       'Toggle DevTools'
                     accelerator: 'Cmd+Alt+I'
-                    click:       -> win?.webContents.openDevTools()
+                    click:       -> win?.webContents.toggleDevTools()
                 ]
             ]
 
