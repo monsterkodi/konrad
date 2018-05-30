@@ -103,6 +103,19 @@ highlightColor = #89f
 .titlebar-dot
     color               #eee
     
+.winclose
+    & img
+        opacity         0.2
+    &:hover
+        & img
+            opacity     0.1
+    &:active
+        & img
+            opacity     1
+        background-color #f00
+        &.gray
+            background-color #eee
+    
 // 00     00  00000000  000   000  000   000  
 // 000   000  000       0000  000  000   000  
 // 000000000  0000000   000 0 000  000   000  

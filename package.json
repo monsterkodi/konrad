@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.47.0",
+  "version": "0.48.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -28,7 +28,7 @@
   "dependencies": {
     "chokidar": "^2.0.3",
     "coffeescript": "^2.3.1",
-    "kxk": "^0.81.0",
+    "kxk": "^0.83.0",
     "mkpath": "^1.0.0",
     "pug": "^2.0.3",
     "semver": "^5.5.0",

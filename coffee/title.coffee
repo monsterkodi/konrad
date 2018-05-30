@@ -26,7 +26,7 @@ class Title
         @winicon = elem class: 'winicon'
         @winicon.appendChild elem 'img', src:slash.fileUrl @cfg.icon
         @elem.appendChild @winicon
-        @winicon.addEventListener 'click', -> post.emit 'menuAction', 'Toggle Menu'   
+        @winicon.addEventListener 'click', -> post.emit 'menuAction', 'Open Menu'   
         
         @title = elem class: 'titlebar-title'
         html  = "<span class='titlebar-name'>#{pkg.name}</span>"
@@ -36,19 +36,17 @@ class Title
         @title.ondblclick = => post.toMain 'toggleMaximize'
         @elem.appendChild @title
                 
-        @minimize = elem class: 'winclose gray'
+        # ─ ◻ 🞩
+        @minimize = elem class: 'winclose gray', text:'─'
         @elem.appendChild @minimize
-        @minimize.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/minimize.png'
         @minimize.addEventListener 'click', -> post.emit 'menuAction', 'Minimize'
         
-        @maximize = elem class: 'winclose gray'
+        @maximize = elem class: 'winclose gray', text:'◻'
         @elem.appendChild @maximize
-        @maximize.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/maximize.png'
         @maximize.addEventListener 'click', -> post.emit 'menuAction', 'Maximize'
 
-        @close = elem class: 'winclose'
+        @close = elem class: 'winclose', text:'🞩'
         @elem.appendChild @close
-        @close.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/close.png'
         @close.addEventListener 'click', -> post.emit 'menuAction', 'Close Window'
         
         if @cfg.menu
@@ -79,6 +77,7 @@ class Title
         
         switch action
             when 'Toggle Menu'      then @toggleMenu()
+            when 'Open Menu'        then @openMenu()
             when 'Show Menu'        then @showMenu()
             when 'Hide Menu'        then @hideMenu()
             when 'DevTools'         then win().webContents.toggleDevTools()
@@ -91,7 +90,6 @@ class Title
     menuTemplate: ->
         
         if empty @templateCache
-            # log 'load menu template', slash.resolve @cfg.menu
             @templateCache = @makeTemplate noon.load slash.resolve @cfg.menu
         @templateCache
         
@@ -126,6 +124,7 @@ class Title
     showMenu:    => @menu.elem.style.display = 'inline-block'; @menu?.focus?(); post.emit 'titlebar', 'hideTitle'
     hideMenu:    => @menu?.close(); @menu.elem.style.display = 'none'; post.emit 'titlebar', 'showTitle'
     toggleMenu:  => if @menuVisible() then @hideMenu() else @showMenu()
+    openMenu:    => if @menuVisible() then @hideMenu() else @showMenu(); @menu.open()
 
     # 000   000  00000000  000   000
     # 000  000   000        000 000
