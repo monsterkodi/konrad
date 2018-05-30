@@ -8,6 +8,10 @@
 
 { slash, elem, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
+pkg = require '../package.json'
+
+title = require './title'
+
 electron  = require 'electron'
 ipc       = electron.ipcRenderer
 
@@ -120,8 +124,6 @@ onMessage = (s) ->
 
     div = taskDiv time: time, message: msg, key: 'msg', icon: '🔧'
     
-    # delayClear()
-
 # 00000000  00000000   00000000    0000000   00000000
 # 000       000   000  000   000  000   000  000   000
 # 0000000   0000000    0000000    000   000  0000000
@@ -150,21 +152,33 @@ onError = (s) ->
 
     div.scrollIntoViewIfNeeded()
     
-setTitleBar = (s) ->
+# 000000000  000  000000000  000      00000000  
+#    000     000     000     000      000       
+#    000     000     000     000      0000000   
+#    000     000     000     000      000       
+#    000     000     000     0000000  00000000  
 
-    if slash.win()
-        $('titlebar')?.remove()
-        $('main').style.top = '0px'
-        win = electron.remote.getCurrentWindow()
-        win.setTitle 'konrad ● ' + s
-    else
-        [path, version] = s.split ' ● '
-        html  = "<span class='titlebarPath'>#{slash.tilde path}</span>"
-        html += "<span class='titlebarDot'> ● </span>"
-        html += "<span class='titlebarVersion'>#{version}</span>"
-        $('titlebar').innerHTML = html
-        $('titlebar').ondblclick = => ipc.send 'toggleMaximize'
+log 'title>'
 
+winTitle = new title pkg:pkg, menu:__dirname + '/../coffee/menu.noon'
+
+log 'title:', winTitle
+
+setTitleBar = (s) -> log 'setTitleBar', s
+
+    # if slash.win()
+        # # $('titlebar')?.remove()
+        # # $('main').style.top = '0px'
+        # win = electron.remote.getCurrentWindow()
+        # win.setTitle 'konrad ● ' + s
+    # else
+        # [path, version] = s.split ' ● '
+        # html  = "<span class='titlebarPath'>#{slash.tilde path}</span>"
+        # html += "<span class='titlebarDot'> ● </span>"
+        # html += "<span class='titlebarVersion'>#{version}</span>"
+        # $('titlebar').innerHTML = html
+        # $('titlebar').ondblclick = => ipc.send 'toggleMaximize'
+        
 # 000   000  00000000  000   000
 # 000  000   000        000 000
 # 0000000    0000000     00000
@@ -223,3 +237,9 @@ $('main').addEventListener "contextmenu", (event) ->
 
     popup.menu opt
     
+post.on 'menuAction', (action) ->
+    log 'menuAction', action
+    switch action
+        when 'Toggle Scheme' then scheme.toggle()
+        when 'About'         then post.toMain 'showAbout'
+        

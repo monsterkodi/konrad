@@ -1,9 +1,10 @@
-
-// 0000000     0000000   00000000   000   000  
-// 000   000  000   000  000   000  000  000   
-// 000   000  000000000  0000000    0000000    
-// 000   000  000   000  000   000  000  000   
-// 0000000    000   000  000   000  000   000  
+/*
+0000000     0000000   00000000   000   000  
+000   000  000   000  000   000  000  000   
+000   000  000000000  0000000    0000000    
+000   000  000   000  000   000  000  000   
+0000000    000   000  000   000  000   000  
+*/
 
 frameWidth     = 6px
 frameColor     = #222
@@ -14,11 +15,65 @@ body
     background          bgColor
     color               #fff
     
+// 00     00   0000000   000  000   000  
+// 000   000  000   000  000  0000  000  
+// 000000000  000000000  000  000 0 000  
+// 000 0 000  000   000  000  000  0000  
+// 000   000  000   000  000  000   000  
+
+#main
+    border-left         frameWidth solid frameColor
+    border-right        frameWidth solid frameColor
+    border-bottom       frameWidth solid frameColor
+    background          bgColor
+    color               #aaa
+
 #overlay
     background          bgColor
     
-.titlebar
-    background          #333
+// 000000000   0000000    0000000  000   000  
+//    000     000   000  000       000  000   
+//    000     000000000  0000000   0000000    
+//    000     000   000       000  000  000   
+//    000     000   000  0000000   000   000  
+
+.task .time
+    color               #555
+
+.task .file
+    color               #ff0
+
+.task .message
+    color               #888
+    
+// 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
+// 000   000  000  000        000   000  000      000  000        000   000     000     
+// 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
+// 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
+// 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
+
+highlightColor = #89f
+
+@keyframes highlightTime
+    0%,100%   
+        color           #555
+    50%  
+        color           highlightColor
+
+@keyframes highlightFile
+    0%,100%   
+        color           #ff0
+    50%  
+        color           highlightColor
+    
+// 000000000  000  000000000  000      00000000  0000000     0000000   00000000   
+//    000     000     000     000      000       000   000  000   000  000   000  
+//    000     000     000     000      0000000   0000000    000000000  0000000    
+//    000     000     000     000      000       000   000  000   000  000   000  
+//    000     000     000     0000000  00000000  0000000    000   000  000   000  
+
+#titlebar
+    background          frameColor
     color               #aaa
 
 .titlebarPath
@@ -30,22 +85,24 @@ body
 .titlebarVersion
     color               #555
 
-.main
-    border-left         frameWidth solid frameColor
-    border-right        frameWidth solid frameColor
-    border-bottom       frameWidth solid frameColor
-    background          bgColor
-    color               #aaa
-
-.task .time
-    color               #555
-
-.task .file
-    color               #ff0
-
-.task .message
+// 00     00  00000000  000   000  000   000  
+// 000   000  000       0000  000  000   000  
+// 000000000  0000000   000 0 000  000   000  
+// 000 0 000  000       000  0000  000   000  
+// 000   000  00000000  000   000   0000000   
+            
+.menuItem
+    color               #444
+    background-color    titleColor // #222
+    
+.menuItem.selected
+    color               #666
+    
+.menu:focus .menuItem
     color               #888
-
+.menu:focus .menuItem.selected
+    color               #fff
+    
 // 00000000    0000000   00000000   000   000  00000000
 // 000   000  000   000  000   000  000   000  000   000
 // 00000000   000   000  00000000   000   000  00000000
@@ -64,6 +121,12 @@ body
         border-bottom       1px solid #222
     &.selected
         color           #fff
+        & .popupCombo
+            color       #888
+    &.separator
+        border-top          1px solid #333
+    &:not(:last-child)
+        border-bottom       1px solid #222
 
 .popupItem:active
     color               #ff0
@@ -71,20 +134,12 @@ body
 .popupCombo
     color               #444
     
-highlightColor = #89f
+//  0000000   0000000  00000000    0000000   000      000      
+// 000       000       000   000  000   000  000      000      
+// 0000000   000       0000000    000   000  000      000      
+//      000  000       000   000  000   000  000      000      
+// 0000000    0000000  000   000   0000000   0000000  0000000  
 
-@keyframes highlightTime
-    0%,100%   
-        color           #555
-    50%  
-        color           highlightColor
-
-@keyframes highlightFile
-    0%,100%   
-        color           #ff0
-    50%  
-        color           highlightColor
-        
 ::-webkit-scrollbar-corner
     background-color        bgColor
 

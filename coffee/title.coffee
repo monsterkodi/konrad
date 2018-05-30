@@ -1,0 +1,167 @@
+###
+000000000  000  000000000  000      00000000
+   000     000     000     000      000     
+   000     000     000     000      0000000 
+   000     000     000     000      000     
+   000     000     000     0000000  00000000
+###
+
+{ elem, slash, empty, post, menu, noon, log, $, _ } = require 'kxk'
+
+# Tabs = require './tabs'
+
+class Title
+    
+    constructor: (cfg) ->
+
+        post.on 'titlebar',   @onTitlebar
+        post.on 'menuAction', @onMenuAction
+        
+        @cfg = cfg 
+        @cfg ?= {}
+        
+        pkg = @cfg.pkg
+        
+        @elem =$ cfg.elem ? "#titlebar"
+        @elem.ondblclick = (event) -> post.toMain 'maximizeWindow', window.winID
+                
+        @winicon = elem class: 'winicon'
+        @winicon.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/menu@2x.png'
+        @elem.appendChild @winicon
+        @winicon.addEventListener 'click', -> post.emit 'menuAction', 'Toggle Menu'   
+        
+        @title = elem class: 'titlebar-title'
+        html  = "<span class='titlebar-name'>kali</span>"
+        html += "<span class='titlebar-dot'> ● </span>"
+        html += "<span class='titlebar-version'>#{pkg.version}</span>"
+        @title.innerHTML = html
+        @title.ondblclick = => post.toMain 'toggleMaximize'
+        @elem.appendChild @title
+        
+        # @tabs = new Tabs @elem
+        
+        @minimize = elem class: 'winclose gray'
+        @elem.appendChild @minimize
+        @minimize.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/minimize.png'
+        @minimize.addEventListener 'click', -> post.emit 'menuAction', 'Minimize'
+        
+        @maximize = elem class: 'winclose gray'
+        @elem.appendChild @maximize
+        @maximize.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/maximize.png'
+        @maximize.addEventListener 'click', -> post.emit 'menuAction', 'Maximize'
+
+        @close = elem class: 'winclose'
+        @elem.appendChild @close
+        @close.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/close.png'
+        @close.addEventListener 'click', -> post.emit 'menuAction', 'Close Window'
+        
+        if @cfg.menu
+            
+            @initMenu @menuTemplate()
+         
+    showTitle: -> @title.style.display = 'initial'
+    hideTitle: -> @title.style.display = 'none'
+        
+    # swapForTabs: (swapIn) -> 
+        # @tabs.div.parentNode.insertBefore swapIn, @tabs.div
+        # @tabs.div.style.display = 'none'
+#         
+    # restoreTabs: ->
+        # @tabs.div.previousSibling.remove()
+        # @tabs.div.style.display = ''
+    
+    onTitlebar: (action) =>
+        
+        switch action
+            when 'showTitle'   then @showTitle()
+            when 'hideTitle'   then @hideTitle()
+            when 'showMenu'    then @showMenu()
+            when 'hideMenu'    then @hideMenu()
+            when 'toggleMenu'  then @toggleMenu()
+            
+    # 00     00  00000000  000   000  000   000  
+    # 000   000  000       0000  000  000   000  
+    # 000000000  0000000   000 0 000  000   000  
+    # 000 0 000  000       000  0000  000   000  
+    # 000   000  00000000  000   000   0000000   
+
+    onMenuAction: (action, args) =>
+        
+        win = -> require('electron').remote.getCurrentWindow()
+        
+        switch action
+            when 'Toggle Menu'      then @toggleMenu()
+            when 'Show Menu'        then @showMenu()
+            when 'Hide Menu'        then @hideMenu()
+            when 'DevTools'         then win().webContents.toggleDevTools()
+            when 'Reload'           then win().webContents.reloadIgnoringCache()
+            when 'Close Window'     then win().close()
+            when 'Minimize'         then win().minimize()
+            when 'Maximize'         
+                if win().isMaximized() then win().unmaximize() else win().maximize()  
+
+    menuTemplate: ->
+        
+        if empty @templateCache
+            log 'load menu template', slash.resolve @cfg.menu
+            @templateCache = @makeTemplate noon.load slash.resolve @cfg.menu
+            # log 'template', @templateCache
+        @templateCache
+        
+    makeTemplate: (obj) ->
+        
+        tmpl = []
+        for text,menuOrAccel of obj
+            tmpl.push switch
+                when empty(menuOrAccel) and text.startsWith '-'
+                    text: ''
+                when _.isNumber menuOrAccel
+                    text:text
+                    accel:str menuOrAccel
+                when _.isString menuOrAccel
+                    text:text
+                    accel:menuOrAccel
+                when empty(menuOrAccel)
+                    text:text
+                    accel: ''
+                else
+                    text:text
+                    menu:@makeTemplate menuOrAccel
+        tmpl
+
+    initMenu: (items) ->
+
+        @menu = new menu items:items
+        # @elem = @menu.elem
+        @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
+        @hideMenu()
+
+    menuVisible: => @menu.elem.style.display != 'none'
+    showMenu:    => @menu.elem.style.display = 'inline-block'; @menu?.focus?(); post.emit 'titlebar', 'hideTitle'
+    hideMenu:    => @menu?.close(); @menu.elem.style.display = 'none'; post.emit 'titlebar', 'showTitle'
+    toggleMenu:  => if @menuVisible() then @hideMenu() else @showMenu()
+
+    # 000   000  00000000  000   000
+    # 000  000   000        000 000
+    # 0000000    0000000     00000
+    # 000  000   000          000
+    # 000   000  00000000     000
+
+    globalModKeyComboEvent: (mod, key, combo, event) ->
+
+        # if not @mainMenu
+            # @mainMenu = Menu.template()
+
+        mainMenu = @menuTemplate()
+            
+        for keypath in sds.find.key mainMenu, 'accel'
+            combos = sds.get(mainMenu, keypath).split ' '
+            if combo in combos
+                keypath.pop()
+                item = sds.get mainMenu, keypath
+                post.emit 'menuAction', item.action ? item.text, item.actarg
+                return item
+
+        'unhandled'
+            
+module.exports = Title
