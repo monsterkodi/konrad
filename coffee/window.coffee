@@ -1,9 +1,9 @@
 ###
-000   000   0000000   000   000  00000000    0000000   0000000
-000  000   000   000  0000  000  000   000  000   000  000   000
-0000000    000   000  000 0 000  0000000    000000000  000   000
-000  000   000   000  000  0000  000   000  000   000  000   000
-000   000   0000000   000   000  000   000  000   000  0000000
+000   000  000  000   000  0000000     0000000   000   000  
+000 0 000  000  0000  000  000   000  000   000  000 0 000  
+000000000  000  000 0 000  000   000  000   000  000000000  
+000   000  000  000  0000  000   000  000   000  000   000  
+00     00  000  000   000  0000000     0000000   00     00  
 ###
 
 { slash, elem, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
@@ -17,11 +17,12 @@ scheme.set prefs.get 'scheme', 'dark'
 window.onresize = -> ipc.send 'saveBounds'
 
 openFile = (f) ->
+    
     f = slash.resolve f
     if slash.win()
-        log f
+        log 'openFile', f, slash.unslash slash.resolve('~/s/ko/ko-win32-x64/ko.exe')
         # childp.spawn 'bash', ['ko', f]
-        childp.spawn slash.unslash slash.resolve('~/s/ko/ko-win32-x64/ko.exe'), ['ko', slash.unslash slash.path f]
+        childp.spawn slash.unslash(slash.resolve('~/s/ko/ko-win32-x64/ko.exe')), ['ko', slash.unslash slash.path f]
     else
         childp.spawn '/usr/local/bin/ko', [f]
 
