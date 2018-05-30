@@ -75,12 +75,6 @@ body
     color               #aaa
     -webkit-app-region  drag
 
-.titlebar-dot
-    color               #444
-
-.titlebar-version
-    color               #555
-    
 .titlebar-title
     flex                1 1 0
     display             flex
@@ -96,7 +90,7 @@ body
 .titlebar-dot
     display             inline-block
     vertical-align      top
-    padding-left        6px
+    padding-left        9px
     padding-right       9px
     margin-top          -1px
 
@@ -130,31 +124,6 @@ body
             background-color #888
         & img
             opacity     1
-
-// 00000000    0000000   00000000   000   000  00000000
-// 000   000  000   000  000   000  000   000  000   000
-// 00000000   000   000  00000000   000   000  00000000
-// 000        000   000  000        000   000  000
-// 000         0000000   000         0000000   000
-
-// .popup
-    // position            absolute
-    // border-radius       3px
-
-// .popupItem
-    // padding             2px
-    // padding-left        2 * frameWidth
-    // padding-right       2 * frameWidth + 70px
-    // cursor              pointer
-    // &:last-child
-        // padding-bottom  frameWidth
-    // &:first-child
-        // padding-top     frameWidth
-
-// .popupCombo
-    // position            absolute
-    // right               2 * frameWidth
-    
 
 // 000000000   0000000    0000000  000   000  
 //    000     000   000  000       000  000   
@@ -261,28 +230,19 @@ body
     border-radius       3px
     font-size           titlebarFontSize
     font-family         titlebarFont
-    // font-weight         bold
     
 .popupItem
     padding             2px
     padding-left        2 * frameWidth
     padding-right       2 * frameWidth + 70px
     cursor              pointer
-    // color               #888
     &.separator
-        padding             0
-        cursor              default
-        border              0
-        height              0
-        margin-top          2px
-        margin-bottom       2px
-        border-top          1px solid #333
-    &:not(:last-child)
-        border-bottom       1px solid #222
-    &.selected
-        color           #fff
-        & .popupCombo
-            color       #888
+        padding         0
+        cursor          default
+        border          0
+        height          0
+        margin-top      2px
+        margin-bottom   2px
     &:last-child
         padding-bottom  frameWidth
     &:first-child

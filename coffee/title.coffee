@@ -24,7 +24,7 @@ class Title
         @elem.ondblclick = (event) -> post.toMain 'maximizeWindow', window.winID
                 
         @winicon = elem class: 'winicon'
-        @winicon.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/menu@2x.png'
+        @winicon.appendChild elem 'img', src:slash.fileUrl @cfg.icon
         @elem.appendChild @winicon
         @winicon.addEventListener 'click', -> post.emit 'menuAction', 'Toggle Menu'   
         
@@ -91,7 +91,7 @@ class Title
     menuTemplate: ->
         
         if empty @templateCache
-            log 'load menu template', slash.resolve @cfg.menu
+            # log 'load menu template', slash.resolve @cfg.menu
             @templateCache = @makeTemplate noon.load slash.resolve @cfg.menu
         @templateCache
         

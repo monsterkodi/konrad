@@ -157,7 +157,10 @@ onError = (s) ->
 #    000     000     000     000      000       
 #    000     000     000     0000000  00000000  
 
-window.titlebar = new title pkg:pkg, menu:__dirname + '/../coffee/menu.noon'
+window.titlebar = new title 
+    pkg:    pkg 
+    menu:   __dirname + '/../coffee/menu.noon' 
+    icon:   __dirname + '/../img/menu@2x.png'
 
 # 000   000  00000000  000   000
 # 000  000   000        000 000
