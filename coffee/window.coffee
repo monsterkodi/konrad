@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ slash, elem, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
+{ slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
 pkg = require '../package.json'
 
@@ -57,7 +57,6 @@ clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay();
 ipc.on "clearLog", clearTasks
 ipc.on "konradExit", (event, s) ->
 ipc.on "konradError", (event, s) ->
-ipc.on "konradVersion", (event, s) -> setTitleBar s
 ipc.on "konradOutput", (event, s) ->
     if      / 😡 /.test s then onError   s
     else if / 👍 /.test s then onTask    s
@@ -158,27 +157,8 @@ onError = (s) ->
 #    000     000     000     000      000       
 #    000     000     000     0000000  00000000  
 
-log 'title>'
+window.titlebar = new title pkg:pkg, menu:__dirname + '/../coffee/menu.noon'
 
-winTitle = new title pkg:pkg, menu:__dirname + '/../coffee/menu.noon'
-
-log 'title:', winTitle
-
-setTitleBar = (s) -> log 'setTitleBar', s
-
-    # if slash.win()
-        # # $('titlebar')?.remove()
-        # # $('main').style.top = '0px'
-        # win = electron.remote.getCurrentWindow()
-        # win.setTitle 'konrad ● ' + s
-    # else
-        # [path, version] = s.split ' ● '
-        # html  = "<span class='titlebarPath'>#{slash.tilde path}</span>"
-        # html += "<span class='titlebarDot'> ● </span>"
-        # html += "<span class='titlebarVersion'>#{version}</span>"
-        # $('titlebar').innerHTML = html
-        # $('titlebar').ondblclick = => ipc.send 'toggleMaximize'
-        
 # 000   000  00000000  000   000
 # 000  000   000        000 000
 # 0000000    0000000     00000
@@ -187,16 +167,14 @@ setTitleBar = (s) -> log 'setTitleBar', s
 
 document.onkeydown = (event) ->
 
-    { mod, key, combo } = keyinfo.forEvent event
+    return stopEvent(event) if 'unhandled' != window.titlebar.handleKey event, true
     
+    { combo } = keyinfo event
+    
+    log 'unhandled', combo
+
     switch combo
-        when 'q'                                then electron.remote.app.quit()
-        when 'k'                                then clearTasks()
-        when 'esc', 'w'                         then window.close()
-        when 'command+i', 'i', 'ctrl+i'         then scheme.toggle()
-        when 'command+c', 'ctrl+c'              then document.execCommand 'copy'
-        when 'command+alt+i', 'ctrl+alt+i'      then ipc.send 'openDevTools'
-        when 'command+alt+ctrl+l', 'ctrl+alt+l' then ipc.send 'reloadWin'
+        when 'command+c', 'ctrl+c' then document.execCommand 'copy'
 
 # 00000000    0000000   00000000   000   000  00000000   
 # 000   000  000   000  000   000  000   000  000   000  
@@ -204,42 +182,27 @@ document.onkeydown = (event) ->
 # 000        000   000  000        000   000  000        
 # 000         0000000   000         0000000   000        
 
-$('main').addEventListener "contextmenu", (event) ->
+$("#main").addEventListener "contextmenu", (event) ->
     
     absPos = pos event
     if not absPos?
         absPos = pos $('main').getBoundingClientRect().left, $('main').getBoundingClientRect().top
-    
-    opt = items: [
-        text:   'Clear'
-        combo:  'k' 
-        cb:     clearTasks
-    ,
-        text:   'Set Dir...'
-        combo:  'ctrl+o'
-        cb:      -> post.toMain 'setRootDir'
-    ,
-        text:   'Show Menu'
-        combo:  'alt'
-        cb:     -> electron.remote.getCurrentWindow().setMenuBarVisibility true
-    ,
-        text:   'About'
-        combo:  'ctrl+.'
-        cb:      -> post.toMain 'showAbout'
-    ,
-        text:   'Quit'
-        combo:  'ctrl+q' 
-        cb:     -> post.toMain 'quitKonrad'
-    ]
-    
-    opt.x = absPos.x
-    opt.y = absPos.y
-
-    popup.menu opt
+       
+    items = _.clone window.titlebar.menuTemplate()
+    items.unshift text:'Clear', accel:'ctrl+k'
+        
+    popup.menu
+        items:  items
+        x:      absPos.x
+        y:      absPos.y
     
 post.on 'menuAction', (action) ->
     log 'menuAction', action
     switch action
-        when 'Toggle Scheme' then scheme.toggle()
-        when 'About'         then post.toMain 'showAbout'
+        when 'Close'            then window.close()
+        when 'Quit'             then electron.remote.app.quit()
+        when 'Clear'            then clearTasks()
+        when 'Set Dir...'       then post.toMain 'setRootDir'
+        when 'About'            then post.toMain 'showAbout'
+        when 'Toggle Scheme'    then scheme.toggle()
         

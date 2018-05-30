@@ -6,9 +6,7 @@
    000     000     000     0000000  00000000
 ###
 
-{ elem, slash, empty, post, menu, noon, log, $, _ } = require 'kxk'
-
-# Tabs = require './tabs'
+{ elem, sds, slash, empty, post, keyinfo, menu, noon, log, $, _ } = require 'kxk'
 
 class Title
     
@@ -31,15 +29,13 @@ class Title
         @winicon.addEventListener 'click', -> post.emit 'menuAction', 'Toggle Menu'   
         
         @title = elem class: 'titlebar-title'
-        html  = "<span class='titlebar-name'>kali</span>"
+        html  = "<span class='titlebar-name'>#{pkg.name}</span>"
         html += "<span class='titlebar-dot'> ● </span>"
         html += "<span class='titlebar-version'>#{pkg.version}</span>"
         @title.innerHTML = html
         @title.ondblclick = => post.toMain 'toggleMaximize'
         @elem.appendChild @title
-        
-        # @tabs = new Tabs @elem
-        
+                
         @minimize = elem class: 'winclose gray'
         @elem.appendChild @minimize
         @minimize.appendChild elem 'img', src:slash.fileUrl __dirname + '/../img/minimize.png'
@@ -61,15 +57,7 @@ class Title
          
     showTitle: -> @title.style.display = 'initial'
     hideTitle: -> @title.style.display = 'none'
-        
-    # swapForTabs: (swapIn) -> 
-        # @tabs.div.parentNode.insertBefore swapIn, @tabs.div
-        # @tabs.div.style.display = 'none'
-#         
-    # restoreTabs: ->
-        # @tabs.div.previousSibling.remove()
-        # @tabs.div.style.display = ''
-    
+            
     onTitlebar: (action) =>
         
         switch action
@@ -105,7 +93,6 @@ class Title
         if empty @templateCache
             log 'load menu template', slash.resolve @cfg.menu
             @templateCache = @makeTemplate noon.load slash.resolve @cfg.menu
-            # log 'template', @templateCache
         @templateCache
         
     makeTemplate: (obj) ->
@@ -132,7 +119,6 @@ class Title
     initMenu: (items) ->
 
         @menu = new menu items:items
-        # @elem = @menu.elem
         @elem.insertBefore @menu.elem, @elem.firstChild.nextSibling
         @hideMenu()
 
@@ -147,11 +133,10 @@ class Title
     # 000  000   000          000
     # 000   000  00000000     000
 
-    globalModKeyComboEvent: (mod, key, combo, event) ->
+    handleKey: (event) ->
 
-        # if not @mainMenu
-            # @mainMenu = Menu.template()
-
+        { combo } = keyinfo.forEvent event
+        
         mainMenu = @menuTemplate()
             
         for keypath in sds.find.key mainMenu, 'accel'
