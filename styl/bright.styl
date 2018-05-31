@@ -103,18 +103,15 @@ highlightColor = #89f
 .titlebar-dot
     color               #eee
     
-.winclose
-    & img
-        opacity         0.2
-    &:hover
-        & img
-            opacity     0.1
+#titlebar .winbutton
+    color               #ddd
     &:active
-        & img
-            opacity     1
+        color           #000
         background-color #f00
         &.gray
-            background-color #eee
+            background-color #ccc
+    &:hover
+        color           #000
     
 // 00     00  00000000  000   000  000   000  
 // 000   000  000       0000  000  000   000  
@@ -155,13 +152,13 @@ highlightColor = #89f
     &.selected
         color           #000
         & .popupCombo
-            color       #444
+            color       #ccc
 
 .popupItem:active
     color               #000
 
 .popupCombo
-    color               #888
+    color               #eee
             
 //  0000000   0000000  00000000    0000000   000      000      
 // 000       000       000   000  000   000  000      000      

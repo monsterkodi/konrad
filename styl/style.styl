@@ -79,7 +79,7 @@ body
     flex-direction      row
     overflow-x          auto
     overflow-y          hidden
-    padding-top         6px
+    padding-top         7px
     padding-left        10px
     -webkit-app-region  drag
     font-weight         bold
@@ -96,21 +96,20 @@ body
     -webkit-app-region  no-drag
     padding-left        6px
     padding-right       2px
-    width               titlebarHeight
-    height              titlebarHeight
+    padding-top         titlebarHeight * 0.1
+    width               titlebarHeight * 0.8
+    height              titlebarHeight * 0.8
     
-#titlebar .winclose
+#titlebar .winbutton
     -webkit-app-region  no-drag
     flex                0 0 45px
-    float               right
     display             inline-block
-    vertical-align      top
-    padding-top         frameWidth
-    
-    & img
-        padding-left    18px
-        width           11px
-        height          11px
+    text-align          center
+    vertical-align      bottom
+    font-size           18px
+    padding-top         2px
+    &.minimize
+        padding-top     5px
 
 // 000000000   0000000    0000000  000   000  
 //    000     000   000  000       000  000   
@@ -198,7 +197,7 @@ body
     cursor              pointer
     padding-left        10px
     padding-right       10px
-    padding-top         6px
+    padding-top         7px
     // font-weight         bold
     display             inline-block
     height              titlebarHeight
