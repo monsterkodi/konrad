@@ -10,8 +10,6 @@
 
 pkg = require '../package.json'
 
-title = require './title'
-
 electron  = require 'electron'
 ipc       = electron.ipcRenderer
 
