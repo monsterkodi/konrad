@@ -197,13 +197,16 @@ $("#main").addEventListener "contextmenu", (event) ->
         x:      absPos.x
         y:      absPos.y
     
+# 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
+# 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
+# 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
+# 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
+# 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
+
 post.on 'menuAction', (action) ->
-    log 'menuAction', action
     switch action
-        when 'Close'            then window.close()
         when 'Quit'             then electron.remote.app.quit()
         when 'Clear'            then clearTasks()
         when 'Set Dir...'       then post.toMain 'setRootDir'
         when 'About'            then post.toMain 'showAbout'
-        when 'Toggle Scheme'    then scheme.toggle()
         

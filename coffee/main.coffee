@@ -215,7 +215,6 @@ createWindow = (ipcMsg, ipcArg) ->
         height:          bounds.height
         minWidth:        206
         minHeight:       206
-        # titleBarStyle:   'hidden'
         transparent:     true
         backgroundColor: '#000'
         maximizable:     true
@@ -318,56 +317,6 @@ app.on 'ready', ->
         electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
     catch err
         log 'error setting shortcut', err
-
-    # # 00     00  00000000  000   000  000   000
-    # # 000   000  000       0000  000  000   000
-    # # 000000000  0000000   000 0 000  000   000
-    # # 000 0 000  000       000  0000  000   000
-    # # 000   000  00000000  000   000   0000000
-
-    # Menu.setApplicationMenu Menu.buildFromTemplate [
-        # label: app.getName()
-        # submenu: [
-            # label:        "About #{pkg.name}"
-            # accelerator:  'ctrl+.'
-            # click:        showAbout
-        # ,
-            # type: 'separator'
-        # ,
-            # label:       'Set Dir...'
-            # accelerator:  'ctrl+o'
-            # click:        setRootDir
-        # ,
-            # label:       'Clear Log'
-            # accelerator: 'ctrl+k'
-            # click:        -> win?.webContents.send 'clearLog'
-        # ,
-            # type: 'separator'
-        # ,
-            # label:       'Quit'
-            # accelerator: 'ctrl+q'
-            # click:        quitKonrad
-        # ]
-    # ,
-        # # 000   000  000  000   000  0000000     0000000   000   000
-        # # 000 0 000  000  0000  000  000   000  000   000  000 0 000
-        # # 000000000  000  000 0 000  000   000  000   000  000000000
-        # # 000   000  000  000  0000  000   000  000   000  000   000
-        # # 00     00  000  000   000  0000000     0000000   00     00
-
-        # label: 'Window'
-        # submenu: [
-            # label:       'Close Window'
-            # accelerator: 'ctrl+w'
-            # click:       -> win?.close()
-        # ,
-            # type: 'separator'
-        # ,
-            # label:       'Toggle DevTools'
-            # accelerator: 'alt+ctrl+i'
-            # click:       -> win?.webContents.toggleDevTools()
-        # ]
-    # ]
 
     showWindow() if args.show
 
