@@ -215,7 +215,8 @@ createWindow = (ipcMsg, ipcArg) ->
         height:          bounds.height
         minWidth:        206
         minHeight:       206
-        titleBarStyle:   'hidden'
+        # titleBarStyle:   'hidden'
+        transparent:     true
         backgroundColor: '#000'
         maximizable:     true
         minimizable:     true

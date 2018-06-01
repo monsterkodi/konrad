@@ -8,8 +8,8 @@
 
 console.log module.parent?.filename
 
-if not module.parent?.filename? or module.parent.filename.endsWith 'default_app.asar\\main.js'
-    
+if not module.parent?.filename? or module.parent.filename.endsWith('default_app.asar\\main.js') or module.parent.filename.endsWith('default_app.asar/main.js')
+    console.log 'main'
     require './main'
 
 else
