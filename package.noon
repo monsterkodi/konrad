@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.53.0
+version         0.55.0
 main            js/index.js
 bin
                 konrad  ./bin/konrad
@@ -28,7 +28,8 @@ dependencies
                 simple-git    ^1.95.0
                 stylus        ^0.54.5
                 tree-kill     ^1.2.0
-                kxk           ^0.90.0
+                wxw           ^0.10.0
+                kxk           ^0.91.0
 devDependencies
                 electron        ^2.0.2
                 electron-packager  ^12.1.0
