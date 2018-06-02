@@ -54,9 +54,9 @@ clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay();
 # 000         0000000   0000000      000     
 
 post.on "clearLog", clearTasks
-post.on "konradExit", (event, s) ->
-post.on "konradError", (event, s) ->
-post.on "konradOutput", (event, s) ->
+post.on "konradExit", (s) ->
+post.on "konradError", (s) ->
+post.on "konradOutput", (s) ->
     if      / 😡 /.test s then onError   s
     else if / 👍 /.test s then onTask    s
     else if / 🔧 /.test s then onMessage s
