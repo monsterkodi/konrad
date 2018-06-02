@@ -11,12 +11,13 @@
 pkg = require '../package.json'
 
 electron  = require 'electron'
-ipc       = electron.ipcRenderer
 
 prefs.init()
 scheme.set prefs.get 'scheme', 'dark'
 
-window.onresize = -> ipc.send 'saveBounds'
+win = electron.remote.getCurrentWindow()
+win.on 'resize', -> post.toMain 'saveBounds'
+win.on 'move',   -> post.toMain 'saveBounds'
 
 openFile = (f) ->
     
@@ -46,16 +47,16 @@ fadeOverlay = ->
     
 clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
 
-# 000  00000000    0000000
-# 000  000   000  000
-# 000  00000000   000
-# 000  000        000
-# 000  000         0000000
+# 00000000    0000000    0000000  000000000  
+# 000   000  000   000  000          000     
+# 00000000   000   000  0000000      000     
+# 000        000   000       000     000     
+# 000         0000000   0000000      000     
 
-ipc.on "clearLog", clearTasks
-ipc.on "konradExit", (event, s) ->
-ipc.on "konradError", (event, s) ->
-ipc.on "konradOutput", (event, s) ->
+post.on "clearLog", clearTasks
+post.on "konradExit", (event, s) ->
+post.on "konradError", (event, s) ->
+post.on "konradOutput", (event, s) ->
     if      / 😡 /.test s then onError   s
     else if / 👍 /.test s then onTask    s
     else if / 🔧 /.test s then onMessage s
@@ -98,7 +99,7 @@ taskDiv = (opt) ->
 
 onTask = (s) ->
 
-    ipc.send 'highlight'
+    post.toMain 'highlight'
 
     [time, sourceTarget] = s.split ' 👍 '
     [source, target] = sourceTarget.split ' ► '
@@ -129,8 +130,8 @@ onMessage = (s) ->
 
 onError = (s) ->
 
-    ipc.send 'showWin'
-    ipc.send 'highlight'
+    post.toMain 'showWindow'
+    post.toMain 'highlight'
     
     $("main").innerHTML = ''
     tasks = {}
@@ -155,7 +156,7 @@ onError = (s) ->
 #    000     000     000     000      000       
 #    000     000     000     0000000  00000000  
 
-window.titlebar = new title 
+window.titlebar = new title
     pkg:    pkg 
     menu:   __dirname + '/../coffee/menu.noon' 
     icon:   __dirname + '/../img/menu@2x.png'

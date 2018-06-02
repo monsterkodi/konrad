@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.56.0",
+  "version": "0.57.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -31,11 +31,11 @@
     "mkpath": "^1.0.0",
     "pug": "^2.0.3",
     "semver": "^5.5.0",
-    "simple-git": "^1.95.0",
+    "simple-git": "^1.95.1",
     "stylus": "^0.54.5",
     "tree-kill": "^1.2.0",
     "wxw": "^0.10.0",
-    "kxk": "^0.91.0"
+    "kxk": "^0.100.0"
   },
   "devDependencies": {
     "electron": "^2.0.2",

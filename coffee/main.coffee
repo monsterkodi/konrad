@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ about, karg, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
+{ about, args, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -15,7 +15,6 @@ app      = electron.app
 Window   = electron.BrowserWindow
 Tray     = electron.Tray
 Menu     = electron.Menu
-ipc      = electron.ipcMain
 dialog   = electron.dialog
 konrad   = null
 win      = null
@@ -30,21 +29,15 @@ konradLastTask = []
 # 000   000  000   000  000   000       000
 # 000   000  000   000   0000000   0000000
 
-args  = karg """
+args  = args.init """
 
-#{pkg.name}
+    show      open window on startup  true
+    prefs     show preferences        false
+    noprefs   don't load preferences  false
+    DevTools  open developer tools    false
+    verbose   |                       false
 
-    show      . ? open window on startup  . = true
-    prefs     . ? show preferences        . = false
-    noprefs   . ? don't load preferences  . = false
-    verbose   . ? log more                . = false
-    DevTools  . ? open developer tools    . = false
-
-version  #{pkg.version}
-
-""", dontExit: true
-
-app.exit 0 if not args?
+"""
 
 if args.verbose
     log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
@@ -68,19 +61,6 @@ if args.prefs
     log colors.green.bold prefs.store.file
     if slash.fileExists prefs.store.file
         log noon.stringify noon.load(prefs.store.file), colors:true
-
-# 000  00000000    0000000
-# 000  000   000  000
-# 000  00000000   000
-# 000  000        000
-# 000  000         0000000
-
-ipc.on 'openDevTools',   -> win?.webContents.toggleDevTools()
-ipc.on 'reloadWin',      -> win?.webContents.reloadIgnoringCache()
-ipc.on 'showWin',        -> showWindow true
-ipc.on 'saveBounds',     -> saveBounds()
-ipc.on 'highlight',      -> highlight()
-ipc.on 'toggleMaximize', -> if win?.isMaximized() then win?.unmaximize() else win?.maximize()
 
 # 000   000   0000000   000   000  00000000    0000000   0000000
 # 000  000   000   000  0000  000  000   000  000   000  000   000
@@ -107,13 +87,13 @@ startKonrad = (rootDir) ->
 
     konrad.on 'close', (code, signal) ->
         if win?
-            win.webContents.send 'konradExit', "konrad exit code: #{code}"
+            post.toWins 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
         s = colors.strip data.toString()
         log "konrad error: #{s}"
         if win?
-            win.webContents.send 'konradError', "konrad error: #{s}"
+            post.toWins 'konradError', "konrad error: #{s}"
         else
             createWindow 'konradError', "konrad error: #{s}"
 
@@ -121,9 +101,9 @@ startKonrad = (rootDir) ->
         s = colors.strip data.toString()
         if /\ 👁\ \ /.test s
             konradVersion = s.split('👁  ')[1]
-            win?.send 'konradVersion', konradVersion
+            post.toWins 'konradVersion', konradVersion
         else if win?
-            win.webContents.send 'konradOutput', s
+            post.toWins 'konradOutput', s
         else
             if / 😡 /.test s
                 createWindow 'konradOutput', s
@@ -190,12 +170,17 @@ showWindow = (inactive) ->
         
     app.dock?.show()
 
+post.on 'showWindow', showWindow
+    
 screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
 
 highlight = ->
+    
     tray.setHighlightMode 'always'
     unhighlight = -> tray.setHighlightMode 'never'
     setTimeout unhighlight, 1000
+
+post.on 'highlight', highlight
 
 createWindow = (ipcMsg, ipcArg) ->
 
@@ -213,18 +198,18 @@ createWindow = (ipcMsg, ipcArg) ->
         y:               bounds.y
         width:           bounds.width
         height:          bounds.height
+        backgroundColor: '#000'
         minWidth:        206
         minHeight:       206
         transparent:     true
-        backgroundColor: '#000'
         maximizable:     true
         minimizable:     true
         resizable:       true
         useContentSize:  true
+        autoHideMenuBar: true
         fullscreenable:  false
         show:            false
         frame:           false
-        autoHideMenuBar: true
 
     if slash.win()
         cfg.icon = slash.path __dirname + '/../img/konrad.ico'
@@ -251,20 +236,29 @@ createWindow = (ipcMsg, ipcArg) ->
             else
                 win.show()
                 
-        win.webContents.send 'konradVersion', konradVersion if konradVersion
+        post.toWins 'konradVersion', konradVersion if konradVersion
         if ipcMsg
-            win.webContents.send ipcMsg, ipcArg
+            post.toWins ipcMsg, ipcArg
         else if konradLastTask.length
             for t in konradLastTask
-                win.webContents.send 'konradOutput', t
+                post.toWins 'konradOutput', t
         else
-            win.webContents.send 'clearLog'
+            post.toWins 'clearLog'
         konradLastTask = []
     win
 
+# 0000000     0000000   000   000  000   000  0000000     0000000  
+# 000   000  000   000  000   000  0000  000  000   000  000       
+# 0000000    000   000  000   000  000 0 000  000   000  0000000   
+# 000   000  000   000  000   000  000  0000  000   000       000  
+# 0000000     0000000    0000000   000   000  0000000    0000000   
+
 saveBounds = ->
-  if win?
-      prefs.set 'bounds', win.getBounds()
+    
+    if win?
+        prefs.set 'bounds', win.getBounds()
+
+post.on 'saveBounds', saveBounds
 
 #  0000000   0000000     0000000   000   000  000000000
 # 000   000  000   000  000   000  000   000     000
