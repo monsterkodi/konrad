@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 cd `dirname $0`/..
 
-NAME=`sds productName`
+NAME=konrad
 
 2>/dev/null 1>/dev/null killall $NAME
 2>/dev/null 1>/dev/null killall $NAME
