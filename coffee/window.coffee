@@ -6,18 +6,19 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ title, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
+{ win, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
-pkg = require '../package.json'
-
-electron  = require 'electron'
-
-prefs.init()
-scheme.set prefs.get 'scheme', 'dark'
-
-win = electron.remote.getCurrentWindow()
-win.on 'resize', -> post.toMain 'saveBounds'
-win.on 'move',   -> post.toMain 'saveBounds'
+w = new win 
+    dir:    __dirname
+    pkg:    require '../package.json'
+    menu:   '../coffee/menu.noon'
+    icon:   '../img/menu@2x.png'
+    
+#  0000000   00000000   00000000  000   000  
+# 000   000  000   000  000       0000  000  
+# 000   000  00000000   0000000   000 0 000  
+# 000   000  000        000       000  0000  
+#  0000000   000        00000000  000   000  
 
 openFile = (f) ->
     
@@ -30,6 +31,12 @@ openFile = (f) ->
         childp.spawn '/usr/local/bin/ko', [f]
 
 tasks = {}
+
+#  0000000   000   000  00000000  00000000   000       0000000   000   000  
+# 000   000  000   000  000       000   000  000      000   000   000 000   
+# 000   000   000 000   0000000   0000000    000      000000000    00000    
+# 000   000     000     000       000   000  000      000   000     000     
+#  0000000       0      00000000  000   000  0000000  000   000     000     
 
 showOverlay = ->
 
@@ -45,8 +52,6 @@ fadeOverlay = ->
     showOverlay()
     $("#overlay").classList.add 'fade-in'
     
-clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
-
 # 00000000    0000000    0000000  000000000  
 # 000   000  000   000  000          000     
 # 00000000   000   000  0000000      000     
@@ -62,6 +67,14 @@ post.on "konradOutput", (s) ->
     else if / 🔧 /.test s then onMessage s
     else console.log 'konrad', s
 
+# 000000000   0000000    0000000  000   000   0000000  
+#    000     000   000  000       000  000   000       
+#    000     000000000  0000000   0000000    0000000   
+#    000     000   000       000  000  000        000  
+#    000     000   000  0000000   000   000  0000000   
+
+clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
+    
 taskDiv = (opt) ->
 
     main =$ 'main'
@@ -150,66 +163,30 @@ onError = (s) ->
 
     div.scrollIntoViewIfNeeded()
     
-# 000000000  000  000000000  000      00000000  
-#    000     000     000     000      000       
-#    000     000     000     000      0000000   
-#    000     000     000     000      000       
-#    000     000     000     0000000  00000000  
-
-window.titlebar = new title
-    dir:    __dirname
-    pkg:    pkg 
-    menu:   '../coffee/menu.noon' 
-    icon:   '../img/menu@2x.png'
-
 # 000   000  00000000  000   000
 # 000  000   000        000 000
 # 0000000    0000000     00000
 # 000  000   000          000
 # 000   000  00000000     000
 
-document.onkeydown = (event) ->
+# onCombo = (combo, info) ->
+#    
+    # switch combo
+        # when 'command+c', 'ctrl+c' then document.execCommand 'copy'
+#         
+# post.on 'combo', onCombo
 
-    return stopEvent(event) if 'unhandled' != window.titlebar.handleKey event, true
-    
-    { combo } = keyinfo.forEvent event
-    
-    log 'unhandled', combo
-
-    switch combo
-        when 'command+c', 'ctrl+c' then document.execCommand 'copy'
-
-# 00000000    0000000   00000000   000   000  00000000   
-# 000   000  000   000  000   000  000   000  000   000  
-# 00000000   000   000  00000000   000   000  00000000   
-# 000        000   000  000        000   000  000        
-# 000         0000000   000         0000000   000        
-
-$("#main").addEventListener "contextmenu", (event) ->
-    
-    absPos = pos event
-    if not absPos?
-        absPos = pos $('main').getBoundingClientRect().left, $('main').getBoundingClientRect().top
-       
-    items = _.clone window.titlebar.menuTemplate()
-    items.unshift text:'Clear', accel:'ctrl+k'
-        
-    popup.menu
-        items:  items
-        x:      absPos.x
-        y:      absPos.y
-    
 # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
 # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
 # 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
 # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
 # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
 
-post.on 'menuAction', (action) ->
+onMenuAction = (action) ->
+    
     log 'menuAction', action
     switch action
-        when 'Quit'             then electron.remote.app.quit()
         when 'Clear'            then clearTasks()
         when 'Set Dir...'       then post.toMain 'setRootDir'
-        when 'About'            then post.toMain 'showAbout'
         
+post.on 'menuAction', onMenuAction

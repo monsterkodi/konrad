@@ -10,7 +10,7 @@ konrad --run
 
 IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
 
-node_modules/electron-packager/cli.js . --overwrite --icon=img/$NAME.icns --ignore=$IGNORE
+node_modules/electron-packager/cli.js . --overwrite --icon=img/app.icns --ignore=$IGNORE
 
 rm $NAME-darwin-x64/LICENSE*
 rm $NAME-darwin-x64/version

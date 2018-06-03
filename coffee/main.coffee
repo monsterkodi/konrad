@@ -6,38 +6,33 @@
 000   000  000   000  000  000   000
 ###
 
-{ about, args, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
+{ app, args, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
 
-app      = electron.app
-Window   = electron.BrowserWindow
-Tray     = electron.Tray
-Menu     = electron.Menu
-dialog   = electron.dialog
-konrad   = null
-win      = null
-tray     = null
-showInactive   = false
+new app
+    dir:        __dirname
+    pkg:        pkg
+    shortcut:   'CmdOrCtrl+F2'
+    index:      'index.html'
+    icon:       '../img/app.ico'
+    tray:       '../img/menu@2x.png'
+    about:      '../img/about.png'
+    width:      400
+    height:     400
+    minWidth:   300
+    minHeight:  200
+    args: """
+        show      open window on startup  true
+        prefs     show preferences        false
+        """
+
+log args
+        
+konrad         = null
 konradVersion  = null
 konradLastTask = []
-
-#  0000000   00000000    0000000    0000000
-# 000   000  000   000  000        000
-# 000000000  0000000    000  0000  0000000
-# 000   000  000   000  000   000       000
-# 000   000  000   000   0000000   0000000
-
-args  = args.init """
-
-    show      open window on startup  true
-    prefs     show preferences        false
-    noprefs   don't load preferences  false
-    DevTools  open developer tools    false
-    verbose   |                       false
-
-"""
 
 if args.verbose
     log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
@@ -47,14 +42,6 @@ if args.verbose
     log colors.yellow.bold 'args'
     log noon.stringify args, colors:true
     log ''
-
-# 00000000   00000000   00000000  00000000   0000000
-# 000   000  000   000  000       000       000
-# 00000000   0000000    0000000   000000    0000000
-# 000        000   000  000       000            000
-# 000        000   000  00000000  000       0000000
-
-prefs.init shortcut: 'CmdOrCtrl+F2'
 
 if args.prefs
     log colors.yellow.bold 'prefs'
@@ -70,6 +57,8 @@ if args.prefs
 
 startKonrad = (rootDir) ->
 
+    log 'startKonrad', rootDir
+    
     prefs.set 'rootDir', rootDir
 
     if konrad?
@@ -82,12 +71,12 @@ startKonrad = (rootDir) ->
         detached: false
 
     konrad.on 'exit', (code, signal) ->
-        if not konrad
-            app.exit()
+        log 'konrad.on exit'
+        # if not konrad
+            # app.exit()
 
     konrad.on 'close', (code, signal) ->
-        if win?
-            post.toWins 'konradExit', "konrad exit code: #{code}"
+        post.toWins 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
         s = colors.strip data.toString()
@@ -134,11 +123,16 @@ setRootDir = ->
         title:      'Open'
         properties: ['openDirectory']
 
-    dialog.showOpenDialog opts, (dirs) =>
+    electron.dialog.showOpenDialog opts, (dirs) =>
         if dir = first dirs
             startKonrad dir
 
 post.on 'setRootDir', setRootDir
+
+if rootDir = prefs.get 'rootDir'
+    startKonrad rootDir
+else
+    log 'no root dir?'
 
 #000   000  000  000   000  0000000     0000000   000   000
 #000 0 000  000  0000  000  000   000  000   000  000 0 000
@@ -146,175 +140,59 @@ post.on 'setRootDir', setRootDir
 #000   000  000  000  0000  000   000  000   000  000   000
 #00     00  000  000   000  0000000     0000000   00     00
 
-toggleWindow = ->
+# showWindow = (inactive) ->
+#     
+    # if win?
+        # if inactive
+            # if slash.win()
+                # { foreground } = require 'wxw'
+                # foreground process.argv[0]
+            # win.showInactive()
+        # else
+            # win.show()
+    # else
+        # showInactive = inactive
+        # createWindow()
+#         
+# post.on 'showWindow', showWindow
     
-    if win?.isVisible() and win?.isFocused()
-        win.hide()
-        app.dock?.hide()
-    else
-        showWindow()
+# createWindow = (ipcMsg, ipcArg) ->
 
-showWindow = (inactive) ->
-    
-    if win?
-        if inactive
-            if slash.win()
-                { foreground } = require 'wxw'
-                foreground process.argv[0]
-            win.showInactive()
-        else
-            win.show()
-    else
-        showInactive = inactive
-        createWindow()
-        
-    app.dock?.show()
+    # win.on 'ready-to-show', ->
 
-post.on 'showWindow', showWindow
-    
-screenSize = -> electron.screen.getPrimaryDisplay().workAreaSize
+        # app.dock?.show()
+        # if slash.win()
+            # win.show()
+        # else        
+            # if showInactive
+                # win.showInactive()
+                # showInactive = false
+            # else
+                # win.show()
+#                 
+        # post.toWins 'konradVersion', konradVersion if konradVersion
+        # if ipcMsg
+            # post.toWins ipcMsg, ipcArg
+        # else if konradLastTask.length
+            # for t in konradLastTask
+                # post.toWins 'konradOutput', t
+        # else
+            # post.toWins 'clearLog'
+        # konradLastTask = []
+    # win
+
+# 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
+# 000   000  000  000        000   000  000      000  000        000   000     000     
+# 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
+# 000   000  000  000   000  000   000  000      000  000   000  000   000     000     
+# 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
 
 highlight = ->
-    
+    log 'highlight'
     tray.setHighlightMode 'always'
     unhighlight = -> tray.setHighlightMode 'never'
     setTimeout unhighlight, 1000
 
 post.on 'highlight', highlight
 
-createWindow = (ipcMsg, ipcArg) ->
 
-    bounds = prefs.get 'bounds', null
-    if not bounds
-        {w, h} = screenSize()
-        bounds = {}
-        bounds.width = h + 122
-        bounds.height = h
-        bounds.x = parseInt (w-bounds.width)/2
-        bounds.y = 0
-
-    cfg =
-        x:               bounds.x
-        y:               bounds.y
-        width:           bounds.width
-        height:          bounds.height
-        backgroundColor: '#000'
-        minWidth:        206
-        minHeight:       206
-        transparent:     true
-        maximizable:     true
-        minimizable:     true
-        resizable:       true
-        useContentSize:  true
-        autoHideMenuBar: true
-        fullscreenable:  false
-        show:            false
-        frame:           false
-
-    if slash.win()
-        cfg.icon = slash.path __dirname + '/../img/konrad.ico'
-        
-    win = new Window cfg
-
-    bounds = prefs.get 'bounds'
-    win.setBounds bounds if bounds?
-
-    win.loadURL slash.fileUrl "#{__dirname}/index.html"
-    win.webContents.openDevTools() if args.DevTools
-    win.on 'closed', -> win = null
-    win.on 'close', -> app.dock?.hide()
-    win.on 'hide', -> app.dock?.hide()
-    win.on 'ready-to-show', ->
-
-        app.dock?.show()
-        if slash.win()
-            win.show()
-        else        
-            if showInactive
-                win.showInactive()
-                showInactive = false
-            else
-                win.show()
-                
-        post.toWins 'konradVersion', konradVersion if konradVersion
-        if ipcMsg
-            post.toWins ipcMsg, ipcArg
-        else if konradLastTask.length
-            for t in konradLastTask
-                post.toWins 'konradOutput', t
-        else
-            post.toWins 'clearLog'
-        konradLastTask = []
-    win
-
-# 0000000     0000000   000   000  000   000  0000000     0000000  
-# 000   000  000   000  000   000  0000  000  000   000  000       
-# 0000000    000   000  000   000  000 0 000  000   000  0000000   
-# 000   000  000   000  000   000  000  0000  000   000       000  
-# 0000000     0000000    0000000   000   000  0000000    0000000   
-
-saveBounds = ->
-    
-    if win?
-        prefs.set 'bounds', win.getBounds()
-
-post.on 'saveBounds', saveBounds
-
-#  0000000   0000000     0000000   000   000  000000000
-# 000   000  000   000  000   000  000   000     000
-# 000000000  0000000    000   000  000   000     000
-# 000   000  000   000  000   000  000   000     000
-# 000   000  0000000     0000000    0000000      000
-
-showAbout = ->
-    
-    dark = 'dark' == prefs.get 'scheme', 'dark'
-    about
-        img: "#{__dirname}/../img/about.png"
-        color:      dark and '#383838' or '#ddd'
-        background: dark and '#282828' or '#fff'
-        highlight:  dark and '#ff0'    or '#000'
-        pkg: pkg
-
-post.on 'showAbout',  showAbout
-
-app.on 'window-all-closed', (event) -> event.preventDefault()
-
-#00000000   00000000   0000000   0000000    000   000
-#000   000  000       000   000  000   000   000 000
-#0000000    0000000   000000000  000   000    00000
-#000   000  000       000   000  000   000     000
-#000   000  00000000  000   000  0000000       000
-
-app.on 'ready', ->
-
-    icon = os.platform() == 'win32' and 'menu@2x.png' or 'menu.png'
-    tray = new Tray slash.join __dirname, '..', 'img', icon
-    tray.on 'click', toggleWindow
-    
-    tray.setContextMenu Menu.buildFromTemplate [
-        label: "Quit"
-        click: -> app.exit 0; process.exit 0
-    ,
-        label: "About"
-        click: showAbout
-    ]
-    
-    app.dock?.hide()
-
-    app.setName pkg.name
-
-    rootDir = prefs.get 'rootDir', slash.resolve '~/s'
-    startKonrad rootDir
-
-    try
-        electron.globalShortcut.register prefs.get('shortcut'), toggleWindow
-    catch err
-        log 'error setting shortcut', err
-
-    showWindow() if args.show
-
-if app.makeSingleInstance( -> showWindow() )
-    app.quit()
-
-module.exports = app
