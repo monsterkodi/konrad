@@ -6,11 +6,11 @@
 0000000     0000000   000  0000000  0000000  
 ###
 
-{ slash, atomic, empty, fs, colors, str, error, log, _ } = require 'kxk'
+{ args, slash, atomic, empty, fs, colors, str, error, _ } = require 'kxk'
 
+log     = console.log
 pretty  = require './pretty'
 config  = require './config'
-args    = require './args'
 argDir  = require './argdir'
 should  = require './should'
 target  = require './target'

@@ -6,9 +6,9 @@
 0000000      000     000   000     000      0000000   0000000 
 ###
 
-{ slash, childp, colors, error, log, _ } = require 'kxk'
+{ args, slash, childp, colors, error, _ } = require 'kxk'
 
-args   = require './args'
+log    = console.log
 argDir = require './argdir'
 pretty = require './pretty'
 

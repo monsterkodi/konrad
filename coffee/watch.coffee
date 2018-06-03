@@ -6,9 +6,8 @@
 00     00  000   000     000      0000000  000   000
 ###
 
-{ slash, childp, colors, log, _ } = require 'kxk'
+{ args, slash, childp, colors, log, _ } = require 'kxk'
 
-args   = require './args'
 pretty = require './pretty'
 should = require './should'
 runcmd = require './runcmd'

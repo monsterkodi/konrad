@@ -6,9 +6,8 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ colors, karg, slash, noon, log, fs, _ } = require 'kxk'
+{ args, colors, slash, noon, log, fs, _ } = require 'kxk'
 
-args        = require './args'
 argDir      = require './argdir'
 build       = require './build'
 config      = require './config'
@@ -20,6 +19,29 @@ watch       = require './watch'
 walk        = require './walk'
 pkg         = require "#{__dirname}/../package"
 
+# log.slog.debug = true
+
+args = args.init """
+    arguments  depend on options                            **
+    bump       bump package.* version [major|minor|patch]   false
+    commit     add, commit and push [msg]                   false
+    publish    bump, commit & publish to npm [msg]          false
+    update     update npm packages                          false
+    test       run tests                                    false
+    watch      watch directory for changes                  false
+    run        build dirty or missing targets in dir        false
+    Rebuild    rebuild all targets in dir                   false
+    info       show build status of dir                     false
+    status     show git status of file/dir                  false
+    diff       show git diff of file/dir                    false
+    verbose    log more                                     false
+    quiet      log nothing                                  false
+    Debug      log debug                                    false
+    logtime    log with time                                true
+    """
+
+log args if args.verbose
+    
 actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
 
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
@@ -167,6 +189,8 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
             break
 
 if args.watch
-    
     watch wlk, opt
+else
+    log.stop()
+    # console.log 'done!'
     

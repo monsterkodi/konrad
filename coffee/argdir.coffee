@@ -6,9 +6,7 @@
 000   000  000   000   0000000   0000000    000  000   000
 ###
 
-{ slash } = require 'kxk'
-
-args = require './args'
+{ args, slash } = require 'kxk'
 
 argDir = ->
     

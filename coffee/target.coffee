@@ -6,9 +6,8 @@
    000     000   000  000   000   0000000   00000000     000   
 ###
 
-{ slash, colors, log, _ } = require 'kxk'
+{ args, slash, colors, log, _ } = require 'kxk'
 
-args   = require './args'
 argDir = require './argdir'
 config = require './config'
 

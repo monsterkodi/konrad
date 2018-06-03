@@ -157,9 +157,10 @@ onError = (s) ->
 #    000     000     000     0000000  00000000  
 
 window.titlebar = new title
+    dir:    __dirname
     pkg:    pkg 
-    menu:   __dirname + '/../coffee/menu.noon' 
-    icon:   __dirname + '/../img/menu@2x.png'
+    menu:   '../coffee/menu.noon' 
+    icon:   '../img/menu@2x.png'
 
 # 000   000  00000000  000   000
 # 000  000   000        000 000
@@ -205,6 +206,7 @@ $("#main").addEventListener "contextmenu", (event) ->
 # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
 
 post.on 'menuAction', (action) ->
+    log 'menuAction', action
     switch action
         when 'Quit'             then electron.remote.app.quit()
         when 'Clear'            then clearTasks()

@@ -6,9 +6,7 @@
 000        000   000  00000000     000        000        000
 ###
 
-{ colors, slash, os, _ } = require 'kxk'
-
-args = require './args'
+{ args, colors, slash, os, _ } = require 'kxk'
 
 pretty = {}
 

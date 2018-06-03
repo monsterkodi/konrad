@@ -6,8 +6,7 @@
 00000000  000   000  000   000   0000000   000   000
 ###
 
-{ log } = require 'kxk'
-
+log    = console.log
 pretty = require './pretty'
 
 konradError = (title, msg) ->
