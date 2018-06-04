@@ -11,7 +11,7 @@
 pkg      = require '../package.json'
 electron = require 'electron'
 
-new app
+app = new app
     dir:        __dirname
     pkg:        pkg
     shortcut:   'CmdOrCtrl+F2'
@@ -28,7 +28,7 @@ new app
         prefs     show preferences        false
         """
 
-log args
+# log args
         
 konrad         = null
 konradVersion  = null
@@ -81,7 +81,7 @@ startKonrad = (rootDir) ->
     konrad.stderr.on 'data', (data) ->
         s = colors.strip data.toString()
         log "konrad error: #{s}"
-        if win?
+        if app.win?
             post.toWins 'konradError', "konrad error: #{s}"
         else
             createWindow 'konradError', "konrad error: #{s}"
@@ -91,7 +91,7 @@ startKonrad = (rootDir) ->
         if /\ 👁\ \ /.test s
             konradVersion = s.split('👁  ')[1]
             post.toWins 'konradVersion', konradVersion
-        else if win?
+        else if app.win?
             post.toWins 'konradOutput', s
         else
             if / 😡 /.test s
@@ -100,6 +100,12 @@ startKonrad = (rootDir) ->
                 highlight()
                 log 'konrad output:', s
                 konradLastTask.push s
+
+#  0000000   000   000  000  000000000  
+# 000   000  000   000  000     000     
+# 000 00 00  000   000  000     000     
+# 000 0000   000   000  000     000     
+#  00000 00   0000000   000     000     
 
 quitKonrad = ->
 
@@ -111,11 +117,11 @@ quitKonrad = ->
 
 post.on 'quitKonrad', quitKonrad
         
-# 00000000    0000000    0000000   000000000  
-# 000   000  000   000  000   000     000     
-# 0000000    000   000  000   000     000     
-# 000   000  000   000  000   000     000     
-# 000   000   0000000    0000000      000     
+#  0000000  00000000  000000000        00000000    0000000    0000000   000000000  
+# 000       000          000           000   000  000   000  000   000     000     
+# 0000000   0000000      000           0000000    000   000  000   000     000     
+#      000  000          000           000   000  000   000  000   000     000     
+# 0000000   00000000     000           000   000   0000000    0000000      000     
 
 setRootDir = ->
 
@@ -129,48 +135,30 @@ setRootDir = ->
 
 post.on 'setRootDir', setRootDir
 
-if rootDir = prefs.get 'rootDir'
-    startKonrad rootDir
-else
-    log 'no root dir?'
+#  0000000   00000000   00000000         00000000   00000000   0000000   0000000    000   000  
+# 000   000  000   000  000   000        000   000  000       000   000  000   000   000 000   
+# 000000000  00000000   00000000         0000000    0000000   000000000  000   000    00000    
+# 000   000  000        000              000   000  000       000   000  000   000     000     
+# 000   000  000        000              000   000  00000000  000   000  0000000       000     
 
-#000   000  000  000   000  0000000     0000000   000   000
-#000 0 000  000  0000  000  000   000  000   000  000 0 000
-#000000000  000  000 0 000  000   000  000   000  000000000
-#000   000  000  000  0000  000   000  000   000  000   000
-#00     00  000  000   000  0000000     0000000   00     00
+onAppReady = ->
 
-# showWindow = (inactive) ->
-#     
-    # if win?
-        # if inactive
-            # if slash.win()
-                # { foreground } = require 'wxw'
-                # foreground process.argv[0]
-            # win.showInactive()
-        # else
-            # win.show()
-    # else
-        # showInactive = inactive
-        # createWindow()
-#         
-# post.on 'showWindow', showWindow
+    if rootDir = prefs.get 'rootDir'
+        startKonrad rootDir
+    else
+        setRootDir()
+
+post.on 'appReady', onAppReady
     
-# createWindow = (ipcMsg, ipcArg) ->
+#000   000  000  000   000        00000000   00000000   0000000   0000000    000   000  
+#000 0 000  000  0000  000        000   000  000       000   000  000   000   000 000   
+#000000000  000  000 0 000        0000000    0000000   000000000  000   000    00000    
+#000   000  000  000  0000        000   000  000       000   000  000   000     000     
+#00     00  000  000   000        000   000  00000000  000   000  0000000       000     
 
-    # win.on 'ready-to-show', ->
-
-        # app.dock?.show()
-        # if slash.win()
-            # win.show()
-        # else        
-            # if showInactive
-                # win.showInactive()
-                # showInactive = false
-            # else
-                # win.show()
-#                 
-        # post.toWins 'konradVersion', konradVersion if konradVersion
+onWinReady = (wID) ->
+    
+    post.toWin wID, 'konradVersion', konradVersion if konradVersion
         # if ipcMsg
             # post.toWins ipcMsg, ipcArg
         # else if konradLastTask.length
@@ -179,8 +167,9 @@ else
         # else
             # post.toWins 'clearLog'
         # konradLastTask = []
-    # win
 
+post.on 'winReady', onWinReady
+        
 # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
 # 000   000  000  000        000   000  000      000  000        000   000     000     
 # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
@@ -188,9 +177,9 @@ else
 # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
 
 highlight = ->
-    log 'highlight'
-    tray.setHighlightMode 'always'
-    unhighlight = -> tray.setHighlightMode 'never'
+    log 'highlight', app.tray?
+    app.tray?.setHighlightMode 'always'
+    unhighlight = -> app.tray?.setHighlightMode 'never'
     setTimeout unhighlight, 1000
 
 post.on 'highlight', highlight

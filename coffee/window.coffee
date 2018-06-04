@@ -40,6 +40,7 @@ tasks = {}
 
 showOverlay = ->
 
+    log 'showOverlay'
     img = slash.fileUrl __dirname+'/../img/about.png'
     $("#overlay")?.remove() 
     overlay = elem id:'overlay'
@@ -58,7 +59,6 @@ fadeOverlay = ->
 # 000        000   000       000     000     
 # 000         0000000   0000000      000     
 
-post.on "clearLog", clearTasks
 post.on "konradExit", (s) ->
 post.on "konradError", (s) ->
 post.on "konradOutput", (s) ->
@@ -74,6 +74,8 @@ post.on "konradOutput", (s) ->
 #    000     000   000  0000000   000   000  0000000   
 
 clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
+
+post.on "clearLog", clearTasks
     
 taskDiv = (opt) ->
 

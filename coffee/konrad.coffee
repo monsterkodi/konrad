@@ -30,13 +30,13 @@ args = args.init """
     test       run tests                                    false
     watch      watch directory for changes                  false
     run        build dirty or missing targets in dir        false
-    Rebuild    rebuild all targets in dir                   false
+    rebuild    rebuild all targets in dir                   false  -R
     info       show build status of dir                     false
     status     show git status of file/dir                  false
     diff       show git diff of file/dir                    false
     verbose    log more                                     false
     quiet      log nothing                                  false
-    Debug      log debug                                    false
+    debug      log debug                                    false  -D
     logtime    log with time                                true
     """
 
