@@ -77,7 +77,7 @@ startKonrad = (rootDir) ->
 
     konrad.stderr.on 'data', (data) ->
         s = colors.strip data.toString()
-        log "konrad error: #{s}"
+        # log "konrad error: #{s}"
         if app.win?
             post.toWins 'konradError', "konrad error: #{s}"
         else
