@@ -19,8 +19,6 @@ watch       = require './watch'
 walk        = require './walk'
 pkg         = require "#{__dirname}/../package"
 
-# log.slog.debug = true
-
 args = args.init """
     arguments  depend on options                            **
     bump       bump package.* version [major|minor|patch]   false
@@ -40,8 +38,6 @@ args = args.init """
     logtime    log with time                                true
     """
 
-log args if args.verbose
-    
 actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
 
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
@@ -63,8 +59,6 @@ json    . ext noon . filter  .. package.json$
 styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
 pug     . ext html . replace .. /pug/ /js/
 """
-
-# log "default config:", opt
 
 # 000   0000000   000   000   0000000   00000000   00000000
 # 000  000        0000  000  000   000  000   000  000
@@ -111,15 +105,15 @@ dirty = (sourceFile, targetFile) ->
 
 if args.info
 
-    log '○● info'.gray
+    console.log '○● info'.gray
 
     walk wlk, opt, (sourceFile, targetFile) ->
 
         log "source: #{sourceFile} target: #{targetFile}" if args.verbose
         if dirty sourceFile, targetFile
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.red)
+            console.log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.red)
         else if args.verbose
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
+            console.log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
 
 if args.diff
     
@@ -161,7 +155,7 @@ if args.status
 
 if args.run or args.rebuild
 
-    log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+    console.log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     
     walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile
@@ -169,11 +163,11 @@ if args.run or args.rebuild
             if args.rebuild or isDirty
                 src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
                 tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
-                log src, "🔧  ", tgt
+                console.log src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
                     o = config.obj targetFile, opt
                     if should 'browserify', o, targetFile
-                        log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)
+                        console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)
                         runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", config.path 'browserify', slash.resolve(targetFile), opt
 
 for cmd in ['update', 'bump', 'commit', 'publish', 'test']
@@ -183,7 +177,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
         if not runcmd cmd, args.arguments.join ' ', process.cwd()
             break
 
-        log '🔧  done'.gray if args.verbose
+        console.log '🔧  done'.gray if args.verbose
 
         if args.arguments and cmd in ['commit', 'bump']
             break

@@ -28,11 +28,8 @@ app = new app
         prefs     show preferences        false
         """
 
-# log args
-        
 konrad         = null
 konradVersion  = null
-konradLastTask = []
 
 if args.verbose
     log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
@@ -98,7 +95,7 @@ startKonrad = (rootDir) ->
                 createWindow 'konradOutput', s
             else
                 highlight()
-                log 'konrad output:', s
+                # log 'konrad output:', s
                 konradLastTask.push s
 
 #  0000000   000   000  000  000000000  
@@ -159,14 +156,6 @@ post.on 'appReady', onAppReady
 onWinReady = (wID) ->
     
     post.toWin wID, 'konradVersion', konradVersion if konradVersion
-        # if ipcMsg
-            # post.toWins ipcMsg, ipcArg
-        # else if konradLastTask.length
-            # for t in konradLastTask
-                # post.toWins 'konradOutput', t
-        # else
-            # post.toWins 'clearLog'
-        # konradLastTask = []
 
 post.on 'winReady', onWinReady
         
@@ -177,10 +166,18 @@ post.on 'winReady', onWinReady
 # 000   000  000   0000000   000   000  0000000  000   0000000   000   000     000     
 
 highlight = ->
-    log 'highlight', app.tray?
-    app.tray?.setHighlightMode 'always'
-    unhighlight = -> app.tray?.setHighlightMode 'never'
-    setTimeout unhighlight, 1000
+
+    return if not app.tray? 
+    
+    if slash.win()
+        app.tray.setImage slash.resolve slash.join __dirname, '../img/menu.png'
+        unhighlight = -> app.tray.setImage slash.resolve slash.join __dirname, '../img/menu@2x.png'
+        setTimeout unhighlight, 1000
+    else
+        
+        app.tray.setHighlightMode 'always'
+        unhighlight = -> app.tray.setHighlightMode 'never'
+        setTimeout unhighlight, 1000
 
 post.on 'highlight', highlight
 

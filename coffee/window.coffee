@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ win, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
+{ win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
 w = new win 
     dir:    __dirname
@@ -20,15 +20,10 @@ w = new win
 # 000   000  000        000       000  0000  
 #  0000000   000        00000000  000   000  
 
+koSend = null
 openFile = (f) ->
-    
-    f = slash.resolve f
-    if slash.win()
-        log 'openFile', f, slash.unslash slash.resolve('~/s/ko/ko-win32-x64/ko.exe')
-        # childp.spawn 'bash', ['ko', f]
-        childp.spawn slash.unslash(slash.resolve('~/s/ko/ko-win32-x64/ko.exe')), ['ko', slash.unslash slash.path f]
-    else
-        childp.spawn '/usr/local/bin/ko', [f]
+    if not koSend then koSend = new udp port:9779
+    koSend.send slash.resolve f
 
 tasks = {}
 
@@ -40,7 +35,6 @@ tasks = {}
 
 showOverlay = ->
 
-    log 'showOverlay'
     img = slash.fileUrl __dirname+'/../img/about.png'
     $("#overlay")?.remove() 
     overlay = elem id:'overlay'
@@ -67,6 +61,14 @@ post.on "konradOutput", (s) ->
     else if / 🔧 /.test s then onMessage s
     else console.log 'konrad', s
 
+post.on "konradVersion", (s) ->
+    split = s.trim().split /\s+/
+    info = 
+        name:    'konrad'
+        version: split[0]
+        path:    slash.tilde split[2]
+    window.titlebar.setTitle info
+    
 # 000000000   0000000    0000000  000   000   0000000  
 #    000     000   000  000       000  000   000       
 #    000     000000000  0000000   0000000    0000000   
@@ -186,9 +188,11 @@ onError = (s) ->
 
 onMenuAction = (action) ->
     
-    log 'menuAction', action
+    # log 'menuAction', action
     switch action
         when 'Clear'            then clearTasks()
         when 'Set Dir...'       then post.toMain 'setRootDir'
         
 post.on 'menuAction', onMenuAction
+
+showOverlay()

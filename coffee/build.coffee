@@ -90,11 +90,11 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
     
     fs.ensureDir slash.dir(targetFile), (err) ->
 
-        if err then return error "can't create output  directory#{slash.dir(targetFile).bold.yellow}".bold.red
+        if err then return error "can't create output  directory#{slash.dir(targetFile)}"
 
         atomic targetFile, compiled, (err) ->
             if not empty err 
-                return error "can't  write#{targetFile.bold.yellow}!".bold.red, err
+                return error "can't  write#{targetFile}!", err
             if not args.quiet
                 if args.verbose
                     log pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
