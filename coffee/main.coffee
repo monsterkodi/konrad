@@ -19,11 +19,11 @@ app = new app
     icon:       '../img/app.ico'
     tray:       '../img/menu@2x.png'
     about:      '../img/about.png'
+    onQuit:     -> quit()
     width:      400
     height:     400
     minWidth:   300
     minHeight:  200
-    onQuit:     -> quit()
     args: """
         show      open window on startup  true
         prefs     show preferences        false
@@ -54,12 +54,11 @@ if args.prefs
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
 startKonrad = (rootDir) ->
-
-    log 'startKonrad', rootDir
     
     prefs.set 'rootDir', rootDir
 
     if konrad?
+        log 'killing konrad', konrad.pid
         treekill = require 'tree-kill'
         treekill konrad.pid, 'SIGKILL'
 
@@ -68,8 +67,9 @@ startKonrad = (rootDir) ->
         shell:    true
         detached: false
 
-    konrad.on 'exit', (code, signal) ->
-        log 'konrad.on exit'
+    log 'startKonrad', konrad.pid, rootDir
+    
+    # konrad.on 'exit', (code, signal) -> log 'konrad.on exit'
 
     konrad.on 'close', (code, signal) ->
         post.toWins 'konradExit', "konrad exit code: #{code}"
@@ -103,7 +103,6 @@ startKonrad = (rootDir) ->
 
 quit = ->
 
-    log 'quit'
     if konrad?
         log 'killing konrad', konrad?.pid
         treekill = require 'tree-kill'
