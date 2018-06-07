@@ -23,6 +23,7 @@ app = new app
     height:     400
     minWidth:   300
     minHeight:  200
+    onQuit:     -> quit()
     args: """
         show      open window on startup  true
         prefs     show preferences        false
@@ -69,15 +70,12 @@ startKonrad = (rootDir) ->
 
     konrad.on 'exit', (code, signal) ->
         log 'konrad.on exit'
-        # if not konrad
-            # app.exit()
 
     konrad.on 'close', (code, signal) ->
         post.toWins 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
         s = colors.strip data.toString()
-        # log "konrad error: #{s}"
         if app.win?
             post.toWins 'konradError', "konrad error: #{s}"
         else
@@ -95,7 +93,6 @@ startKonrad = (rootDir) ->
                 createWindow 'konradOutput', s
             else
                 highlight()
-                # log 'konrad output:', s
                 konradLastTask.push s
 
 #  0000000   000   000  000  000000000  
@@ -104,15 +101,14 @@ startKonrad = (rootDir) ->
 # 000 0000   000   000  000     000     
 #  00000 00   0000000   000     000     
 
-quitKonrad = ->
+quit = ->
 
+    log 'quit'
     if konrad?
         log 'killing konrad', konrad?.pid
         treekill = require 'tree-kill'
         treekill konrad.pid, 'SIGKILL'
         konrad = null
-
-post.on 'quitKonrad', quitKonrad
         
 #  0000000  00000000  000000000        00000000    0000000    0000000   000000000  
 # 000       000          000           000   000  000   000  000   000     000     
@@ -138,27 +134,23 @@ post.on 'setRootDir', setRootDir
 # 000   000  000        000              000   000  000       000   000  000   000     000     
 # 000   000  000        000              000   000  00000000  000   000  0000000       000     
 
-onAppReady = ->
+post.on 'appReady', ->
 
     if rootDir = prefs.get 'rootDir'
         startKonrad rootDir
     else
         setRootDir()
 
-post.on 'appReady', onAppReady
-    
 #000   000  000  000   000        00000000   00000000   0000000   0000000    000   000  
 #000 0 000  000  0000  000        000   000  000       000   000  000   000   000 000   
 #000000000  000  000 0 000        0000000    0000000   000000000  000   000    00000    
 #000   000  000  000  0000        000   000  000       000   000  000   000     000     
 #00     00  000  000   000        000   000  00000000  000   000  0000000       000     
 
-onWinReady = (wID) ->
+post.on 'winReady', (wID) ->
     
     post.toWin wID, 'konradVersion', konradVersion if konradVersion
 
-post.on 'winReady', onWinReady
-        
 # 000   000  000   0000000   000   000  000      000   0000000   000   000  000000000  
 # 000   000  000  000        000   000  000      000  000        000   000     000     
 # 000000000  000  000  0000  000000000  000      000  000  0000  000000000     000     
