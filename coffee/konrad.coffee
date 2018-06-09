@@ -50,10 +50,7 @@ if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
 # 0000000    00000000  000       000   000   0000000   0000000     000     0000000
 
 opt = noon.parse """
-ignore
-    /.*-x64/
-    /.*\.app$/
-coffee  . ext js   . map inline . replace .. /coffee/ /js/ .. ^coffee/ js/ 
+coffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ 
 noon    . ext json
 json    . ext noon . filter  .. package.json$
 styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
@@ -70,6 +67,7 @@ opt.ignore = [
     /gulpfile.coffee$/
     /Gruntfile.coffee$/
     /\.konrad\.noon$/
+    /menu.noon$/
 ]
 
 wlk =
@@ -82,6 +80,7 @@ wlk =
         /\.app$/
         /_misc/
         /.*-x64/
+        /inno/
     ]
 
 # 0000000    000  00000000   000000000  000   000

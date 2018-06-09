@@ -8,7 +8,7 @@
 
 { win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
 
-w = new win 
+w = new win
     dir:    __dirname
     pkg:    require '../package.json'
     menu:   '../coffee/menu.noon'
@@ -22,6 +22,7 @@ w = new win
 
 koSend = null
 openFile = (f) ->
+    log 'openFile', f
     if not koSend then koSend = new udp port:9779
     koSend.send slash.resolve f
 
@@ -75,9 +76,7 @@ post.on "konradVersion", (s) ->
 #    000     000   000       000  000  000        000  
 #    000     000   000  0000000   000   000  0000000   
 
-clearTasks = -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
-
-post.on "clearLog", clearTasks
+post.on "clearLog", -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
     
 taskDiv = (opt) ->
 
@@ -98,7 +97,7 @@ taskDiv = (opt) ->
 
     fil.classList.add opt.file? and 'file' or 'message'
     fil.innerHTML = " #{opt.icon} #{opt.file ? opt.message}"
-    fil.onclick = () -> openFile opt.file if opt.file?
+    fil.onclick = -> openFile opt.file if opt.file?
 
     div.appendChild tim
     div.appendChild fil
@@ -120,10 +119,22 @@ onTask = (s) ->
 
     [time, sourceTarget] = s.split ' 👍 '
     [source, target] = sourceTarget.split ' ► '
+    
+    source = slash.tilde source.trim()
+    target = slash.tilde target.trim()
 
     source = slash.tilde(source).trim()
     div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
+    
+    if slash.dir(target).startsWith slash.tilde slash.dir __filename
+        if slash.file(target) == 'window.js' or slash.ext(target) in ['css', 'html']
+            post.emit 'menuAction', 'Reload'
+        else if slash.file(target) == 'main.js'
+            post.toMain 'Restart'
+        else
+            log "should restart konrad '#{slash.file(target)}'", target, slash.path __filename
+            post.toMain 'Restart konrad'
     
     fadeOverlay()
 
@@ -167,32 +178,16 @@ onError = (s) ->
 
     div.scrollIntoViewIfNeeded()
     
-# 000   000  00000000  000   000
-# 000  000   000        000 000
-# 0000000    0000000     00000
-# 000  000   000          000
-# 000   000  00000000     000
-
-# onCombo = (combo, info) ->
-#    
-    # switch combo
-        # when 'command+c', 'ctrl+c' then document.execCommand 'copy'
-#         
-# post.on 'combo', onCombo
-
 # 00     00  00000000  000   000  000   000   0000000    0000000  000000000  000   0000000   000   000  
 # 000   000  000       0000  000  000   000  000   000  000          000     000  000   000  0000  000  
 # 000000000  0000000   000 0 000  000   000  000000000  000          000     000  000   000  000 0 000  
 # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
 # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
 
-onMenuAction = (action) ->
+post.on 'menuAction', (action) ->
     
-    # log 'menuAction', action
     switch action
-        when 'Clear'            then clearTasks()
-        when 'Set Dir...'       then post.toMain 'setRootDir'
+        when 'Clear'      then post.emit 'clearLog'
+        when 'Set Dir...' then post.toMain 'setRootDir'
         
-post.on 'menuAction', onMenuAction
-
 showOverlay()

@@ -101,10 +101,6 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
                 else
                     log pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 
-            if slash.samePath slash.dir(targetFile), __dirname
-                watch = require './watch'
-                watch.reload()
-            else if cb?
-                cb sourceFile, targetFile
+            cb? sourceFile, targetFile
 
 module.exports = build

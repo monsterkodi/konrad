@@ -53,6 +53,8 @@ if args.prefs
 # 000  000   000   000  000  0000  000   000  000   000  000   000
 # 000   000   0000000   000   000  000   000  000   000  0000000
 
+post.on 'Restart konrad', -> startKonrad prefs.get 'rootDir'
+
 startKonrad = (rootDir) ->
     
     prefs.set 'rootDir', rootDir
@@ -60,7 +62,7 @@ startKonrad = (rootDir) ->
     if konrad?
         log 'killing konrad', konrad.pid
         treekill = require 'tree-kill'
-        treekill konrad.pid, 'SIGKILL'
+        treekill konrad.pid
 
     konrad = childp.spawn "konrad", ['-vw'],
         cwd:      rootDir
@@ -69,9 +71,11 @@ startKonrad = (rootDir) ->
 
     log 'startKonrad', konrad.pid, rootDir
     
-    # konrad.on 'exit', (code, signal) -> log 'konrad.on exit'
+    konrad.on 'exit', (code, signal) -> 
+        # log 'konrad.on exit'
 
     konrad.on 'close', (code, signal) ->
+        # log 'konrad.on close'
         post.toWins 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
@@ -106,8 +110,25 @@ quit = ->
     if konrad?
         log 'killing konrad', konrad?.pid
         treekill = require 'tree-kill'
-        treekill konrad.pid, 'SIGKILL'
+        treekill konrad.pid, -> app.exitApp()
         konrad = null
+        'delay'
+        
+post.on 'Restart', ->
+    
+    log 'on Restart', konrad.pid
+
+    treekill = require 'tree-kill'
+    treekill konrad.pid, -> 
+    
+        log 'spawn', process.argv[0], process.argv.slice(1)
+        childp.spawn process.argv[0], process.argv.slice(1),
+            cwd:         process.cwd()
+            encoding:    'utf8'
+            detached:    true
+            shell:       true
+            windowsHide: true
+        process.exit 0
         
 #  0000000  00000000  000000000        00000000    0000000    0000000   000000000  
 # 000       000          000           000   000  000   000  000   000     000     

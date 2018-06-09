@@ -19,32 +19,18 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 
                 coffee = require 'coffeescript'
                 
-                if cfg[ext]?.map in ['inline', 'file']
-                    toSource       = slash.relative sourceFile, targetFile
-                    splitIndex     = toSource.lastIndexOf('./') + 2
-                    sourceRoot     = toSource.slice 0, splitIndex - 4
-                    relativeSource = toSource.substr splitIndex
+                if cfg[ext]?.map
                     mapcfg =
-                        filename:      sourceFile
                         sourceMap:     true
-                        generatedFile: slash.basename targetFile
-                        sourceRoot:    sourceRoot
-                        sourceFiles:   [relativeSource]
-
-                switch cfg[ext]?.map
-                    when 'inline'
-                        mapcfg.inlineMap = true
-                        jsMap = coffee.compile sourceText, mapcfg
-                        jsMap.js
-                    when 'file'
-                        jsMap = coffee.compile sourceText, mapcfg
-                        srcMap = jsMap.v3SourceMap
-                        mapFile = "#{targetFile}.map"
-                        atomic mapFile, srcMap, (err) ->
-                            if err then error "can't write sourceMap for #{targetFile}: #{err}"
-                        jsMap.js + "\n//# sourceMappingURL=#{slash.basename mapFile}\n"
-                    else
-                        coffee.compile sourceText
+                        inlineMap:     true
+                        sourceRoot:    '.'
+                        filename:      slash.relative sourceFile, slash.dir targetFile
+                        generatedFile: slash.file targetFile
+                        
+                    jsMap = coffee.compile sourceText, mapcfg
+                    jsMap.js
+                else
+                    coffee.compile sourceText
 
             when 'styl'
                 

@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.58.0
+version         0.80.0
 main            js/index.js
 bin
                 konrad  ./bin/konrad
@@ -22,14 +22,13 @@ homepage        https://github.com/monsterkodi/konrad
 dependencies
                 chokidar      ^2.0.3
                 coffeescript  ^2.3.1
+                kxk           https://github.com/monsterkodi/kxk.git
                 mkpath        ^1.0.0
                 pug           ^2.0.3
                 semver        ^5.5.0
-                simple-git    ^1.95.0
+                simple-git    ^1.95.1
                 stylus        ^0.54.5
                 tree-kill     ^1.2.0
-                wxw           ^0.10.0
-                kxk           https://github.com/monsterkodi/kxk.git
 devDependencies
                 electron        ^2.0.2
                 electron-packager  ^12.1.0
