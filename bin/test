@@ -10,3 +10,4 @@ elif [ -e "coffee" ] ; then
 fi
 
 mocha -c --require coffeescript/register --bail "$TEST"
+# mocha -c --require coffeescript/register "$TEST"

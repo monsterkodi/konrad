@@ -29,7 +29,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             encoding: 'utf8'
             stdio:    'inherit'
             shell:    true
-            
+          
     catch err
         return konradError "command error", "command '#{cmd}' (#{command}) #{'failed!'}", err
     true
