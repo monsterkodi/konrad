@@ -6,7 +6,7 @@
 000        000   000  00000000     000        000        000
 ###
 
-{ args, colors, slash, os, _ } = require 'kxk'
+{ args, valid, colors, slash, os, _ } = require 'kxk'
 
 pretty = {}
 
@@ -21,7 +21,7 @@ pretty.file = (f, c=colors.yellow) ->
     
 pretty.filePath = (p, c=colors.yellow) ->
     p = p.replace os.homedir(), "~"
-    if slash.dir(p) not in ['.', '/']
+    if valid slash.dir p 
         "#{pretty.path slash.dir(p), c}#{pretty.path '/', c}#{pretty.file slash.basename(p), c}"
     else
         "#{pretty.file slash.basename(p), c}"

@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ args, colors, slash, noon, log, fs, _ } = require 'kxk'
+{ args, colors, slash, noon, fs, log, _ } = require 'kxk'
 
 argDir      = require './argdir'
 build       = require './build'
@@ -42,7 +42,7 @@ actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebui
 
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
     args.run = true # makes run the default action if no other action is set
-
+    
 # 0000000    00000000  00000000   0000000   000   000  000      000000000   0000000
 # 000   000  000       000       000   000  000   000  000         000     000
 # 000   000  0000000   000000    000000000  000   000  000         000     0000000
