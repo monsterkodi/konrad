@@ -97,7 +97,6 @@ startKonrad = (rootDir) ->
                 createWindow 'konradOutput', s
             else
                 highlight()
-                konradLastTask.push s
 
 #  0000000   000   000  000  000000000  
 # 000   000  000   000  000     000     
