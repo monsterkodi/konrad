@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 cd `dirname $0`/..
 
-NAME=konrad
+if rm -rf konrad-darwin-x64; then
+    konrad --run
 
-2>/dev/null 1>/dev/null killall $NAME
-2>/dev/null 1>/dev/null killall $NAME
+    IGNORE="(.*\.dmg$|Icon$|.*md$|pug$|styl$|.*\.lock$|img/dmg.*\.png)"
 
-konrad --run
-
-IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
-
-node_modules/electron-packager/cli.js . --overwrite --icon=img/app.icns --ignore=$IGNORE
-
-rm $NAME-darwin-x64/LICENSE*
-rm $NAME-darwin-x64/version
+    node_modules/electron-packager/cli.js . --overwrite --icon=img/app.icns --ignore=$IGNORE
+fi
