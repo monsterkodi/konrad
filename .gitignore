@@ -1,9 +1,10 @@
+js/css/
+js/main.js
+js/window.js
 Icon?
 notes.md
 node_modules
 bin/*.js
-js/*
-!js/konrad.js
 bin/*.json
 node_modules
 *-x64
