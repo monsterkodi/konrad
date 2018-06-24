@@ -21,17 +21,17 @@ pkg         = require "#{__dirname}/../package"
 
 args = args.init """
     arguments  depend on options                            **
-    bump       bump package.* version [major|minor|patch]   false
-    commit     add, commit and push [msg]                   false
-    publish    bump, commit & publish to npm [msg]          false
-    update     update npm packages                          false
-    test       run tests                                    false
-    watch      watch directory for changes                  false
     run        build dirty or missing targets in dir        false
     rebuild    rebuild all targets in dir                   false  -R
+    watch      watch directory for changes                  false
     info       show build status of dir                     false
-    status     show git status of file/dir                  false
+    bump       bump package.* version [major|minor|patch]   false
     diff       show git diff of file/dir                    false
+    status     show git status of file/dir                  false
+    commit     add, commit and push [msg]                   false
+    update     update npm packages                          false
+    publish    bump, commit & publish to npm [msg]          false
+    test       run tests                                    false
     verbose    log more                                     false
     quiet      log nothing                                  false
     debug      log debug                                    false  -D
@@ -183,7 +183,4 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
 if args.watch
     watch wlk, opt
-else
-    log.stop()
-    # console.log 'done!'
     

@@ -10,8 +10,6 @@ if rm -rf konrad-win32-x64; then
     IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
     
     # TODO: -no-prune ???
-    node_modules/electron-packager/cli.js . --overwrite --icon=img/app.ico --no-prune --ignore=$IGNORE
+    node_modules/electron-packager/cli.js . --overwrite --icon=img/app.ico --ignore=$IGNORE
 
-else
-    handle64 -nobanner konrad-win32-x64\\resources\\electron.asar
 fi
