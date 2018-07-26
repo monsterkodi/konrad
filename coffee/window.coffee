@@ -70,14 +70,14 @@ post.on "konradVersion", (s) ->
         path:    slash.tilde split[2]
     window.titlebar.setTitle info
     
-# 000000000   0000000    0000000  000   000   0000000  
-#    000     000   000  000       000  000   000       
-#    000     000000000  0000000   0000000    0000000   
-#    000     000   000       000  000  000        000  
-#    000     000   000  0000000   000   000  0000000   
-
 post.on "clearLog", -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
     
+# 000000000   0000000    0000000  000   000  0000000    000  000   000  
+#    000     000   000  000       000  000   000   000  000  000   000  
+#    000     000000000  0000000   0000000    000   000  000   000 000   
+#    000     000   000       000  000  000   000   000  000     000     
+#    000     000   000  0000000   000   000  0000000    000      0      
+
 taskDiv = (opt) ->
 
     main =$ 'main'
@@ -122,8 +122,7 @@ onTask = (s) ->
     
     source = slash.tilde source.trim()
     target = slash.tilde target.trim()
-
-    source = slash.tilde(source).trim()
+    # source = slash.tilde(source).trim()
     div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
     
@@ -161,10 +160,13 @@ onError = (s) ->
     post.toMain 'showWindow'
     post.toMain 'highlight'
     
-    $("main").innerHTML = ''
-    tasks = {}
+    for key,task of tasks
+        if task.icon == '😡' 
+            task.div.remove()
+            delete tasks[key]
 
     lines = s.split '\n'
+    
     [time, file] = lines.shift().split ' 😡 '
     file = file.trim()
 
