@@ -36,7 +36,7 @@ tasks = {}
 
 showOverlay = ->
 
-    img = slash.fileUrl __dirname+'/../img/about.png'
+    img = slash.fileUrl slash.join __dirname, '..', 'img', 'about.png'
     $("#overlay")?.remove() 
     overlay = elem id:'overlay'
     overlay.appendChild elem 'img', class:'info', src:img
