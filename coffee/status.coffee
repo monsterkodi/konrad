@@ -6,9 +6,11 @@
 0000000      000     000   000     000      0000000   0000000 
 ###
 
-{ args, slash, childp, colors, error, _ } = require 'kxk'
+{ colors, childp, slash, valid, args, error, log, _ } = require 'kxk'
 
 log    = console.log
+kork   = require 'kork'
+render = require './render'
 argDir = require './argdir'
 pretty = require './pretty'
 
@@ -18,6 +20,12 @@ gitStatus = (sourceFile) ->
     git = require('simple-git') gitDir
     doFetch git, gitDir, sourceFile
     
+# 00000000  00000000  000000000   0000000  000   000  
+# 000       000          000     000       000   000  
+# 000000    0000000      000     000       000000000  
+# 000       000          000     000       000   000  
+# 000       00000000     000      0000000  000   000  
+
 doFetch = (git, gitDir, sourceFile) ->
     
     git.fetch (err,status) ->
@@ -25,6 +33,12 @@ doFetch = (git, gitDir, sourceFile) ->
         if err then return error "git fetch error #{err}"
         doStatus git, gitDir, sourceFile
         
+#  0000000  000000000   0000000   000000000  000   000   0000000  
+# 000          000     000   000     000     000   000  000       
+# 0000000      000     000000000     000     000   000  0000000   
+#      000     000     000   000     000     000   000       000  
+# 0000000      000     000   000     000      0000000   0000000   
+
 doStatus = (git, gitDir, sourceFile) ->
         
     git.status (err,status) ->
@@ -36,6 +50,7 @@ doStatus = (git, gitDir, sourceFile) ->
         fileLists = _.omitBy status, (v,k) -> _.isEmpty v
 
         for k,v of fileLists
+            
             m =
                 not_added:  colors.gray
                 conflicted: colors.yellow
@@ -44,6 +59,7 @@ doStatus = (git, gitDir, sourceFile) ->
                 deleted:    colors.red
 
             if k in _.keys m
+                
                 for f in status[k] ? []
                     d = argDir()
 
@@ -64,8 +80,17 @@ doStatus = (git, gitDir, sourceFile) ->
                     relPath = slash.relative gitFile, '.'
                     lame    = slash.extname(gitFile) == '.js' or slash.basename(gitFile) == 'package.json'
                     change  = prfx + pretty.filePath(relPath, (lame and m[k].dim or m[k]))
+                    
+                    # 0000000    000  00000000  00000000  
+                    # 000   000  000  000       000       
+                    # 000   000  000  000000    000000    
+                    # 000   000  000  000       000       
+                    # 0000000    000  000       000       
+                    
                     if k in ['modified', 'created'] and args.diff
+                        
                         continue if lame
+                        
                         res = childp.execSync "git diff -U0 --ignore-space-at-eol #{gitFile}",
                             encoding: 'utf8'
                             cwd: gitDir
@@ -75,13 +100,18 @@ doStatus = (git, gitDir, sourceFile) ->
                             ls = colors.strip(l)
                             if (ls[0] in ['+', '-', '@']) and (ls.substr(0,4) not in ['+++ ', '--- '])
                                 if ls[0] == '+'
-                                    diff += "\n " + (ls.substr(1)).white
+                                    rgs = kork.ranges ls.substr(1), slash.ext f
+                                    if valid rgs
+                                        diff += "\n " + render rgs
+                                    else
+                                        diff += "\n " + (ls.substr(1)).white
                                 else if ls[0] == '-'
                                     diff += "\n " + (ls.substr(1)).gray.bold.dim
                                 else
                                     diff += ("\n"+c)
                                     c = '●'.blue.dim
                         change += diff+"\n"+"▲".blue.dim if diff.length
+                        
                     changes.push change
 
         relPath = slash.relative gitDir, '.'
