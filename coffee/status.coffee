@@ -96,20 +96,28 @@ doStatus = (git, gitDir, sourceFile) ->
                             cwd: gitDir
                         diff = ""
                         c = '▼'.bold.blue
+                        start = 0
                         for l in res.split /\r?\n/
                             ls = colors.strip(l)
-                            if (ls[0] in ['+', '-', '@']) and (ls.substr(0,4) not in ['+++ ', '--- '])
-                                if ls[0] == '+'
-                                    rgs = kork.ranges ls.substr(1), slash.ext f
-                                    if valid rgs
-                                        diff += "\n " + render rgs
-                                    else
-                                        diff += "\n " + (ls.substr(1)).white
-                                else if ls[0] == '-'
-                                    diff += "\n " + (ls.substr(1)).gray.bold.dim
+                            if ls.substr(0,4) in ['+++ ', '--- '] then
+                            else if ls[0] == '@'
+                                split = ls.split '@@'
+                                split = split[1].split ' +'
+                                split = split[1].split ','
+                                start = parseInt split[0]
+                                diff += ("\n"+c)
+                                c = '●'.blue.dim
+                            else if ls[0] == '+'
+                                diff += "\n "
+                                # diff += "[0;7m#{slash.join(gitDir, f)}:#{start}[0m"
+                                start++
+                                rgs = kork.ranges ls.substr(1), slash.ext f
+                                if valid rgs
+                                    diff += render rgs
                                 else
-                                    diff += ("\n"+c)
-                                    c = '●'.blue.dim
+                                    diff += ls.substr(1).white
+                            else if ls[0] == '-'
+                                diff += "\n " + (ls.substr(1)).gray.bold.dim
                         change += diff+"\n"+"▲".blue.dim if diff.length
                         
                     changes.push change
