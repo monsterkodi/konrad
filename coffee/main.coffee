@@ -72,7 +72,7 @@ startKonrad = (rootDir) ->
     log 'startKonrad', konrad.pid, rootDir
     
     konrad.on 'exit', (code, signal) -> 
-        # log 'konrad.on exit'
+        log 'konrad.on exit'
 
     konrad.on 'close', (code, signal) ->
         # log 'konrad.on close'
