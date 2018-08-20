@@ -8,4 +8,5 @@ bin/*.js
 bin/*.json
 node_modules
 *-x64
+*-ia32
 *.dmg
