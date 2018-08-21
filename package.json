@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.96.0",
+  "version": "0.97.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -26,20 +26,20 @@
   },
   "homepage": "https://github.com/monsterkodi/konrad",
   "dependencies": {
-    "chokidar": "^2.0.3",
+    "chokidar": "^2.0.4",
     "coffeescript": "^2.3.1",
     "kxk": "../kxk",
     "mkpath": "^1.0.0",
     "pug": "^2.0.3",
-    "semver": "^5.5.0",
-    "simple-git": "^1.95.1",
+    "semver": "^5.5.1",
+    "simple-git": "^1.96.0",
     "stylus": "^0.54.5",
     "tree-kill": "^1.2.0",
     "kork": "../kork"
   },
   "devDependencies": {
-    "electron": "^2.0.2",
-    "electron-packager": "^12.1.0",
-    "electron-rebuild": "^1.7.3"
+    "electron": "^2.0.7",
+    "electron-packager": "^12.1.1",
+    "electron-rebuild": "^1.8.2"
   }
 }
