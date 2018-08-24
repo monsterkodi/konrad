@@ -22,22 +22,15 @@ Watch = (wlk, opt) ->
     
     start = (cb) ->
 
-        pass = (p) -> if slash.extname(p).substr(1) in _.keys(opt) then true
+        pass = (p) -> 
+            if slash.ext(p) in _.keys(opt)
+                true
 
         d = args.arguments[0] ? '.'
         v = "#{pkg.version} ●".dim.gray
         log pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), colors.white}".gray
-        log 'watch.ignore', wlk.ignore
-        watcher = watch.watch d
-        # watcher = require('chokidar').watch d,
-            # ignored:        wlk.ignore
-            # ignoreInitial:  true
-            # usePolling:     false
-            # useFsEvents:    true
-
-        watcher
-            # .on 'add',    (p) -> if pass p then cb slash.path p
-            .on 'change', (p) -> if pass p then cb slash.path p
+        watcher = watch.watch d, recursive:true, ignore:wlk.ignore
+        watcher.on 'change', (info) -> if pass info.path then cb slash.path info.path
 
     start (sourceFile) ->
 

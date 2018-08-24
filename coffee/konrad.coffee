@@ -72,16 +72,16 @@ opt.ignore = [
 
 wlk =
     ignore: [
-        /node_modules/
-        /bower_components/
+        /node_modules$/
+        /bower_components$/
         /\/img$/
         /\/\..+$/
         /\.git$/
         /\.app$/
-        /_misc/
-        /.*-x64/
-        /.*-ia32/
-        /inno/
+        /.*-x64$/
+        /.*-ia32$/
+        /\/?inno$/
+        /\/?js$/
     ]
 
 # 0000000    000  00000000   000000000  000   000
