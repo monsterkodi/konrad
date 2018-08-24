@@ -6,7 +6,7 @@
 00     00  000   000     000      0000000  000   000
 ###
 
-{ args, slash, childp, colors, _ } = require 'kxk'
+{ watch, args, slash, childp, colors, _ } = require 'kxk'
 
 log    = console.log
 pretty = require './pretty'
@@ -18,7 +18,7 @@ pkg    = require '../package.json'
 
 watcher = null
 
-watch = (wlk, opt) ->
+Watch = (wlk, opt) ->
     
     start = (cb) ->
 
@@ -27,14 +27,16 @@ watch = (wlk, opt) ->
         d = args.arguments[0] ? '.'
         v = "#{pkg.version} ●".dim.gray
         log pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), colors.white}".gray
-        watcher = require('chokidar').watch d,
-            ignored:        wlk.ignore
-            ignoreInitial:  true
-            usePolling:     false
-            useFsEvents:    true
+        log 'watch.ignore', wlk.ignore
+        watcher = watch.watch d
+        # watcher = require('chokidar').watch d,
+            # ignored:        wlk.ignore
+            # ignoreInitial:  true
+            # usePolling:     false
+            # useFsEvents:    true
 
         watcher
-            .on 'add',    (p) -> if pass p then cb slash.path p
+            # .on 'add',    (p) -> if pass p then cb slash.path p
             .on 'change', (p) -> if pass p then cb slash.path p
 
     start (sourceFile) ->
@@ -51,4 +53,4 @@ watch = (wlk, opt) ->
         else
             test sourceFile
 
-module.exports = watch
+module.exports = Watch

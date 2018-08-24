@@ -21,6 +21,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 
                 if cfg[ext]?.map
                     mapcfg =
+                        bare:          true
                         sourceMap:     true
                         inlineMap:     true
                         sourceRoot:    '.'
@@ -30,7 +31,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                     jsMap = coffee.compile sourceText, mapcfg
                     jsMap.js
                 else
-                    coffee.compile sourceText
+                    coffee.compile sourceText, bare:true
 
             when 'styl'
                 

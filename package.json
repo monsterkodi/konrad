@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.97.0",
+  "version": "0.98.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -26,7 +26,6 @@
   },
   "homepage": "https://github.com/monsterkodi/konrad",
   "dependencies": {
-    "chokidar": "^2.0.4",
     "coffeescript": "^2.3.1",
     "kxk": "../kxk",
     "mkpath": "^1.0.0",
