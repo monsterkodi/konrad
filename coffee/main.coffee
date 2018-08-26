@@ -32,6 +32,8 @@ app = new app
 konrad         = null
 konradVersion  = null
 
+log args
+
 if args.verbose
     log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
     log colors.yellow.bold 'process'
@@ -64,15 +66,21 @@ startKonrad = (rootDir) ->
         treekill = require 'tree-kill'
         treekill konrad.pid
 
-    konrad = childp.spawn "konrad", ['-vw'],
+    if os.platform() == 'win32'
+        path = "konrad"
+    else
+        process.env.PATH += ':/usr/local/bin'
+        path = "/usr/local/bin/konrad"
+        
+    konrad = childp.spawn path, ['-vw'],
         cwd:      rootDir
         shell:    true
         detached: false
 
-    log 'startKonrad', konrad.pid, rootDir
+    # log 'startKonrad', path, konrad.pid, rootDir, process.env
     
     konrad.on 'exit', (code, signal) -> 
-        log 'konrad.on exit'
+        log 'konrad.on exit', code, signal
 
     konrad.on 'close', (code, signal) ->
         # log 'konrad.on close'
