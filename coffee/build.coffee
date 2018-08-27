@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000  
 ###
 
-{ args, slash, atomic, empty, fs, colors, str, error, _ } = require 'kxk'
+{ args, slash, empty, fs, colors, str, error, _ } = require 'kxk'
 
 log     = console.log
 pretty  = require './pretty'
@@ -92,7 +92,7 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
         if err then return error "can't create output  directory#{slash.dir(targetFile)}"
 
-        atomic targetFile, compiled, (err) ->
+        fs.writeFile targetFile, compiled, (err) ->
             if not empty err 
                 return error "can't  write#{targetFile}!", err
             if not args.quiet
