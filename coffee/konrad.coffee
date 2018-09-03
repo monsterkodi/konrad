@@ -155,7 +155,8 @@ if args.status
 
 if args.run or args.rebuild
 
-    console.log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+    if not args.quiet
+        console.log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     
     walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile
@@ -163,7 +164,8 @@ if args.run or args.rebuild
             if args.rebuild or isDirty
                 src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
                 tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
-                console.log src, "🔧  ", tgt
+                if not args.quiet
+                    console.log src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
                     o = config.obj targetFile, opt
                     if should 'browserify', o, targetFile
