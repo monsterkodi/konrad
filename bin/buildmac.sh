@@ -2,6 +2,9 @@
 cd `dirname $0`/..
 
 if rm -rf konrad-darwin-x64; then
+    
+    ./bin/compile.sh
+    
     konrad --run
 
     IGNORE="(.*\.dmg$|Icon$|.*md$|pug$|styl$|.*\.lock$|img/dmg.*\.png)"
