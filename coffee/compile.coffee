@@ -17,7 +17,8 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
             
             when 'coffee'
                 
-                coffee = require 'coffeescript'
+                # coffee = require 'coffeescript'
+                coffee = require 'koffee'
                 
                 if cfg[ext]?.map
                     mapcfg =
@@ -26,6 +27,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                         inlineMap:     true
                         sourceRoot:    '.'
                         filename:      slash.relative sourceFile, slash.dir targetFile
+                        feature: header: true
                         generatedFile: slash.file targetFile
                         
                     jsMap = coffee.compile sourceText, mapcfg
