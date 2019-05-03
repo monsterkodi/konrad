@@ -36,7 +36,7 @@ args = args.init """
     quiet      log nothing                                  false
     debug      log debug                                    false  -D
     logtime    log with time                                true
-    """
+    """, pkg:pkg
 
 actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
 
