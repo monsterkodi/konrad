@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-/usr/bin/env coffee $DIR/bump.coffee $*
+DIR=`dirname $0`
+$DIR/../node_modules/.bin/koffee $DIR/bump.coffee $*
     

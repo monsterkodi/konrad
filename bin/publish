@@ -1,22 +1,14 @@
 #!/usr/bin/env bash
 
-# TEST=`sds scripts.test`
-# if [ -n "$TEST" ] ; then
-    # if ! npm test ; then
-        # echo '[ERROR] test failed!' | colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
-        # exit 1
-    # fi
-# fi
-
-konrad --test
-
-if [ $# -ne 0 ]; then
-    `dirname $0`/commit "$*"
+DIR=`dirname $0`
+if $DIR/konrad --test; then
+    $DIR/commit "$*"
+    
+    set -e
+    
+    VERSION=`sds version`
+    
+    echo 'npm publish' | $DIR/../node_modules/.bin/colorcat -sx
+    # npm publish        | $DIR/../node_modules/.bin/colorcat -P $DIR/../cc/npm.noon
 fi
 
-set -e
-
-VERSION=`sds version`
-
-echo 'npm publish' | colorcat -sx
-npm publish        | colorcat -P `dirname $0`/../cc/npm.noon

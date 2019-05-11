@@ -51,6 +51,7 @@ if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
 
 opt = noon.parse """
 coffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ 
+koffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ 
 noon    . ext json
 json    . ext noon . filter  .. package.json$
 styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
@@ -177,6 +178,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
     if args[cmd]
 
         if not runcmd cmd, args.arguments.join ' ', process.cwd()
+            process.exit 1
             break
 
         console.log '🔧  done'.gray if args.verbose

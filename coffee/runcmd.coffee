@@ -31,7 +31,8 @@ runcmd = (cmd, cmdargs, cwd) ->
             shell:    true
           
     catch err
-        return konradError "command error", "command '#{cmd}' (#{command}) #{'failed!'}", err
+        konradError "command error", "command '#{cmd}' (#{command}) #{'failed!'}", err
+        return false
     true
 
 module.exports = runcmd

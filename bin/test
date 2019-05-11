@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-TEST=test
-if [ -e "coffee/test" ] ; then
-    TEST="coffee/test/*.coffee"
-elif [ -e "test" ] ; then
-    TEST="test/*.coffee"
-elif [ -e "coffee" ] ; then
-    TEST="coffee/test.coffee"
+TEST=`sds scripts.test`
+if [ -n "$TEST" ] ; then
+    if ! npm test ; then
+        echo '[ERROR] test failed!' 
+        exit 1
+    fi
 fi
-
-mocha -c --require coffeescript/register --bail "$TEST"
-# mocha -c --require coffeescript/register "$TEST"
