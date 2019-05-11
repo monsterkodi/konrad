@@ -9,6 +9,6 @@ if $DIR/konrad --test; then
     VERSION=`sds version`
     
     echo 'npm publish' | $DIR/../node_modules/.bin/colorcat -sx
-    # npm publish        | $DIR/../node_modules/.bin/colorcat -P $DIR/../cc/npm.noon
+    npm publish        | $DIR/../node_modules/.bin/colorcat -P $DIR/../cc/npm.noon
 fi
 
