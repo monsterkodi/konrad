@@ -3,7 +3,8 @@
 TEST=`sds scripts.test`
 if [ -n "$TEST" ] ; then
     if ! npm test ; then
-        echo '[ERROR] test failed!' 
         exit 1
     fi
+else
+    echo 'no test'
 fi
