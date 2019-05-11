@@ -9,7 +9,7 @@
 { colors, childp, slash, valid, args, error, log, _ } = require 'kxk'
 
 log    = console.log
-kork   = require 'kork'
+klor   = require 'klor'
 render = require './render'
 argDir = require './argdir'
 pretty = require './pretty'
@@ -111,7 +111,7 @@ doStatus = (git, gitDir, sourceFile) ->
                                 diff += "\n "
                                 # diff += "[0;7m#{slash.join(gitDir, f)}:#{start}[0m"
                                 start++
-                                rgs = kork.ranges ls.substr(1), slash.ext f
+                                rgs = klor.ranges ls.substr(1), slash.ext f
                                 if valid rgs
                                     diff += render rgs
                                 else

@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.105.0
+version         0.111.0
 main            js/index.js
 bin
                 konrad  ./bin/konrad
@@ -21,9 +21,7 @@ bugs
 homepage        https://github.com/monsterkodi/konrad
 dependencies
                 coffeescript  ^1.12.7
-                kork          ../kork
-                kxk           ../kxk
-                koffee        ../koffee
+                klor          ^0.13.0
                 mkpath        ^1.0.0
                 pug           ^2.0.3
                 semver        ^5.5.1
