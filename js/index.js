@@ -9,12 +9,9 @@
  */
 
 (function() {
-  var ref, ref1;
+  var ref;
 
-  console.log((ref = module.parent) != null ? ref.filename : void 0);
-
-  if ((((ref1 = module.parent) != null ? ref1.filename : void 0) == null) || module.parent.filename.endsWith('default_app.asar\\main.js') || module.parent.filename.endsWith('default_app.asar/main.js')) {
-    console.log('main');
+  if ((((ref = module.parent) != null ? ref.filename : void 0) == null) || module.parent.filename.endsWith('default_app.asar\\main.js') || module.parent.filename.endsWith('default_app.asar/main.js')) {
     require('./main');
   } else {
     require('./konrad');

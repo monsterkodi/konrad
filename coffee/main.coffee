@@ -32,7 +32,7 @@ app = new app
 konrad         = null
 konradVersion  = null
 
-log args
+# log args
 
 if args.verbose
     log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"

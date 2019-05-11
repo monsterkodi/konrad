@@ -26,18 +26,18 @@
   },
   "homepage": "https://github.com/monsterkodi/konrad",
   "dependencies": {
-    "coffeescript": "^1.12.7",
+    "koffee": "^0.30.0",
     "klor": "^0.13.0",
     "mkpath": "^1.0.0",
     "pug": "^2.0.3",
-    "semver": "^5.5.1",
-    "simple-git": "^1.96.0",
+    "semver": "^6.0.0",
+    "simple-git": "^1.113.0",
     "stylus": "^0.54.5",
-    "tree-kill": "^1.2.0"
+    "tree-kill": "^1.2.1"
   },
   "devDependencies": {
-    "electron": "^2.0.7",
-    "electron-packager": "^12.1.1",
-    "electron-rebuild": "^1.8.2"
+    "electron": "^4.2.0",
+    "electron-packager": "^13.1.1",
+    "electron-rebuild": "^1.8.4"
   }
 }
