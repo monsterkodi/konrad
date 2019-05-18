@@ -6,9 +6,8 @@
 00000000  000   000  000   000   0000000   000   000
 ###
 
-{ slash } = require 'kxk'
+{ slash, klog } = require 'kxk'
 
-log = console.log
 pretty = require './pretty'
 
 konradError = (title, msg, srcFile) ->
@@ -30,9 +29,9 @@ konradError = (title, msg, srcFile) ->
         sourceFile += ":#{line}" if line
         sourceFile += ":#{col}" if col
         
-        log pretty.time(), "😡  #{pretty.filePath sourceFile}\n#{errStr}"
+        klog pretty.time(), "😡  #{pretty.filePath sourceFile}\n#{errStr}"
     else
-        log "#{title.bold.yellow} #{String(stripped).red}"
+        klog "#{title.bold.yellow} #{String(stripped).red}"
     false
     
 module.exports = konradError

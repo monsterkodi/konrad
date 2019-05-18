@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ args, colors, slash, noon, fs, log, _ } = require 'kxk'
+{ args, colors, slash, noon, fs, klog, _ } = require 'kxk'
 
 argDir      = require './argdir'
 build       = require './build'
@@ -106,15 +106,15 @@ dirty = (sourceFile, targetFile) ->
 
 if args.info
 
-    console.log '○● info'.gray
+    log '○● info'.gray
 
     walk wlk, opt, (sourceFile, targetFile) ->
 
         log "source: #{sourceFile} target: #{targetFile}" if args.verbose
         if dirty sourceFile, targetFile
-            console.log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.red)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.red)
         else if args.verbose
-            console.log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
 
 if args.diff
     
@@ -157,7 +157,7 @@ if args.status
 if args.run or args.rebuild
 
     if not args.quiet
-        console.log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+        log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     
     walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile
@@ -166,7 +166,7 @@ if args.run or args.rebuild
                 src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
                 tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
                 if not args.quiet
-                    console.log src, "🔧  ", tgt
+                    clog src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
                     o = config.obj targetFile, opt
                     if should 'browserify', o, targetFile
@@ -181,7 +181,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
             process.exit 1
             break
 
-        console.log '🔧  done'.gray if args.verbose
+        log '🔧  done'.gray if args.verbose
 
         if args.arguments and cmd in ['commit', 'bump']
             break

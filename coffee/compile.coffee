@@ -6,7 +6,7 @@
  0000000   0000000   000   000  000        000  0000000  00000000  
 ###
 
-{ noon, slash, error, log, fs, _ } = require 'kxk'
+{ noon, slash, fs, _ } = require 'kxk'
 
 konradError = require './error'
 

@@ -6,7 +6,7 @@
 000   000   0000000   000   000   0000000  000   000  0000000  
 ###
 
-{ args, slash, childp, os, log, _ } = require 'kxk'
+{ args, slash, childp, os, klog, _ } = require 'kxk'
 
 pretty      = require './pretty'
 konradError = require './error'
@@ -22,7 +22,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             command = "#{cmdpath} #{cmdargs}"
             
         if args.verbose
-            log "🔧 ", cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
+            klog "🔧 ", cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
             
         childp.execSync command,
             cwd:      cwd

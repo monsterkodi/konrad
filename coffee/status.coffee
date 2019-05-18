@@ -6,9 +6,8 @@
 0000000      000     000   000     000      0000000   0000000 
 ###
 
-{ colors, childp, slash, valid, args, error, log, _ } = require 'kxk'
+{ colors, childp, slash, valid, args, kerror, klog, _ } = require 'kxk'
 
-log    = console.log
 klor   = require 'klor'
 render = require './render'
 argDir = require './argdir'
@@ -30,7 +29,7 @@ doFetch = (git, gitDir, sourceFile) ->
     
     git.fetch (err,status) ->
         
-        if err then return error "git fetch error #{err}"
+        if err then return kerror "git fetch kerror #{err}"
         doStatus git, gitDir, sourceFile
         
 #  0000000  000000000   0000000   000000000  000   000   0000000  
@@ -43,7 +42,7 @@ doStatus = (git, gitDir, sourceFile) ->
         
     git.status (err,status) ->
 
-        if err then return error "git status error #{err}"
+        if err then return kerror "git status error #{err}"
 
         changes = []
 
@@ -71,7 +70,7 @@ doStatus = (git, gitDir, sourceFile) ->
                                 filtered = false
                                 break
                         if filtered
-                            log 'filtered', slash.resolve(a), f, slash.join(gitDir, f) if args.debug
+                            klog 'filtered', slash.resolve(a), f, slash.join(gitDir, f) if args.debug
                             continue
 
                     prfx    = "    "
@@ -137,9 +136,9 @@ doStatus = (git, gitDir, sourceFile) ->
             else
                 ''
 
-        log ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
+        klog ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
         for c in changes
-            log c
+            klog c
 
 module.exports = 
     gitStatus:gitStatus

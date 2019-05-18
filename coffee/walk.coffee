@@ -6,7 +6,7 @@
 00     00  000   000  0000000  000   000
 ###
 
-{ walkdir, slash, error, log, _ } = require 'kxk'
+{ walkdir, slash, kerror, _ } = require 'kxk'
 
 argDir = require './argdir'
 should = require './should'
@@ -42,6 +42,6 @@ walk = (wlk, opt, cb) ->
                     if not cb p
                         @ignore wp
     catch err
-        error "walk", err
+        kerror "walk", err
 
 module.exports = walk

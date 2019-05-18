@@ -6,9 +6,8 @@
 0000000     0000000   000  0000000  0000000  
 ###
 
-{ args, slash, empty, fs, colors, str, error, _ } = require 'kxk'
+{ args, slash, empty, fs, colors, klog, kerror, _ } = require 'kxk'
 
-log     = console.log
 pretty  = require './pretty'
 config  = require './config'
 argDir  = require './argdir'
@@ -19,7 +18,7 @@ runcmd  = require './runcmd'
 
 build = (sourceFile, opt, cb) ->
 
-    log "source file".gray, sourceFile if args.debug
+    klog "source file".gray, sourceFile if args.debug
 
     ext = slash.extname(sourceFile).substr(1)
 
@@ -30,16 +29,16 @@ build = (sourceFile, opt, cb) ->
         out  = cfg.browserify.out
         pwd  = config.path 'browserify', slash.resolve(sourceFile), opt
         if out != slash.relative sourceFile, pwd
-            log pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), colors.blue)
+            klog pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), colors.blue)
             runcmd 'browserify', "#{main} #{out}", pwd
         return
 
     targetFile = target sourceFile, opt
     if not targetFile?
-        log "no targetFile for source: #{sourceFile}", opt
+        warn "no targetFile for source: #{sourceFile}", opt
         return
 
-    log "target file".gray, targetFile if args.debug
+    klog "target file".gray, targetFile if args.debug
 
     # 00000000   00000000   0000000   0000000
     # 000   000  000       000   000  000   000
@@ -49,7 +48,7 @@ build = (sourceFile, opt, cb) ->
 
     fs.readFile sourceFile, 'utf8', (err, sourceText) ->
 
-        if err then return error "can't read #{sourceFile}"
+        if err then return kerror "can't read #{sourceFile}"
         
         #  0000000   0000000   00     00  00000000   000  000      00000000  
         # 000       000   000  000   000  000   000  000  000      000       
@@ -60,7 +59,7 @@ build = (sourceFile, opt, cb) ->
         compiled = compile sourceText, ext, sourceFile, targetFile, cfg
         
         if empty compiled
-            if args.verbose then error "compile failed for #{sourceFile}"
+            if args.verbose then kerror "compile failed for #{sourceFile}"
             return
         
         fs.readFile targetFile, 'utf8', (err, targetData) ->
@@ -70,9 +69,9 @@ build = (sourceFile, opt, cb) ->
                 writeCompiled sourceFile, targetFile, compiled, cb
 
             else
-                log 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
+                klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
                 if args.verbose
-                    log pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
+                    klog pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
@@ -86,20 +85,20 @@ build = (sourceFile, opt, cb) ->
 
 writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
-    log 'writeCompiled:', sourceFile, targetFile if args.debug
+    # klog 'writeCompiled:', sourceFile, targetFile if args.debug
     
     fs.ensureDir slash.dir(targetFile), (err) ->
 
-        if err then return error "can't create output  directory#{slash.dir(targetFile)}"
+        if err then return kerror "can't create output  directory#{slash.dir(targetFile)}"
 
         fs.writeFile targetFile, compiled, (err) ->
             if not empty err 
-                return error "can't  write#{targetFile}!", err
+                return kerror "can't  write#{targetFile}!", err
             if not args.quiet
                 if args.verbose
-                    log pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
+                    klog pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
                 else
-                    log pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
+                    klog pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 
             cb? sourceFile, targetFile
 

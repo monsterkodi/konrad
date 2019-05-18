@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, colors, prefs, first, post, noon, os, slash, childp, fs, log } = require 'kxk'
+{ app, args, colors, prefs, first, post, noon, os, slash, childp, klog, fs } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -32,22 +32,20 @@ app = new app
 konrad         = null
 konradVersion  = null
 
-# log args
-
 if args.verbose
-    log colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
-    log colors.yellow.bold 'process'
+    klog colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
+    klog colors.yellow.bold 'process'
     p = cwd: process.cwd()
-    log noon.stringify p, colors:true
-    log colors.yellow.bold 'args'
-    log noon.stringify args, colors:true
-    log ''
+    klog noon.stringify p, colors:true
+    klog colors.yellow.bold 'args'
+    klog noon.stringify args, colors:true
+    klog ''
 
 if args.prefs
-    log colors.yellow.bold 'prefs'
-    log colors.green.bold prefs.store.file
+    klog colors.yellow.bold 'prefs'
+    klog colors.green.bold prefs.store.file
     if slash.fileExists prefs.store.file
-        log noon.stringify noon.load(prefs.store.file), colors:true
+        klog noon.stringify noon.load(prefs.store.file), colors:true
 
 # 000   000   0000000   000   000  00000000    0000000   0000000
 # 000  000   000   000  0000  000  000   000  000   000  000   000
@@ -62,7 +60,7 @@ startKonrad = (rootDir) ->
     prefs.set 'rootDir', rootDir
 
     if konrad?
-        log 'killing konrad', konrad.pid
+        klog 'killing konrad', konrad.pid
         treekill = require 'tree-kill'
         treekill konrad.pid
 
@@ -77,13 +75,10 @@ startKonrad = (rootDir) ->
         shell:    true
         detached: false
 
-    # log 'startKonrad', path, konrad.pid, rootDir, process.env
-    
     konrad.on 'exit', (code, signal) -> 
-        log 'konrad.on exit', code, signal
+        klog 'konrad.on exit', code, signal
 
     konrad.on 'close', (code, signal) ->
-        # log 'konrad.on close'
         post.toWins 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
@@ -115,7 +110,7 @@ startKonrad = (rootDir) ->
 quit = ->
 
     if konrad?
-        log 'killing konrad', konrad?.pid
+        klog 'killing konrad', konrad?.pid
         treekill = require 'tree-kill'
         treekill konrad.pid, -> app.exitApp()
         konrad = null
@@ -123,12 +118,12 @@ quit = ->
         
 post.on 'Restart', ->
     
-    log 'on Restart', konrad.pid
+    klog 'on Restart', konrad.pid
 
     treekill = require 'tree-kill'
     treekill konrad.pid, -> 
     
-        log 'spawn', process.argv[0], process.argv.slice(1)
+        klog 'spawn', process.argv[0], process.argv.slice(1)
         childp.spawn process.argv[0], process.argv.slice(1),
             cwd:         process.cwd()
             encoding:    'utf8'

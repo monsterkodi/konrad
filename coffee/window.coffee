@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, pos, log, $, _ } = require 'kxk'
+{ win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, klog, $, _ } = require 'kxk'
 
 w = new win
     dir:    __dirname
@@ -22,7 +22,7 @@ w = new win
 
 koSend = null
 openFile = (f) ->
-    log 'openFile', f
+    klog 'openFile', f
     if not koSend then koSend = new udp port:9779
     koSend.send slash.resolve f
 
@@ -60,7 +60,7 @@ post.on "konradOutput", (s) ->
     if      / 😡 /.test s then onError   s
     else if / 👍 /.test s then onTask    s
     else if / 🔧 /.test s then onMessage s
-    else console.log 'konrad', s
+    else log 'konrad', s
 
 post.on "konradVersion", (s) ->
     split = s.trim().split /\s+/
@@ -132,7 +132,7 @@ onTask = (s) ->
         else if slash.file(target) == 'main.js'
             post.toMain 'Restart'
         else
-            log "should restart konrad '#{slash.file(target)}'", target, slash.path __filename
+            # klog "should restart konrad '#{slash.file(target)}'", target, slash.path __filename
             post.toMain 'Restart konrad'
     
     fadeOverlay()

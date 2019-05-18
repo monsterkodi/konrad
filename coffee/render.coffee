@@ -6,7 +6,7 @@
 000   000  00000000  000   000  0000000    00000000  000   000
 ###
 
-{ colors, log } = require 'kxk'
+{ colors } = require 'kxk'
 
 render = (rgs) ->
 
@@ -43,7 +43,6 @@ render = (rgs) ->
             when 'semver', 'dir url tld', 'url tld punctuation'
                 colors.magenta.bold
             else
-                # log 'rng.value', rng.value
                 colors.white.bold
             
         plain  += rng.match
