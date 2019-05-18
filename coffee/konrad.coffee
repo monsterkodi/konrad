@@ -157,7 +157,7 @@ if args.status
 if args.run or args.rebuild
 
     if not args.quiet
-        log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+        klog '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     
     walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile
@@ -166,7 +166,7 @@ if args.run or args.rebuild
                 src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
                 tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
                 if not args.quiet
-                    clog src, "🔧  ", tgt
+                    klog src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
                     o = config.obj targetFile, opt
                     if should 'browserify', o, targetFile
@@ -181,7 +181,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
             process.exit 1
             break
 
-        log '🔧  done'.gray if args.verbose
+        klog '🔧  done'.gray if args.verbose
 
         if args.arguments and cmd in ['commit', 'bump']
             break

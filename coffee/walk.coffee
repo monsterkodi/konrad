@@ -42,6 +42,6 @@ walk = (wlk, opt, cb) ->
                     if not cb p
                         @ignore wp
     catch err
-        kerror "walk", err
+        kerror "walk", err.toString()
 
 module.exports = walk

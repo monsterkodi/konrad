@@ -5,6 +5,4 @@ if [ ! -e $1 ]; then
     exit 1
 fi
 
-# echo 'browserify'       | colorcat -sx
-
 browserify $1 > $2

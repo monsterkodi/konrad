@@ -8,7 +8,4 @@ fi
 npm prune           | colorcat -sP `dirname $0`/../cc/npm.noon
 npm-upgrade
 npm install         | colorcat -sP `dirname $0`/../cc/npm.noon
-# ncu -a              | colorcat -sP `dirname $0`/../cc/ncu.noon
-# npm update          | colorcat -sP `dirname $0`/../cc/npm.noon
-# npm update          | colorcat -sP `dirname $0`/../cc/npm.noon
 npm ls -s --depth 0 | colorcat -sP `dirname $0`/../cc/npm.noon
