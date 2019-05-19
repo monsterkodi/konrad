@@ -7,43 +7,44 @@
      000  000   000  000   000  000   000  000      000   000
 0000000   000   000   0000000    0000000   0000000  0000000
  */
-var _, argDir, args, colors, klog, pretty, ref, should, slash;
 
-ref = require('kxk'), args = ref.args, slash = ref.slash, colors = ref.colors, klog = ref.klog, _ = ref._;
+(function() {
+    var _, argDir, args, colors, klog, pretty, ref, should, slash;
 
-argDir = require('./argdir');
+    ref = require('kxk'), args = ref.args, slash = ref.slash, colors = ref.colors, klog = ref.klog, _ = ref._;
 
-pretty = require('./pretty');
+    argDir = require('./argdir');
 
-should = function(k, o, p) {
-    var i, j, keys, len, r;
-    if (o[k] == null) {
-        return false;
-    }
-    if (_.isArray(o[k])) {
-        keys = o[k];
-    } else if (_.isObject(o[k])) {
-        keys = _.keys(o[k]);
-    } else {
-        keys = [o[k]];
-    }
-    for (j = 0, len = keys.length; j < len; j++) {
-        i = keys[j];
-        r = i;
-        if (_.isString(i)) {
-            r = new RegExp(i);
+    pretty = require('./pretty');
+
+    should = function(k, o, p) {
+        var i, j, keys, len, r;
+        if (o[k] == null) {
+            return false;
         }
-        if (r.test(p)) {
-            if (args.debug) {
-                klog(pretty.filePath(slash.relative(p, argDir()), colors.gray), 'should '.blue + k.bold.blue);
+        if (_.isArray(o[k])) {
+            keys = o[k];
+        } else if (_.isObject(o[k])) {
+            keys = _.keys(o[k]);
+        } else {
+            keys = [o[k]];
+        }
+        for (j = 0, len = keys.length; j < len; j++) {
+            i = keys[j];
+            r = i;
+            if (_.isString(i)) {
+                r = new RegExp(i);
             }
-            return true;
+            if (r.test(p)) {
+                if (args.debug) {
+                    klog(pretty.filePath(slash.relative(p, argDir()), colors.gray), 'should '.blue + k.bold.blue);
+                }
+                return true;
+            }
         }
-    }
-    return false;
-};
+        return false;
+    };
 
-module.exports = should;
+    module.exports = should;
 
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2hvdWxkLmpzIiwic291cmNlUm9vdCI6Ii4iLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUFtQyxPQUFBLENBQVEsS0FBUixDQUFuQyxFQUFFLGVBQUYsRUFBUSxpQkFBUixFQUFlLG1CQUFmLEVBQXVCLGVBQXZCLEVBQTZCOztBQUU3QixNQUFBLEdBQVMsT0FBQSxDQUFRLFVBQVI7O0FBQ1QsTUFBQSxHQUFTLE9BQUEsQ0FBUSxVQUFSOztBQUVULE1BQUEsR0FBUyxTQUFDLENBQUQsRUFBSSxDQUFKLEVBQU8sQ0FBUDtBQUVMLFFBQUE7SUFBQSxJQUFvQixZQUFwQjtBQUFBLGVBQU8sTUFBUDs7SUFFQSxJQUFHLENBQUMsQ0FBQyxPQUFGLENBQVUsQ0FBRSxDQUFBLENBQUEsQ0FBWixDQUFIO1FBQ0ksSUFBQSxHQUFPLENBQUUsQ0FBQSxDQUFBLEVBRGI7S0FBQSxNQUVLLElBQUcsQ0FBQyxDQUFDLFFBQUYsQ0FBVyxDQUFFLENBQUEsQ0FBQSxDQUFiLENBQUg7UUFDRCxJQUFBLEdBQU8sQ0FBQyxDQUFDLElBQUYsQ0FBTyxDQUFFLENBQUEsQ0FBQSxDQUFULEVBRE47S0FBQSxNQUFBO1FBR0QsSUFBQSxHQUFPLENBQUMsQ0FBRSxDQUFBLENBQUEsQ0FBSCxFQUhOOztBQUtMLFNBQUEsc0NBQUE7O1FBQ0ksQ0FBQSxHQUFJO1FBQ0osSUFBb0IsQ0FBQyxDQUFDLFFBQUYsQ0FBVyxDQUFYLENBQXBCO1lBQUEsQ0FBQSxHQUFJLElBQUksTUFBSixDQUFXLENBQVgsRUFBSjs7UUFDQSxJQUFHLENBQUMsQ0FBQyxJQUFGLENBQU8sQ0FBUCxDQUFIO1lBQ0ksSUFBOEYsSUFBSSxDQUFDLEtBQW5HO2dCQUFBLElBQUEsQ0FBSyxNQUFNLENBQUMsUUFBUCxDQUFnQixLQUFLLENBQUMsUUFBTixDQUFlLENBQWYsRUFBa0IsTUFBQSxDQUFBLENBQWxCLENBQWhCLEVBQTZDLE1BQU0sQ0FBQyxJQUFwRCxDQUFMLEVBQWdFLFNBQVMsQ0FBQyxJQUFWLEdBQWUsQ0FBQyxDQUFDLElBQUksQ0FBQyxJQUF0RixFQUFBOztBQUNBLG1CQUFPLEtBRlg7O0FBSEo7V0FNQTtBQWpCSzs7QUFtQlQsTUFBTSxDQUFDLE9BQVAsR0FBaUIiLCJzb3VyY2VzQ29udGVudCI6WyIjIyNcbiAwMDAwMDAwICAwMDAgICAwMDAgICAwMDAwMDAwICAgMDAwICAgMDAwICAwMDAgICAgICAwMDAwMDAwICBcbjAwMCAgICAgICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAgICAwMDAgICAwMDBcbjAwMDAwMDAgICAwMDAwMDAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAgICAwMDAgICAwMDBcbiAgICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAgICAwMDAgICAwMDBcbjAwMDAwMDAgICAwMDAgICAwMDAgICAwMDAwMDAwICAgIDAwMDAwMDAgICAwMDAwMDAwICAwMDAwMDAwICBcbiMjI1xuXG57IGFyZ3MsIHNsYXNoLCBjb2xvcnMsIGtsb2csIF8gfSA9IHJlcXVpcmUgJ2t4aydcblxuYXJnRGlyID0gcmVxdWlyZSAnLi9hcmdkaXInXG5wcmV0dHkgPSByZXF1aXJlICcuL3ByZXR0eSdcblxuc2hvdWxkID0gKGssIG8sIHApIC0+XG5cbiAgICByZXR1cm4gZmFsc2UgaWYgbm90IG9ba10/XG5cbiAgICBpZiBfLmlzQXJyYXkgb1trXVxuICAgICAgICBrZXlzID0gb1trXVxuICAgIGVsc2UgaWYgXy5pc09iamVjdCBvW2tdXG4gICAgICAgIGtleXMgPSBfLmtleXMgb1trXVxuICAgIGVsc2VcbiAgICAgICAga2V5cyA9IFtvW2tdXVxuXG4gICAgZm9yIGkgaW4ga2V5c1xuICAgICAgICByID0gaVxuICAgICAgICByID0gbmV3IFJlZ0V4cCBpIGlmIF8uaXNTdHJpbmcgaVxuICAgICAgICBpZiByLnRlc3QgcFxuICAgICAgICAgICAga2xvZyBwcmV0dHkuZmlsZVBhdGgoc2xhc2gucmVsYXRpdmUocCwgYXJnRGlyKCkpLCBjb2xvcnMuZ3JheSksICdzaG91bGQgJy5ibHVlK2suYm9sZC5ibHVlIGlmIGFyZ3MuZGVidWdcbiAgICAgICAgICAgIHJldHVybiB0cnVlXG4gICAgZmFsc2VcblxubW9kdWxlLmV4cG9ydHMgPSBzaG91bGRcbiJdfQ==
-//# sourceURL=../coffee/should.coffee
+}).call(this);

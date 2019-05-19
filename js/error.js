@@ -7,39 +7,40 @@
 000       000   000  000   000  000   000  000   000
 00000000  000   000  000   000   0000000   000   000
  */
-var klog, konradError, pretty, ref, slash;
 
-ref = require('kxk'), slash = ref.slash, klog = ref.klog;
+(function() {
+    var klog, konradError, pretty, ref, slash;
 
-pretty = require('./pretty');
+    ref = require('kxk'), slash = ref.slash, klog = ref.klog;
 
-konradError = function(title, msg, srcFile) {
-    var col, errStr, file, fileLine, line, ref1, ref2, rest, sourceFile, splitted, stripped;
-    stripped = String(msg).strip;
-    splitted = stripped.split('\n');
-    if (title === 'compile error') {
-        ref1 = splitted[0].split(': '), fileLine = ref1[0], rest = ref1[1];
-        ref2 = slash.splitFileLine(fileLine), file = ref2[0], line = ref2[1], col = ref2[2];
-        splitted[0] = rest.bold.yellow;
-        errStr = splitted.join('\n');
-        if (srcFile) {
-            file = slash.tilde(srcFile);
+    pretty = require('./pretty');
+
+    konradError = function(title, msg, srcFile) {
+        var col, errStr, file, fileLine, line, ref1, ref2, rest, sourceFile, splitted, stripped;
+        stripped = String(msg).strip;
+        splitted = stripped.split('\n');
+        if (title === 'compile error') {
+            ref1 = splitted[0].split(': '), fileLine = ref1[0], rest = ref1[1];
+            ref2 = slash.splitFileLine(fileLine), file = ref2[0], line = ref2[1], col = ref2[2];
+            splitted[0] = rest.bold.yellow;
+            errStr = splitted.join('\n');
+            if (srcFile) {
+                file = slash.tilde(srcFile);
+            }
+            sourceFile = file;
+            if (line) {
+                sourceFile += ":" + line;
+            }
+            if (col) {
+                sourceFile += ":" + col;
+            }
+            klog(pretty.time(), "😡  " + (pretty.filePath(sourceFile)) + "\n" + errStr);
+        } else {
+            klog(title.bold.yellow + " " + (String(stripped).red));
         }
-        sourceFile = file;
-        if (line) {
-            sourceFile += ":" + line;
-        }
-        if (col) {
-            sourceFile += ":" + col;
-        }
-        klog(pretty.time(), "😡  " + (pretty.filePath(sourceFile)) + "\n" + errStr);
-    } else {
-        klog(title.bold.yellow + " " + (String(stripped).red));
-    }
-    return false;
-};
+        return false;
+    };
 
-module.exports = konradError;
+    module.exports = konradError;
 
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXJyb3IuanMiLCJzb3VyY2VSb290IjoiLiIsInNvdXJjZXMiOlsiIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUE7Ozs7Ozs7QUFBQSxJQUFBOztBQVFBLE1BQWtCLE9BQUEsQ0FBUSxLQUFSLENBQWxCLEVBQUUsaUJBQUYsRUFBUzs7QUFFVCxNQUFBLEdBQVMsT0FBQSxDQUFRLFVBQVI7O0FBRVQsV0FBQSxHQUFjLFNBQUMsS0FBRCxFQUFRLEdBQVIsRUFBYSxPQUFiO0FBRVYsUUFBQTtJQUFBLFFBQUEsR0FBVyxNQUFBLENBQU8sR0FBUCxDQUFXLENBQUM7SUFDdkIsUUFBQSxHQUFXLFFBQVEsQ0FBQyxLQUFULENBQWUsSUFBZjtJQUVYLElBQUcsS0FBQSxLQUFTLGVBQVo7UUFFSSxPQUFtQixRQUFTLENBQUEsQ0FBQSxDQUFFLENBQUMsS0FBWixDQUFrQixJQUFsQixDQUFuQixFQUFDLGtCQUFELEVBQVc7UUFDWCxPQUFvQixLQUFLLENBQUMsYUFBTixDQUFvQixRQUFwQixDQUFwQixFQUFDLGNBQUQsRUFBTyxjQUFQLEVBQWE7UUFDYixRQUFTLENBQUEsQ0FBQSxDQUFULEdBQWMsSUFBSSxDQUFDLElBQUksQ0FBQztRQUN4QixNQUFBLEdBQVMsUUFBUSxDQUFDLElBQVQsQ0FBYyxJQUFkO1FBRVQsSUFBRyxPQUFIO1lBQ0ksSUFBQSxHQUFPLEtBQUssQ0FBQyxLQUFOLENBQVksT0FBWixFQURYOztRQUdBLFVBQUEsR0FBYTtRQUNiLElBQTRCLElBQTVCO1lBQUEsVUFBQSxJQUFjLEdBQUEsR0FBSSxLQUFsQjs7UUFDQSxJQUEyQixHQUEzQjtZQUFBLFVBQUEsSUFBYyxHQUFBLEdBQUksSUFBbEI7O1FBRUEsSUFBQSxDQUFLLE1BQU0sQ0FBQyxJQUFQLENBQUEsQ0FBTCxFQUFvQixNQUFBLEdBQU0sQ0FBQyxNQUFNLENBQUMsUUFBUCxDQUFnQixVQUFoQixDQUFELENBQU4sR0FBa0MsSUFBbEMsR0FBc0MsTUFBMUQsRUFkSjtLQUFBLE1BQUE7UUFnQkksSUFBQSxDQUFRLEtBQUssQ0FBQyxJQUFJLENBQUMsTUFBWixHQUFtQixHQUFuQixHQUFxQixDQUFDLE1BQUEsQ0FBTyxRQUFQLENBQWdCLENBQUMsR0FBbEIsQ0FBNUIsRUFoQko7O1dBaUJBO0FBdEJVOztBQXdCZCxNQUFNLENBQUMsT0FBUCxHQUFpQiIsInNvdXJjZXNDb250ZW50IjpbIiMjI1xuMDAwMDAwMDAgIDAwMDAwMDAwICAgMDAwMDAwMDAgICAgMDAwMDAwMCAgIDAwMDAwMDAwXG4wMDAgICAgICAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwXG4wMDAwMDAwICAgMDAwMDAwMCAgICAwMDAwMDAwICAgIDAwMCAgIDAwMCAgMDAwMDAwMFxuMDAwICAgICAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMFxuMDAwMDAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMFxuIyMjXG5cbnsgc2xhc2gsIGtsb2cgfSA9IHJlcXVpcmUgJ2t4aydcblxucHJldHR5ID0gcmVxdWlyZSAnLi9wcmV0dHknXG5cbmtvbnJhZEVycm9yID0gKHRpdGxlLCBtc2csIHNyY0ZpbGUpIC0+XG4gICAgXG4gICAgc3RyaXBwZWQgPSBTdHJpbmcobXNnKS5zdHJpcFxuICAgIHNwbGl0dGVkID0gc3RyaXBwZWQuc3BsaXQgJ1xcbidcblxuICAgIGlmIHRpdGxlID09ICdjb21waWxlIGVycm9yJ1xuICAgICAgICBcbiAgICAgICAgW2ZpbGVMaW5lLCByZXN0XSA9IHNwbGl0dGVkWzBdLnNwbGl0ICc6ICdcbiAgICAgICAgW2ZpbGUsIGxpbmUsIGNvbF0gPSBzbGFzaC5zcGxpdEZpbGVMaW5lIGZpbGVMaW5lXG4gICAgICAgIHNwbGl0dGVkWzBdID0gcmVzdC5ib2xkLnllbGxvd1xuICAgICAgICBlcnJTdHIgPSBzcGxpdHRlZC5qb2luICdcXG4nXG4gICAgICAgIFxuICAgICAgICBpZiBzcmNGaWxlXG4gICAgICAgICAgICBmaWxlID0gc2xhc2gudGlsZGUgc3JjRmlsZVxuICAgICAgICAgICAgXG4gICAgICAgIHNvdXJjZUZpbGUgPSBmaWxlXG4gICAgICAgIHNvdXJjZUZpbGUgKz0gXCI6I3tsaW5lfVwiIGlmIGxpbmVcbiAgICAgICAgc291cmNlRmlsZSArPSBcIjoje2NvbH1cIiBpZiBjb2xcbiAgICAgICAgXG4gICAgICAgIGtsb2cgcHJldHR5LnRpbWUoKSwgXCLwn5ihICAje3ByZXR0eS5maWxlUGF0aCBzb3VyY2VGaWxlfVxcbiN7ZXJyU3RyfVwiXG4gICAgZWxzZVxuICAgICAgICBrbG9nIFwiI3t0aXRsZS5ib2xkLnllbGxvd30gI3tTdHJpbmcoc3RyaXBwZWQpLnJlZH1cIlxuICAgIGZhbHNlXG4gICAgXG5tb2R1bGUuZXhwb3J0cyA9IGtvbnJhZEVycm9yXG4iXX0=
-//# sourceURL=../coffee/error.coffee
+}).call(this);

@@ -63,12 +63,13 @@ post.on "konradOutput", (s) ->
     else log 'konrad', s
 
 post.on "konradVersion", (s) ->
+    
     split = s.trim().split /\s+/
-    info = 
-        name:    'konrad'
-        version: split[0]
-        path:    slash.tilde split[2]
-    window.titlebar.setTitle info
+    window.titlebar.setTitle  
+        title: process.argv[0].endsWith('Electron Helper') and ['version' 'path'] or ['path']
+        pkg:
+            version: split[0]
+            path: slash.tilde split[2]
     
 post.on "clearLog", -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
     

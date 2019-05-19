@@ -136,9 +136,9 @@ doStatus = (git, gitDir, sourceFile) ->
             else
                 ''
 
-        klog ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
+        log ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
         for c in changes
-            klog c
+            log c
 
 module.exports = 
     gitStatus:gitStatus
