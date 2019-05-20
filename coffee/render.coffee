@@ -24,23 +24,23 @@ render = (rgs) ->
                 colors.white.dim
             when 'comment'
                 colors.gray.bold
-            when 'comment punctuation', 'punctuation'
+            when 'punct comment', 'punct'
                 colors.gray.dim
             when 'function', 'function call', 'string single', 'string double', 'dir text', 'property'
                 colors.green.bold
-            when 'function call punctuation', 'string single punctuation', 'string double punctuation', 'dir punctuation'
+            when 'punct function call', 'punct string single', 'punct string double', 'punct dir'
                 colors.green.dim
             when 'obj', 'class', 'git file'
                 colors.yellow.bold
-            when 'git punctuation', 'git ext'
+            when 'punct git', 'git ext'
                 colors.yellow.dim
             when 'number', 'keyword', 'url domain'
                 colors.blue.bold
-            when 'require', 'property punctuation'
+            when 'require', 'punct property'
                 colors.green.dim
-            when 'semver punctuation', 'url protocol', 'url punctuation'
+            when 'punct semver', 'url protocol', 'punct url'
                 colors.magenta
-            when 'semver', 'dir url tld', 'url tld punctuation'
+            when 'semver', 'dir url tld', 'punct url tld'
                 colors.magenta.bold
             else
                 colors.white.bold
