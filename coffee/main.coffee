@@ -64,17 +64,26 @@ startKonrad = (rootDir) ->
         treekill = require 'tree-kill'
         treekill konrad.pid
 
-    if os.platform() == 'win32'
-        path = "konrad"
-    else
-        process.env.PATH += ':/usr/local/bin'
-        path = "/usr/local/bin/konrad"
-        
-    konrad = childp.spawn path, ['-vw'],
+    # if slash.win()
+        # # path = "konrad"
+        # path = slash.resolve "#{__dirname}/../bin/konrad"
+    # else
+        # process.env.PATH += ':/usr/local/bin'
+        # path = "/usr/local/bin/konrad"
+#         
+    # klog "spawn #{path}"
+    # klog "cwd   #{rootDir}"
+    # konrad = childp.spawn path, ['-w''-v'],
+        # cwd:      rootDir
+        # shell:    true
+        # detached: false
+
+    path = slash.resolve "#{__dirname}/../js/konrad.js"
+    konrad = childp.spawn 'node', [path, '-w' '-v'],
         cwd:      rootDir
         shell:    true
         detached: false
-
+        
     konrad.on 'exit', (code, signal) -> 
         klog 'konrad.on exit', code, signal
 
@@ -82,6 +91,7 @@ startKonrad = (rootDir) ->
         post.toWins 'konradExit', "konrad exit code: #{code}"
 
     konrad.stderr.on 'data', (data) ->
+        klog 'konrad.stderr', data.toString()
         s = colors.strip data.toString()
         if app.win?
             post.toWins 'konradError', "konrad error: #{s}"
