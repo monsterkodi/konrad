@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 DIR=`dirname $0`
+BIN=$DIR/../node_modules/.bin
 if [ $# -eq 0 ]; then
     if [ -e package.json ]; then
         MSG="v`sds -rp version`"
@@ -7,7 +8,7 @@ if [ $# -eq 0 ]; then
         MSG="v`../node_modules/.bin/sds -rp version ../package.json`"
     fi
     if [ -z "$MSG" ]; then
-        echo '[ERROR] no commit message and no package.json!' | $DIR/../node_modules/.bin/colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
+        echo '[ERROR] no commit message and no package.json!' | $BIN/colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
         exit 1
     fi
 else
@@ -17,10 +18,10 @@ fi
 set -e
 
 git add .
-git status -sb       | $DIR/../node_modules/.bin/colorcat -sP $DIR/../cc/status.noon
-git commit -m "$MSG" | $DIR/../node_modules/.bin/colorcat -sP $DIR/../cc/commit.noon
+git status -sb       | $BIN/colorcat -sP $DIR/../cc/status.noon
+git commit -m "$MSG" | $BIN/colorcat -sP $DIR/../cc/commit.noon
 
-echo 'pushing'       | $DIR/../node_modules/.bin/colorcat -sx
+echo 'pushing'       | $BIN/colorcat -sx
 
-git push -q 2>&1     | $DIR/../node_modules/.bin/colorcat -sP  $DIR/../cc/push.noon
-git status -sb       | $DIR/../node_modules/.bin/colorcat -sP  $DIR/../cc/status.noon
+git push -q 2>&1     | $BIN/colorcat -sP  $DIR/../cc/push.noon
+git status -sb       | $BIN/colorcat -sP  $DIR/../cc/status.noon

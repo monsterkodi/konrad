@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-
 DIR=`dirname $0`
+BIN=$DIR/../node_modules/.bin
+
 if $DIR/konrad --test; then
     $DIR/commit "$*"
     
     set -e
     
-    VERSION=`$DIR/../node_modules/.bin/sds version`
+    VERSION=`$BIN/sds version`
     
-    echo 'npm publish' | $DIR/../node_modules/.bin/colorcat -sx
-    npm publish        | $DIR/../node_modules/.bin/colorcat -P $DIR/../cc/npm.noon
+    echo 'npm publish' | $BIN/colorcat -sx
+    npm publish        | $BIN/colorcat -P $DIR/../cc/npm.noon
 fi
 

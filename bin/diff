@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-
-echo -n "git diff -U0 --ignore-space-at-eol $*" | bash | colorcat -sP "`dirname $0`/../cc/diff.noon"
+DIR=`dirname $0`
+BIN=$DIR/../node_modules/.bin
+echo -n "git diff -U0 --ignore-space-at-eol $*" | bash | $BIN/colorcat -sP "$DIR/../cc/diff.noon"

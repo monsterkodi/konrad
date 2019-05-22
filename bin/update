@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
+DIR=`dirname $0`
+BIN=$DIR/../node_modules/.bin
 
 if [ ! -e package.json ]; then
-    echo '[ERROR] no package.json!' | colorcat -p "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy"     
+    echo '[ERROR] no package.json!' | $BIN/colorcat -p "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy"     
     exit 1
 fi
 
-npm prune           | colorcat -sP `dirname $0`/../cc/npm.noon
-npm-upgrade
-npm install         | colorcat -sP `dirname $0`/../cc/npm.noon
-npm ls -s --depth 0 | colorcat -sP `dirname $0`/../cc/npm.noon
+npm prune           | $BIN/colorcat -sP $DIR/../cc/npm.noon
+$BIN/ncu -u --packageFile package.json 
+npm install         | $BIN/colorcat -sP $DIR/../cc/npm.noon
+npm ls -s --depth 0 | $BIN/colorcat -sP $DIR/../cc/npm.noon
