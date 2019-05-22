@@ -2,6 +2,8 @@
 DIR=`dirname $0`
 BIN=$DIR/../node_modules/.bin
 
+$BIN/konrad --run
+
 if $DIR/konrad --test; then
     $DIR/commit "$*"
     
