@@ -6,9 +6,10 @@
  0000000   0000000   000   000  000        000  0000000  00000000  
 ###
 
-{ noon, slash, fs, _ } = require 'kxk'
+{ noon, slash, klog, fs, _ } = require 'kxk'
 
-konradError = require './error'
+koffee = require 'koffee'
+kerror = require './error'
 
 compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
     
@@ -16,10 +17,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
         compiled = switch ext
             
             when 'coffee'
-                
-                # coffee = require 'coffeescript'
-                coffee = require 'koffee'
-                
+
                 if cfg[ext]?.map
                     mapcfg =
                         bare:          true
@@ -30,22 +28,21 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                         feature: header: true
                         generatedFile: slash.file targetFile
                         
-                    jsMap = coffee.compile sourceText, mapcfg
+                    jsMap = koffee.compile sourceText, mapcfg
                     jsMap.js
                 else
-                    coffee.compile sourceText, bare:true
+                    koffee.compile sourceText, bare:true
 
             when 'styl'
-                
                 stylus = require 'stylus'
                 stylus sourceText
-                    .set 'filename', sourceFile
-                    .set 'paths', [slash.dir sourceFile]
+                    # .set 'filename' 'konrad'
+                    # .set 'filename', sourceFile
+                    # .set 'paths', [slash.dir sourceFile]
                     .render()
                     
             when 'pug'
-                
-                pug = require 'pug'
+                pug    = require 'pug'
                 pug.render sourceText, pretty: true
                 
             when 'json'
@@ -59,7 +56,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 throw "don't know how to build files with extname .#{ext.bold}!".yellow
 
     catch e
-        konradError 'compile error', e, sourceFile
+        kerror 'compile error', e, sourceFile
         return null
         
     compiled

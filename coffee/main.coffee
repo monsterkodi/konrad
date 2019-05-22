@@ -64,21 +64,7 @@ startKonrad = (rootDir) ->
         treekill = require 'tree-kill'
         treekill konrad.pid
 
-    # if slash.win()
-        # # path = "konrad"
-        # path = slash.resolve "#{__dirname}/../bin/konrad"
-    # else
-        # process.env.PATH += ':/usr/local/bin'
-        # path = "/usr/local/bin/konrad"
-#         
-    # klog "spawn #{path}"
-    # klog "cwd   #{rootDir}"
-    # konrad = childp.spawn path, ['-w''-v'],
-        # cwd:      rootDir
-        # shell:    true
-        # detached: false
-
-    path = slash.resolve "#{__dirname}/../js/konrad.js"
+    path = slash.resolve "#{__dirname}/../js/konrad.js"    
     konrad = childp.spawn 'node', [path, '-w' '-v'],
         cwd:      rootDir
         shell:    true

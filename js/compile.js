@@ -9,20 +9,21 @@
  */
 
 (function() {
-    var _, compile, fs, konradError, noon, ref, slash;
+    var _, compile, fs, kerror, klog, koffee, noon, ref, slash;
 
-    ref = require('kxk'), noon = ref.noon, slash = ref.slash, fs = ref.fs, _ = ref._;
+    ref = require('kxk'), noon = ref.noon, slash = ref.slash, klog = ref.klog, fs = ref.fs, _ = ref._;
 
-    konradError = require('./error');
+    koffee = require('koffee');
+
+    kerror = require('./error');
 
     compile = function(sourceText, ext, sourceFile, targetFile, cfg) {
-        var coffee, compiled, e, jsMap, mapcfg, pug, stylus;
+        var compiled, e, jsMap, mapcfg, pug, stylus;
         try {
             compiled = (function() {
                 var ref1;
                 switch (ext) {
                     case 'coffee':
-                        coffee = require('koffee');
                         if ((ref1 = cfg[ext]) != null ? ref1.map : void 0) {
                             mapcfg = {
                                 bare: true,
@@ -35,17 +36,17 @@
                                 },
                                 generatedFile: slash.file(targetFile)
                             };
-                            jsMap = coffee.compile(sourceText, mapcfg);
+                            jsMap = koffee.compile(sourceText, mapcfg);
                             return jsMap.js;
                         } else {
-                            return coffee.compile(sourceText, {
+                            return koffee.compile(sourceText, {
                                 bare: true
                             });
                         }
                         break;
                     case 'styl':
                         stylus = require('stylus');
-                        return stylus(sourceText).set('filename', sourceFile).set('paths', [slash.dir(sourceFile)]).render();
+                        return stylus(sourceText).render();
                     case 'pug':
                         pug = require('pug');
                         return pug.render(sourceText, {
@@ -68,7 +69,7 @@
             })();
         } catch (error) {
             e = error;
-            konradError('compile error', e, sourceFile);
+            kerror('compile error', e, sourceFile);
             return null;
         }
         return compiled;
