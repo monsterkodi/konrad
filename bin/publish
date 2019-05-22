@@ -6,7 +6,7 @@ if $DIR/konrad --test; then
     
     set -e
     
-    VERSION=`sds version`
+    VERSION=`$DIR/../node_modules/.bin/sds version`
     
     echo 'npm publish' | $DIR/../node_modules/.bin/colorcat -sx
     npm publish        | $DIR/../node_modules/.bin/colorcat -P $DIR/../cc/npm.noon

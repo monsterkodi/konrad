@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-TEST=`sds scripts.test`
+DIR=`dirname $0`
+TEST=`$DIR/../node_modules/.bin/sds scripts.test`
 if [ -n "$TEST" ] ; then
     if ! npm test ; then
         exit 1
