@@ -8,16 +8,16 @@
 
 { args, colors, slash, noon, fs, klog, _ } = require 'kxk'
 
-argDir      = require './argdir'
-build       = require './build'
-config      = require './config'
-pretty      = require './pretty'
-runcmd      = require './runcmd'
-should      = require './should'
-status      = require './status'
-watch       = require './watch'
-walk        = require './walk'
-pkg         = require "#{__dirname}/../package"
+argDir = require './argdir'
+build  = require './build'
+config = require './config'
+pretty = require './pretty'
+runcmd = require './runcmd'
+should = require './should'
+status = require './status'
+watch  = require './watch'
+walk   = require './walk'
+pkg    = require "#{__dirname}/../package"
 
 args = args.init """
     arguments  depend on options                            **

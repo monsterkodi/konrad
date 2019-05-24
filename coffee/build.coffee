@@ -71,7 +71,7 @@ build = (sourceFile, opt, cb) ->
             else
                 klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
                 if args.verbose
-                    klog pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
+                    log pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
                 stat = fs.statSync sourceFile
                 ttat = fs.statSync targetFile
                 if stat.mtime.getTime() != ttat.mtime.getTime()
