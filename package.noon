@@ -10,7 +10,7 @@ scripts
                 mac     bash ./bin/buildmac.sh
 repository
                 type  git
-                url   git+https://github.com/monsterkodi/konrad.git
+                url   https://github.com/monsterkodi/konrad.git
 keywords
                 build
                 tool
@@ -21,9 +21,9 @@ bugs
 homepage        https://github.com/monsterkodi/konrad
 dependencies
                 colorcat        ^1.4.0
-                klor            ^0.21.0
-                koffee          ^0.45.0
-                kxk             ^0.290.0
+                klor            ^0.41.0
+                koffee          ^0.50.0
+                kxk             ^0.292.0
                 mkpath          ^1.0.0
                 npm-check-updates  ^3.1.9
                 pug             ^2.0.3
@@ -35,4 +35,4 @@ dependencies
 devDependencies
                 electron        ^5.0.2
                 electron-packager  ^13.1.1
-                electron-rebuild  ^1.8.4
+                electron-rebuild  ^1.8.5
