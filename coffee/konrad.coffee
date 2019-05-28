@@ -173,7 +173,7 @@ if args.run or args.rebuild
                         console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)
                         runcmd 'browserify', "#{o.browserify.main} #{o.browserify.out}", config.path 'browserify', slash.resolve(targetFile), opt
 
-for cmd in ['update', 'bump', 'commit', 'publish', 'test']
+for cmd in ['update' 'bump' 'commit' 'publish' 'test']
 
     if args[cmd]
 
@@ -183,7 +183,7 @@ for cmd in ['update', 'bump', 'commit', 'publish', 'test']
 
         klog '🔧  done'.gray if args.verbose
 
-        if args.arguments and cmd in ['commit', 'bump']
+        if args.arguments and cmd in ['commit' 'bump']
             break
 
 if args.watch

@@ -36,9 +36,6 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
             when 'styl'
                 stylus = require 'stylus'
                 stylus sourceText
-                    # .set 'filename' 'konrad'
-                    # .set 'filename', sourceFile
-                    # .set 'paths', [slash.dir sourceFile]
                     .render()
                     
             when 'pug'
