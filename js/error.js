@@ -1,4 +1,4 @@
-// koffee 0.52.0
+// koffee 0.56.0
 
 /*
 00000000  00000000   00000000    0000000   00000000
@@ -9,21 +9,21 @@
  */
 
 (function() {
-    var colors, klog, konradError, pretty, ref, slash;
+    var klog, konradError, kstr, pretty, ref;
 
-    ref = require('kxk'), slash = ref.slash, klog = ref.klog, colors = ref.colors;
+    ref = require('kxk'), klog = ref.klog, kstr = ref.kstr;
 
     pretty = require('./pretty');
 
     konradError = function(title, msg, srcFile) {
         var msgsplit, stripped;
-        msgsplit = msg.split('\n');
-        stripped = msgsplit.map(function(s) {
-            return colors.strip(s);
-        });
         if (title === 'compile error') {
             klog(pretty.time(), "😡  " + msg);
         } else {
+            msgsplit = msg.split('\n');
+            stripped = msgsplit.map(function(s) {
+                return kstr.stripAnsi(s);
+            });
             klog(title.bold.yellow + " " + (colors.red(stripped)));
         }
         return false;

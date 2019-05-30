@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, klog, $, _ } = require 'kxk'
+{ win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, noon, klog, $, _ } = require 'kxk'
 
 w = new win
     dir:    __dirname
@@ -56,10 +56,11 @@ fadeOverlay = ->
 
 post.on "konradExit", (s) ->
 post.on "konradError", (s) ->
-post.on "konradOutput", (s) ->
-    if      / 😡 /.test s then onError   s
-    else if / 👍 /.test s then onTask    s
-    else if / 🔧 /.test s then onMessage s
+post.on "konradOutput", (s, html) ->
+    
+    if      / 😡 /.test s then onError   s, html
+    else if / 👍 /.test s then onTask    s, html
+    else if / 🔧 /.test s then onMessage s, html
     else log 'konrad', s
 
 post.on "konradVersion", (s) ->
@@ -97,7 +98,7 @@ taskDiv = (opt) ->
     tim.innerHTML = opt.time
 
     fil.classList.add opt.file? and 'file' or 'message'
-    fil.innerHTML = " #{opt.icon} #{opt.file ? opt.message}"
+    fil.innerHTML = opt.fileHtml ? " #{opt.icon} #{opt.file ? opt.message}"
     fil.onclick = -> openFile opt.file if opt.file?
 
     div.appendChild tim
@@ -156,7 +157,7 @@ onMessage = (s) ->
 # 000       000   000  000   000  000   000  000   000
 # 00000000  000   000  000   000   0000000   000   000
 
-onError = (s) ->
+onError = (s, html) ->
 
     post.toMain 'showWindow'
     post.toMain 'highlight'
@@ -167,16 +168,22 @@ onError = (s) ->
             delete tasks[key]
 
     lines = s.split '\n'
+    if html
+        htmls = html.split '\n'
+        fileHtml = htmls.shift().split('</span>')[5..].join '</span>'
     
     [time, file] = lines.shift().split ' 😡 '
     file = file.trim()
 
-    div = taskDiv time: time, file: file, key: file.split(':')[0], icon: '😡'
+    div = taskDiv time: time, file: file, key: file.split(':')[0], icon: '😡', fileHtml:fileHtml
 
-    for l in lines
+    for i in [0...lines.length]
         pre = document.createElement 'pre'
         pre.classList.add 'error'
-        pre.textContent = l
+        if htmls[i]
+            pre.innerHTML = htmls[i]
+        else
+            pre.textContent = lines[i]
         div.appendChild pre
 
     div.scrollIntoViewIfNeeded()

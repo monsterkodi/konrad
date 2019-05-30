@@ -11,15 +11,19 @@
 pretty = {}
 
 pretty.path = (p, c=colors.yellow) ->
+    
     p.split('/').map((n) -> c(n)).join c('/').dim
 
 pretty.ext = (e, c=colors.yellow) ->
+    
     if e.length then c('.').dim + c(e.substr 1) else ''
     
 pretty.file = (f, c=colors.yellow) ->
+    
     "#{c(slash.base(f)).bold}#{pretty.ext slash.extname(f), c}"
     
 pretty.filePath = (p, c=colors.yellow) ->
+    
     p = p.replace os.homedir(), "~"
     if valid slash.dir p 
         "#{pretty.path slash.dir(p), c}#{pretty.path '/', c}#{pretty.file slash.basename(p), c}"

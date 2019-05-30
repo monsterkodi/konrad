@@ -2,16 +2,16 @@
 DIR=`dirname $0`
 BIN=$DIR/../node_modules/.bin
 
-$DIR/konrad --run
+if $DIR/konrad --run; then
 
-if $DIR/konrad --test; then
-    $DIR/commit "$*"
-    
-    set -e
-    
-    VERSION=`$BIN/sds version`
-    
-    echo 'npm publish' | $BIN/colorcat -sx
-    npm publish        | $BIN/colorcat -P $DIR/../cc/npm.noon
+    if $DIR/konrad --test; then
+        $DIR/commit "$*"
+        
+        set -e
+        
+        VERSION=`$BIN/sds version`
+        
+        echo 'npm publish' | $BIN/colorcat -sx
+        npm publish        | $BIN/colorcat -P $DIR/../cc/npm.noon
+    fi
 fi
-

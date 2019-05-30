@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, colors, prefs, first, post, noon, os, slash, childp, klog, fs } = require 'kxk'
+{ app, args, colors, prefs, first, post, noon, os, slash, childp, klog, kstr, fs } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -33,6 +33,7 @@ konrad         = null
 konradVersion  = null
 
 if args.verbose
+    
     klog colors.white.bold "\n#{pkg.name}", colors.gray "v#{pkg.version}\n"
     klog colors.yellow.bold 'process'
     p = cwd: process.cwd()
@@ -42,6 +43,7 @@ if args.verbose
     klog ''
 
 if args.prefs
+    
     klog colors.yellow.bold 'prefs'
     klog colors.green.bold prefs.store.file
     if slash.fileExists prefs.store.file
@@ -83,22 +85,22 @@ startKonrad = (rootDir) ->
 
     konrad.stderr.on 'data', (data) ->
         klog 'konrad.stderr', data.toString()
-        s = colors.strip data.toString()
+        s = kstr.stripAnsi data.toString()
         if app.win?
-            post.toWins 'konradError', "konrad error: #{s}"
+            post.toWins 'konradError', "konrad error: #{s}", kstr.ansi2html data.toString()
         else
-            createWindow 'konradError', "konrad error: #{s}"
+            createWindow 'konradError', "konrad error: #{s}", kstr.ansi2html data.toString()
 
     konrad.stdout.on 'data', (data) ->
-        s = colors.strip data.toString()
+        s = kstr.stripAnsi data.toString()
         if /\ 👁\ \ /.test s
             konradVersion = s.split('👁  ')[1]
             post.toWins 'konradVersion', konradVersion
         else if app.win?
-            post.toWins 'konradOutput', s
+            post.toWins 'konradOutput', s, kstr.ansi2html data.toString()
         else
             if / 😡 /.test s
-                createWindow 'konradOutput', s
+                createWindow 'konradOutput', s, kstr.ansi2html data.toString()
             else
                 highlight()
 
