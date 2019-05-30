@@ -9,10 +9,10 @@
 { noon, slash, klog, fs, _ } = require 'kxk'
 
 koffee = require 'koffee'
-kerror = require './error'
+konradError = require './error'
 
 compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
-    
+
     try
         compiled = switch ext
             
@@ -20,6 +20,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
 
                 if cfg[ext]?.map
                     mapcfg =
+                        source:        sourceFile
                         bare:          true
                         sourceMap:     true
                         inlineMap:     true
@@ -31,7 +32,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                     jsMap = koffee.compile sourceText, mapcfg
                     jsMap.js
                 else
-                    koffee.compile sourceText, bare:true
+                    koffee.compile sourceText, bare:true, source:sourceFile
 
             when 'styl'
                 stylus = require 'stylus'
@@ -53,7 +54,8 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 throw "don't know how to build files with extname .#{ext.bold}!".yellow
 
     catch e
-        kerror 'compile error', e, sourceFile
+        
+        konradError 'compile error', e.message, sourceFile
         return null
         
     compiled

@@ -59,7 +59,7 @@ build = (sourceFile, opt, cb) ->
         compiled = compile sourceText, ext, sourceFile, targetFile, cfg
         
         if empty compiled
-            if args.verbose then kerror "compile failed for #{sourceFile}"
+            # if args.verbose then kerror "compile failed for #{sourceFile}"
             return
         
         fs.readFile targetFile, 'utf8', (err, targetData) ->

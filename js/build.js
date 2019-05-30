@@ -1,4 +1,4 @@
-// koffee 0.50.0
+// koffee 0.52.0
 
 /*
 0000000    000   000  000  000      0000000  
@@ -59,9 +59,6 @@
             }
             compiled = compile(sourceText, ext, sourceFile, targetFile, cfg);
             if (empty(compiled)) {
-                if (args.verbose) {
-                    kerror("compile failed for " + sourceFile);
-                }
                 return;
             }
             return fs.readFile(targetFile, 'utf8', function(err, targetData) {
