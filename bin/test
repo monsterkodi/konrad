@@ -4,7 +4,7 @@ BIN=$DIR/../node_modules/.bin
 
 TEST=`$BIN/sds scripts.test`
 if [ -n "$TEST" ] ; then
-    if ! npm test ; then
+    if ! npm test --silent; then
         exit 1
     fi
 else
