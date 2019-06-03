@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 DIR=`dirname $0`
-if [ $# -e $DIR/../../../node_modules/.bin ]; then
+if [ -e $DIR/../../../node_modules/.bin ]; then
     BIN=$DIR/../../../node_modules/.bin
 else    
     BIN=$DIR/../node_modules/.bin
