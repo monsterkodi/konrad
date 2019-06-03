@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 DIR=`dirname $0`
-BIN=$DIR/../node_modules/.bin
+if [ $# -e $DIR/../../../node_modules/.bin ]; then
+    BIN=$DIR/../../../node_modules/.bin
+else    
+    BIN=$DIR/../node_modules/.bin
+fi
 if [ $# -eq 0 ]; then
     if [ -e package.json ]; then
-        MSG="v`sds -rp version`"
+        MSG="v`$BIN/sds version package.json`"
     elif [ -e ../package.json ]; then
-        MSG="v`../node_modules/.bin/sds -rp version ../package.json`"
+        MSG="v`$BIN/sds version ../package.json`"
     fi
     if [ -z "$MSG" ]; then
         echo '[ERROR] no commit message and no package.json!' | $BIN/colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
