@@ -48,7 +48,10 @@ build = (sourceFile, opt, cb) ->
 
     fs.readFile sourceFile, 'utf8', (err, sourceText) ->
 
-        if err then return kerror "can't read #{sourceFile}"
+        if err 
+            kerror "can't read #{sourceFile}"
+            cb()
+            return 
         
         #  0000000   0000000   00     00  00000000   000  000      00000000  
         # 000       000   000  000   000  000   000  000  000      000       
@@ -59,7 +62,7 @@ build = (sourceFile, opt, cb) ->
         compiled = compile sourceText, ext, sourceFile, targetFile, cfg
         
         if empty compiled
-            # if args.verbose then kerror "compile failed for #{sourceFile}"
+            cb()
             return
         
         fs.readFile targetFile, 'utf8', (err, targetData) ->

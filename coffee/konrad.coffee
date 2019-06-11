@@ -168,6 +168,8 @@ if args.run or args.rebuild
                 if not args.quiet
                     klog src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
+                    if not targetFile
+                        process.exit 1
                     o = config.obj targetFile, opt
                     if should 'browserify', o, targetFile
                         console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)

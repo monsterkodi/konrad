@@ -10,6 +10,7 @@
 
 argDir = require './argdir'
 config = require './config'
+pretty = require './pretty'
 
 target = (sourceFile, opt) ->
     
