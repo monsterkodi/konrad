@@ -9,5 +9,5 @@ if rm -rf konrad-darwin-x64; then
 
     IGNORE="(.*\.dmg$|Icon$|.*\.lock$|img/dmg.*\.png)"
 
-    node_modules/electron-packager/cli.js . --overwrite --icon=img/app.icns --ignore=$IGNORE
+    node_modules/.bin/electron-packager . --overwrite --icon=img/app.icns --ignore=$IGNORE
 fi
