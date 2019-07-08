@@ -198,4 +198,3 @@ highlight = ->
 
 post.on 'highlight', highlight
 
-
