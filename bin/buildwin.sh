@@ -9,7 +9,7 @@ if rm -rf konrad-win32-x64; then
     
     IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
     
-    node_modules/electron-packager/cli.js . --overwrite --icon=img/app.ico --ignore=$IGNORE
+    node_modules/.bin/electron-packager . --overwrite --icon=img/app.ico --ignore=$IGNORE
     
     ./konrad-win32-x64/konrad.exe &
 fi
