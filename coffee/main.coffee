@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, colors, prefs, first, post, noon, os, slash, childp, klog, kstr, fs } = require 'kxk'
+{ app, args, colors, prefs, first, post, noon, os, slash, childp, udp, klog, kstr, fs } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -31,6 +31,12 @@ app = new app
 
 konrad         = null
 konradVersion  = null
+
+konradUdp = new udp port:9559
+konradSend = (msg, args...) -> 
+    s = [msg+':'].concat(args).join ' '
+    # klog 'konradSend' s
+    konradUdp.send s
 
 if args.verbose
     
@@ -78,30 +84,46 @@ startKonrad = (rootDir) ->
         detached: false
         
     konrad.on 'exit' (code, signal) -> 
+        
         klog 'konrad.on exit' code, signal
+        konradSend 'exit'
 
     konrad.on 'close' (code, signal) ->
+        
         post.toWins 'konradExit' "konrad exit code: #{code}"
+        konradSend 'exit'
 
     konrad.stderr.on 'data' (data) ->
+        
         klog 'konrad.stderr' data.toString()
         s = kstr.stripAnsi data.toString()
+        konradSend 'error' s
         if app.win?
             post.toWins 'konradError' "konrad error: #{s}" kstr.ansi2html data.toString()
         else
             createWindow 'konradError' "konrad error: #{s}" kstr.ansi2html data.toString()
 
     konrad.stdout.on 'data' (data) ->
+        
         s = kstr.stripAnsi data.toString()
+        
         if /\ 👁\ \ /.test s
             konradVersion = s.split('👁  ')[1]
             post.toWins 'konradVersion' konradVersion
+            konradSend 'version' konradVersion
         else if app.win?
             post.toWins 'konradOutput' s, kstr.ansi2html data.toString()
+            if / 😡 /.test s
+                konradSend 'error' s
+                app.win.focus()
+            else
+                konradSend 'output' s
         else
             if / 😡 /.test s
+                konradSend 'error' s
                 createWindow 'konradOutput' s, kstr.ansi2html data.toString()
             else
+                konradSend 'output' s
                 highlight()
 
 #  0000000   000   000  000  000000000  
