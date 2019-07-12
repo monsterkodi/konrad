@@ -115,17 +115,24 @@ startKonrad = (rootDir) ->
             post.toWins 'konradOutput' s, kstr.ansi2html data.toString()
             if / 😡 /.test s
                 konradSend 'error' s
+                app.win.show()
                 app.win.focus()
             else
                 konradSend 'output' s
         else
             if / 😡 /.test s
                 konradSend 'error' s
-                createWindow 'konradOutput' s, kstr.ansi2html data.toString()
+                createWindow 'konradError' s, kstr.ansi2html data.toString()
             else
                 konradSend 'output' s
                 highlight()
 
+createWindow = (msg, s, h) ->
+    
+    app.createWindow (win) ->
+        klog 'winReadyToShow' win.id, msg #, s, h
+        post.toWin win.id, msg, s, h
+                
 #  0000000   000   000  000  000000000  
 # 000   000  000   000  000     000     
 # 000 00 00  000   000  000     000     

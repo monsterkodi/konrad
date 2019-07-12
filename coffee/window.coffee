@@ -54,14 +54,14 @@ fadeOverlay = ->
 # 000        000   000       000     000     
 # 000         0000000   0000000      000     
 
-post.on "konradExit", (s) ->
-post.on "konradError", (s) ->
-post.on "konradOutput", (s, html) ->
+post.on "konradExit" (s) ->
+post.on "konradError" (s, html) -> onError s, html
+post.on "konradOutput" (s, html) ->
     
     if      / 😡 /.test s then onError   s, html
     else if / 👍 /.test s then onTask    s, html
     else if / 🔧 /.test s then onMessage s, html
-    else log 'konrad', s
+    else log 'konrad' s
 
 post.on "konradVersion", (s) ->
     
