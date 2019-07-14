@@ -5,7 +5,7 @@
 (\S+)(@)([\d\.]+)\s(\S+)  . yf . z . mf . s:
 [\s┬─├└│\+\-\`]+            xd 
 [\/+]                        d
-(npm notice)              . s: 
+(npm notice)              . xd 
 (===)([^=]+)(===)         . md . mf . md
 ([^:]+)(:)                . xd . xd
 (\d+)(\.)(\d+)\s          . gb . gd . gb

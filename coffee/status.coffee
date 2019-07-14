@@ -97,7 +97,7 @@ doStatus = (git, gitDir, sourceFile) ->
                         c = '▼'.bold.blue
                         start = 0
                         for l in res.split /\r?\n/
-                            ls = colors.strip(l)
+                            ls = klor.kolor.strip l
                             if ls.substr(0,4) in ['+++ ', '--- '] then
                             else if ls[0] == '@'
                                 split = ls.split '@@'
@@ -108,7 +108,6 @@ doStatus = (git, gitDir, sourceFile) ->
                                 c = '●'.blue.dim
                             else if ls[0] == '+'
                                 diff += "\n "
-                                # diff += "[0;7m#{slash.join(gitDir, f)}:#{start}[0m"
                                 start++
                                 rgs = klor.ranges ls.substr(1), slash.ext f
                                 if valid rgs

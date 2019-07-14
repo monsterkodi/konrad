@@ -25,7 +25,7 @@ git add .
 git status -sb       | $BIN/colorcat -sP $DIR/../cc/status.noon
 git commit -m "$MSG" | $BIN/colorcat -sP $DIR/../cc/commit.noon
 
-echo 'pushing'       | $BIN/colorcat -sx
+echo 'pushing'       | $BIN/colorcat -swd
 
 git push -q 2>&1     | $BIN/colorcat -sP  $DIR/../cc/push.noon
 git status -sb       | $BIN/colorcat -sP  $DIR/../cc/status.noon

@@ -11,7 +11,7 @@ if $DIR/konrad --run; then
         
         VERSION=`$BIN/sds version`
         
-        echo 'npm publish' | $BIN/colorcat -sx
-        npm publish        | $BIN/colorcat -P $DIR/../cc/npm.noon
+        echo 'npm publish' | $BIN/colorcat -swd
+        npm publish 2>&1   | $BIN/colorcat -sP $DIR/../cc/npm.noon
     fi
 fi
