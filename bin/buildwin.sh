@@ -11,5 +11,5 @@ if rm -rf konrad-win32-x64; then
     
     node_modules/.bin/electron-packager . --overwrite --icon=img/app.ico --ignore=$IGNORE
     
-    ./konrad-win32-x64/konrad.exe &
+    start ./konrad-win32-x64/konrad.exe
 fi
