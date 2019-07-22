@@ -59,6 +59,7 @@ post.on "konradError" (s, html) -> onError s, html
 post.on "konradOutput" (s, html) ->
     
     if      / 😡 /.test s then onError   s, html
+    if      / 🔺 /.test s then onFile    s, html
     else if / 👍 /.test s then onTask    s, html
     else if / 🔧 /.test s then onMessage s, html
     else log 'konrad' s
@@ -116,7 +117,7 @@ taskDiv = (opt) ->
 #    000     000   000  0000000   000   000
 
 onTask = (s) ->
-
+    
     post.toMain 'highlight'
 
     [time, sourceTarget] = s.split ' 👍 '
@@ -172,10 +173,11 @@ onError = (s, html) ->
         htmls = html.split '\n'
         fileHtml = htmls.shift().split('</span>')[5..].join '</span>'
     
-    [time, file] = lines.shift().split ' 😡 '
-    file = file.trim()
+    [time, msg] = lines.shift().split ' 😡 '
+    msg = msg.trim()
+    if msg.split(':').length >= 3 then msg = ''
 
-    div = taskDiv time: time, file: file, key: file.split(':')[0], icon: '😡', fileHtml:fileHtml
+    div = taskDiv time:time, icon:'😡' message:msg
 
     for i in [0...lines.length]
         pre = document.createElement 'pre'
@@ -185,6 +187,28 @@ onError = (s, html) ->
         else
             pre.textContent = lines[i]
         div.appendChild pre
+
+    div.scrollIntoViewIfNeeded()
+
+# 00000000  000  000      00000000  
+# 000       000  000      000       
+# 000000    000  000      0000000   
+# 000       000  000      000       
+# 000       000  0000000  00000000  
+
+onFile = (s, html) ->
+
+    post.toMain 'showWindow'
+    post.toMain 'highlight'
+    
+    if html
+        htmls = html.split '\n'
+        fileHtml = htmls.shift().split('</span>')[5..].join '</span>'
+    
+    [time, file] = s.split ' 🔺 '
+    file = file.trim()
+
+    div = taskDiv time:time, file:file, key:file.split(':')[0], icon:'🔺', fileHtml:fileHtml
 
     div.scrollIntoViewIfNeeded()
     

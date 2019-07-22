@@ -9,6 +9,7 @@
 { noon, slash, klog, fs, _ } = require 'kxk'
 
 koffee = require 'koffee'
+pretty = require './pretty'
 konradError = require './error'
 
 compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
@@ -54,7 +55,8 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 throw "don't know how to build files with extname .#{ext.bold}!".yellow
 
     catch e
-        
+        pos = e.location? and ':'+(e.location.first_line+1)+':'+e.location.first_column or ''
+        klog pretty.time(), "🔺  #{pretty.filePath slash.tilde sourceFile}#{pos}"
         konradError 'compile error', e.message, sourceFile
         return null
         
