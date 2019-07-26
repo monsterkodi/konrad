@@ -7,9 +7,9 @@ if rm -rf konrad-win32-x64; then
     
     node_modules/.bin/electron-rebuild
     
-    IGNORE="/(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
+    # IGNORE="(.*\.dmg$|Icon$|coffee$|.*md$|pug$|styl$|package\.noon$|.*\.lock$|img/dmg.*\.png)"
     
-    node_modules/.bin/electron-packager . --overwrite --icon=img/app.ico --ignore=$IGNORE
+    node_modules/.bin/electron-packager . --overwrite --icon=img/app.ico #--ignore=$IGNORE
     
     start ./konrad-win32-x64/konrad.exe
 fi

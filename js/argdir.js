@@ -7,27 +7,26 @@
 000   000  000   000  000   000  000   000  000  000   000
 000   000  000   000   0000000   0000000    000  000   000
  */
+var argDir, args, ref, slash;
 
-(function() {
-    var argDir, args, ref, slash;
+ref = require('kxk'), args = ref.args, slash = ref.slash;
 
-    ref = require('kxk'), args = ref.args, slash = ref.slash;
-
-    argDir = function() {
-        var d;
-        if (args["arguments"][0]) {
-            d = slash.resolve(args["arguments"][0]);
-            if (slash.dirExists(d)) {
-                return d;
-            }
-            d = slash.dir(d);
-            if (slash.dirExists(d)) {
-                return d;
-            }
+argDir = function() {
+    var d;
+    if (args["arguments"][0]) {
+        d = slash.resolve(args["arguments"][0]);
+        if (slash.dirExists(d)) {
+            return d;
         }
-        return slash.resolve('.');
-    };
+        d = slash.dir(d);
+        if (slash.dirExists(d)) {
+            return d;
+        }
+    }
+    return slash.resolve('.');
+};
 
-    module.exports = argDir;
+module.exports = argDir;
 
-}).call(this);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXJnZGlyLmpzIiwic291cmNlUm9vdCI6Ii4iLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUFrQixPQUFBLENBQVEsS0FBUixDQUFsQixFQUFFLGVBQUYsRUFBUTs7QUFFUixNQUFBLEdBQVMsU0FBQTtBQUVMLFFBQUE7SUFBQSxJQUFHLElBQUksRUFBQyxTQUFELEVBQVcsQ0FBQSxDQUFBLENBQWxCO1FBQ0ksQ0FBQSxHQUFJLEtBQUssQ0FBQyxPQUFOLENBQWMsSUFBSSxFQUFDLFNBQUQsRUFBVyxDQUFBLENBQUEsQ0FBN0I7UUFDSixJQUFHLEtBQUssQ0FBQyxTQUFOLENBQWdCLENBQWhCLENBQUg7QUFDSSxtQkFBTyxFQURYOztRQUVBLENBQUEsR0FBSSxLQUFLLENBQUMsR0FBTixDQUFVLENBQVY7UUFDSixJQUFHLEtBQUssQ0FBQyxTQUFOLENBQWdCLENBQWhCLENBQUg7QUFDSSxtQkFBTyxFQURYO1NBTEo7O1dBT0EsS0FBSyxDQUFDLE9BQU4sQ0FBYyxHQUFkO0FBVEs7O0FBV1QsTUFBTSxDQUFDLE9BQVAsR0FBaUIiLCJzb3VyY2VzQ29udGVudCI6WyIjIyNcbiAwMDAwMDAwICAgMDAwMDAwMDAgICAgMDAwMDAwMCAgIDAwMDAwMDAgICAgMDAwICAwMDAwMDAwMCBcbjAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAgICAgIDAwMCAgIDAwMCAgMDAwICAwMDAgICAwMDBcbjAwMDAwMDAwMCAgMDAwMDAwMCAgICAwMDAgIDAwMDAgIDAwMCAgIDAwMCAgMDAwICAwMDAwMDAwICBcbjAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAwMDAgICAwMDBcbjAwMCAgIDAwMCAgMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMDAwMDAgICAgMDAwICAwMDAgICAwMDBcbiMjI1xuXG57IGFyZ3MsIHNsYXNoIH0gPSByZXF1aXJlICdreGsnXG5cbmFyZ0RpciA9IC0+XG4gICAgXG4gICAgaWYgYXJncy5hcmd1bWVudHNbMF1cbiAgICAgICAgZCA9IHNsYXNoLnJlc29sdmUgYXJncy5hcmd1bWVudHNbMF1cbiAgICAgICAgaWYgc2xhc2guZGlyRXhpc3RzIGRcbiAgICAgICAgICAgIHJldHVybiBkXG4gICAgICAgIGQgPSBzbGFzaC5kaXIgZCAjID8/P1xuICAgICAgICBpZiBzbGFzaC5kaXJFeGlzdHMgZFxuICAgICAgICAgICAgcmV0dXJuIGRcbiAgICBzbGFzaC5yZXNvbHZlICcuJ1xuXG5tb2R1bGUuZXhwb3J0cyA9IGFyZ0RpclxuIl19
+//# sourceURL=../coffee/argdir.coffee

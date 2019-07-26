@@ -6,7 +6,7 @@
 0000000     0000000   000   000  000        
 ###
 
-{ slash, karg, noon, colors, fs } = require 'kxk'
+{ slash, karg, noon, fs } = require 'kxk'
 
 semver = require 'semver'
 args   = karg """

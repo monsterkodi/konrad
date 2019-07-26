@@ -14,7 +14,7 @@ konradError = require './error'
 runcmd = (cmd, cmdargs, cwd) ->
     
     try
-        cmdpath = slash.resolve slash.join __dirname, '..', 'bin', cmd
+        cmdpath = slash.resolve slash.join __dirname, '..' 'bin' cmd
         
         if slash.win()
             command = "bash #{cmdpath} #{cmdargs}"
@@ -22,16 +22,20 @@ runcmd = (cmd, cmdargs, cwd) ->
             command = "#{cmdpath} #{cmdargs}"
             
         if args.verbose
-            klog "🔧 ", cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
+            klog "🔧 " cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
+
+        commandargs = ''
+        if process.argv.length > 3
+            commandargs = ' ' + process.argv.slice(3).join ' '
             
-        childp.execSync command,
+        childp.execSync command + commandargs,
             cwd:      cwd
             encoding: 'utf8'
             stdio:    'inherit'
             shell:    true
           
     catch err
-        konradError "command error", "command '#{cmd}' (#{command}) #{'failed!'}", err
+        konradError "command error" "command '#{cmd}' (#{command}) #{'failed!'}" err
         return false
     true
 

@@ -26,6 +26,7 @@ args = args.init """
     watch      watch directory for changes                  false
     info       show build status of dir                     false
     bump       bump package.* version [major|minor|patch]   false
+    build      make package                                 false  -m
     diff       show git diff of file/dir                    false
     status     show git status of file/dir                  false
     commit     add, commit and push [msg]                   false
@@ -38,7 +39,7 @@ args = args.init """
     logtime    log with time                                true
     """, pkg:pkg
 
-actions = ['bump', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
+actions = ['bump', 'build', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
 
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
     args.run = true # makes run the default action if no other action is set
@@ -175,7 +176,7 @@ if args.run or args.rebuild
                         console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)
                         runcmd 'browserify' "#{o.browserify.main} #{o.browserify.out}" config.path 'browserify', slash.resolve(targetFile), opt
 
-for cmd in ['update' 'bump' 'commit' 'publish' 'test']
+for cmd in ['update' 'bump' 'build' 'commit' 'publish' 'test']
 
     if args[cmd]
 
@@ -185,7 +186,7 @@ for cmd in ['update' 'bump' 'commit' 'publish' 'test']
 
         klog '🔧  done'.gray if args.verbose
 
-        if args.arguments and cmd in ['commit' 'bump']
+        if args.arguments and cmd in ['commit' 'bump' 'build']
             break
 
 if args.watch

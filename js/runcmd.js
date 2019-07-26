@@ -7,42 +7,45 @@
 000   000  000   000  000  0000  000       000 0 000  000   000
 000   000   0000000   000   000   0000000  000   000  0000000
  */
+var _, args, childp, klog, konradError, os, pretty, ref, runcmd, slash;
 
-(function() {
-    var _, args, childp, klog, konradError, os, pretty, ref, runcmd, slash;
+ref = require('kxk'), args = ref.args, slash = ref.slash, childp = ref.childp, os = ref.os, klog = ref.klog, _ = ref._;
 
-    ref = require('kxk'), args = ref.args, slash = ref.slash, childp = ref.childp, os = ref.os, klog = ref.klog, _ = ref._;
+pretty = require('./pretty');
 
-    pretty = require('./pretty');
+konradError = require('./error');
 
-    konradError = require('./error');
-
-    runcmd = function(cmd, cmdargs, cwd) {
-        var cmdpath, command, err;
-        try {
-            cmdpath = slash.resolve(slash.join(__dirname, '..', 'bin', cmd));
-            if (slash.win()) {
-                command = "bash " + cmdpath + " " + cmdargs;
-            } else {
-                command = cmdpath + " " + cmdargs;
-            }
-            if (args.verbose) {
-                klog("🔧 ", cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green);
-            }
-            childp.execSync(command, {
-                cwd: cwd,
-                encoding: 'utf8',
-                stdio: 'inherit',
-                shell: true
-            });
-        } catch (error) {
-            err = error;
-            konradError("command error", "command '" + cmd + "' (" + command + ") " + 'failed!', err);
-            return false;
+runcmd = function(cmd, cmdargs, cwd) {
+    var cmdpath, command, commandargs, err;
+    try {
+        cmdpath = slash.resolve(slash.join(__dirname, '..', 'bin', cmd));
+        if (slash.win()) {
+            command = "bash " + cmdpath + " " + cmdargs;
+        } else {
+            command = cmdpath + " " + cmdargs;
         }
-        return true;
-    };
+        if (args.verbose) {
+            klog("🔧 ", cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green);
+        }
+        commandargs = '';
+        if (process.argv.length > 3) {
+            commandargs = ' ' + process.argv.slice(3).join(' ');
+        }
+        childp.execSync(command + commandargs, {
+            cwd: cwd,
+            encoding: 'utf8',
+            stdio: 'inherit',
+            shell: true
+        });
+    } catch (error) {
+        err = error;
+        konradError("command error", "command '" + cmd + "' (" + command + ") " + 'failed!', err);
+        return false;
+    }
+    return true;
+};
 
-    module.exports = runcmd;
+module.exports = runcmd;
 
-}).call(this);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicnVuY21kLmpzIiwic291cmNlUm9vdCI6Ii4iLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUF1QyxPQUFBLENBQVEsS0FBUixDQUF2QyxFQUFFLGVBQUYsRUFBUSxpQkFBUixFQUFlLG1CQUFmLEVBQXVCLFdBQXZCLEVBQTJCLGVBQTNCLEVBQWlDOztBQUVqQyxNQUFBLEdBQWMsT0FBQSxDQUFRLFVBQVI7O0FBQ2QsV0FBQSxHQUFjLE9BQUEsQ0FBUSxTQUFSOztBQUVkLE1BQUEsR0FBUyxTQUFDLEdBQUQsRUFBTSxPQUFOLEVBQWUsR0FBZjtBQUVMLFFBQUE7QUFBQTtRQUNJLE9BQUEsR0FBVSxLQUFLLENBQUMsT0FBTixDQUFjLEtBQUssQ0FBQyxJQUFOLENBQVcsU0FBWCxFQUFzQixJQUF0QixFQUEyQixLQUEzQixFQUFpQyxHQUFqQyxDQUFkO1FBRVYsSUFBRyxLQUFLLENBQUMsR0FBTixDQUFBLENBQUg7WUFDSSxPQUFBLEdBQVUsT0FBQSxHQUFRLE9BQVIsR0FBZ0IsR0FBaEIsR0FBbUIsUUFEakM7U0FBQSxNQUFBO1lBR0ksT0FBQSxHQUFhLE9BQUQsR0FBUyxHQUFULEdBQVksUUFINUI7O1FBS0EsSUFBRyxJQUFJLENBQUMsT0FBUjtZQUNJLElBQUEsQ0FBSyxLQUFMLEVBQVcsR0FBRyxDQUFDLElBQUksQ0FBQyxLQUFwQixFQUEyQixNQUFNLENBQUMsUUFBUCxDQUFnQixPQUFoQixDQUEzQixFQUFxRCxPQUFPLENBQUMsS0FBN0QsRUFESjs7UUFHQSxXQUFBLEdBQWM7UUFDZCxJQUFHLE9BQU8sQ0FBQyxJQUFJLENBQUMsTUFBYixHQUFzQixDQUF6QjtZQUNJLFdBQUEsR0FBYyxHQUFBLEdBQU0sT0FBTyxDQUFDLElBQUksQ0FBQyxLQUFiLENBQW1CLENBQW5CLENBQXFCLENBQUMsSUFBdEIsQ0FBMkIsR0FBM0IsRUFEeEI7O1FBR0EsTUFBTSxDQUFDLFFBQVAsQ0FBZ0IsT0FBQSxHQUFVLFdBQTFCLEVBQ0k7WUFBQSxHQUFBLEVBQVUsR0FBVjtZQUNBLFFBQUEsRUFBVSxNQURWO1lBRUEsS0FBQSxFQUFVLFNBRlY7WUFHQSxLQUFBLEVBQVUsSUFIVjtTQURKLEVBZko7S0FBQSxhQUFBO1FBcUJNO1FBQ0YsV0FBQSxDQUFZLGVBQVosRUFBNEIsV0FBQSxHQUFZLEdBQVosR0FBZ0IsS0FBaEIsR0FBcUIsT0FBckIsR0FBNkIsSUFBN0IsR0FBaUMsU0FBN0QsRUFBeUUsR0FBekU7QUFDQSxlQUFPLE1BdkJYOztXQXdCQTtBQTFCSzs7QUE0QlQsTUFBTSxDQUFDLE9BQVAsR0FBaUIiLCJzb3VyY2VzQ29udGVudCI6WyIjIyNcbjAwMDAwMDAwICAgMDAwICAgMDAwICAwMDAgICAwMDAgICAwMDAwMDAwICAwMCAgICAgMDAgIDAwMDAwMDAgIFxuMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMDAgIDAwMCAgMDAwICAgICAgIDAwMCAgIDAwMCAgMDAwICAgMDAwXG4wMDAwMDAwICAgIDAwMCAgIDAwMCAgMDAwIDAgMDAwICAwMDAgICAgICAgMDAwMDAwMDAwICAwMDAgICAwMDBcbjAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgIDAwMDAgIDAwMCAgICAgICAwMDAgMCAwMDAgIDAwMCAgIDAwMFxuMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMCAgIDAwMDAwMDAgIDAwMCAgIDAwMCAgMDAwMDAwMCAgXG4jIyNcblxueyBhcmdzLCBzbGFzaCwgY2hpbGRwLCBvcywga2xvZywgXyB9ID0gcmVxdWlyZSAna3hrJ1xuXG5wcmV0dHkgICAgICA9IHJlcXVpcmUgJy4vcHJldHR5J1xua29ucmFkRXJyb3IgPSByZXF1aXJlICcuL2Vycm9yJ1xuXG5ydW5jbWQgPSAoY21kLCBjbWRhcmdzLCBjd2QpIC0+XG4gICAgXG4gICAgdHJ5XG4gICAgICAgIGNtZHBhdGggPSBzbGFzaC5yZXNvbHZlIHNsYXNoLmpvaW4gX19kaXJuYW1lLCAnLi4nICdiaW4nIGNtZFxuICAgICAgICBcbiAgICAgICAgaWYgc2xhc2gud2luKClcbiAgICAgICAgICAgIGNvbW1hbmQgPSBcImJhc2ggI3tjbWRwYXRofSAje2NtZGFyZ3N9XCJcbiAgICAgICAgZWxzZVxuICAgICAgICAgICAgY29tbWFuZCA9IFwiI3tjbWRwYXRofSAje2NtZGFyZ3N9XCJcbiAgICAgICAgICAgIFxuICAgICAgICBpZiBhcmdzLnZlcmJvc2VcbiAgICAgICAgICAgIGtsb2cgXCLwn5SnIFwiIGNtZC5ncmF5LnJlc2V0LCBwcmV0dHkuZmlsZVBhdGgoY21kcGF0aCksIGNtZGFyZ3MuZ3JlZW5cblxuICAgICAgICBjb21tYW5kYXJncyA9ICcnXG4gICAgICAgIGlmIHByb2Nlc3MuYXJndi5sZW5ndGggPiAzXG4gICAgICAgICAgICBjb21tYW5kYXJncyA9ICcgJyArIHByb2Nlc3MuYXJndi5zbGljZSgzKS5qb2luICcgJ1xuICAgICAgICAgICAgXG4gICAgICAgIGNoaWxkcC5leGVjU3luYyBjb21tYW5kICsgY29tbWFuZGFyZ3MsXG4gICAgICAgICAgICBjd2Q6wqAgICAgIGN3ZFxuICAgICAgICAgICAgZW5jb2Rpbmc6wqAndXRmOCdcbiAgICAgICAgICAgIHN0ZGlvOsKgICAgJ2luaGVyaXQnXG4gICAgICAgICAgICBzaGVsbDogICAgdHJ1ZVxuICAgICAgICAgIFxuICAgIGNhdGNoIGVyclxuICAgICAgICBrb25yYWRFcnJvciBcImNvbW1hbmQgZXJyb3JcIiBcImNvbW1hbmQgJyN7Y21kfScgKCN7Y29tbWFuZH0pICN7J2ZhaWxlZCEnfVwiIGVyclxuICAgICAgICByZXR1cm4gZmFsc2VcbiAgICB0cnVlXG5cbm1vZHVsZS5leHBvcnRzID0gcnVuY21kXG4iXX0=
+//# sourceURL=../coffee/runcmd.coffee
