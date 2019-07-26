@@ -42,7 +42,8 @@ try
     if args.package 
         ign = "(.*\.dmg$|Icon$|.*\.lock$|inno$|x64$)"
         exe = slash.resolve './node_modules/.bin/electron-packager'
-        cmd = "#{exe} . --overwrite --icon=img/app.ico --ignore=\"#{ign}\""
+        icn = slash.win() and 'ico' or 'icns'
+        cmd = "#{exe} . --overwrite --icon=img/app.#{icn} --ignore=\"#{ign}\""
         exec 'package' cmd
     if args.start
         exeext = switch os.platform()
