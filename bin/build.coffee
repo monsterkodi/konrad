@@ -15,6 +15,7 @@ build
     install  . ? run npm install  . = true
     rebuild  . ? electron-rebuild . = true
     package  . ? package project  . = true
+    prune    . ? prune package    . = true . -P
     start    . ? run executable   . = true
     verbose                       . = true
 """
@@ -39,19 +40,25 @@ try
     if args.compile then exec 'compile' 'node ' + slash.join __dirname, 'konrad'
     if args.install then exec 'install' 'npm install'
     if args.rebuild then exec 'rebuild' slash.resolve './node_modules/.bin/electron-rebuild'
-    if args.package 
-        ign = "(.*\.dmg$|Icon$|.*\.lock$|inno$|x64$)"
+    if args.package
         exe = slash.resolve './node_modules/.bin/electron-packager'
         icn = slash.win() and 'ico' or 'icns'
-        cmd = "#{exe} . --overwrite --icon=img/app.#{icn} --ignore=\"#{ign}\""
+        cmd = "#{exe} . --overwrite --icon=img/app.#{icn}"
         exec 'package' cmd
+    if args.prune
+        if args.verbose then klog kolor.y4('prune')
+        for d in ['inno' 'x64']
+            dir = slash.join bindir, 'resources' 'app' d # needs to change on mac
+            if slash.dirExists dir
+                if args.verbose then klog kolor.r5 dir
+                fs.removeSync dir
     if args.start
         exeext = switch os.platform()
             when 'win32'  then '.exe'
             when 'darwin' then '.app'
             else '' # linux?
         exepth = slash.resolve slash.join bindir, "#{pkg.name}#{exeext}"
-        if args.verbose then klog 'start     ' exepth
+        if args.verbose then klog kolor.y3('start     '), exepth
         childp.spawn exepth, encoding:'utf8' shell:true detached:true stdio:'inherit'
         
     process.exit 0
