@@ -95,7 +95,7 @@ startKonrad = (rootDir) ->
 
     konrad.stderr.on 'data' (data) ->
         
-        klog 'konrad.stderr' data.toString()
+        klog data.toString()
         s = kstr.stripAnsi data.toString()
         konradSend 'error' s
         if app.win?
