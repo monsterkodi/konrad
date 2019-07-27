@@ -94,10 +94,10 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
         if err then return kerror "can't create output  directory#{slash.dir(targetFile)}"
 
-        atomic targetFile, compiled, (err) ->
+        slash.writeText targetFile, compiled, (done) ->
         # fs.writeFile targetFile, compiled, (err) ->
-            if not empty err 
-                return kerror "can't  write#{targetFile}!", err
+            if empty done
+                return kerror "can't  write#{targetFile}!"
             if not args.quiet
                 if args.verbose
                     klog pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
