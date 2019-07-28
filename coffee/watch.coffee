@@ -32,7 +32,6 @@ Watch = (wlk, opt) ->
         klog pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), colors.white}".gray
         watcher = watch.watch d, recursive:true, ignore:wlk.ignore
         watcher.on 'change' (info) -> 
-            klog 'info' info.path, info.change
             if pass info.path then cb slash.path info.path
 
     start (sourceFile) ->

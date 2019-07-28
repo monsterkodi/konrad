@@ -20,7 +20,7 @@ build
     verbose                       . = true
 """
 
-exec = (msg, cmd, opt={stdio:'inherit' shell:true}) ->
+exec = (msg, cmd, opt={shell:true encoding:'utf8'}) ->
     
     if args.verbose then klog kolor.y5 msg
     childp.execSync cmd, opt
@@ -30,10 +30,19 @@ try
     pkg    = require slash.join pkgdir, 'package.json'
     bindir = pkg.name + '-' + "#{os.platform()}-x64"
     
+    exeext = switch os.platform()
+        when 'win32'  then '.exe'
+        when 'darwin' then '.app'
+        else '' # linux?
+    exepth = slash.resolve slash.join bindir, "#{pkg.name}#{exeext}"
+    
     if args.verbose then klog kolor.y3('cwd      '), kolor.w2 pkgdir
     process.chdir pkgdir
 
     if slash.dirExists bindir
+        if os.platform() == 'win32'
+            if r = exec 'quit' "wxw quit \"#{slash.unslash exepth}\""
+                childp.execSync "sleep 1"
         if args.verbose then klog kolor.y4('remove   '), kolor.b6 bindir
         fs.removeSync bindir
     
@@ -53,11 +62,6 @@ try
                 if args.verbose then klog kolor.r5 dir
                 fs.removeSync dir
     if args.start
-        exeext = switch os.platform()
-            when 'win32'  then '.exe'
-            when 'darwin' then '.app'
-            else '' # linux?
-        exepth = slash.resolve slash.join bindir, "#{pkg.name}#{exeext}"
         if args.verbose then klog kolor.y3('start     '), exepth
         childp.spawn exepth, encoding:'utf8' shell:true detached:true stdio:'inherit'
         
