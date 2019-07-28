@@ -174,8 +174,9 @@ onError = (s, html) ->
         fileHtml = htmls.shift().split('</span>')[5..].join '</span>'
     
     [time, msg] = lines.shift().split ' 😡 '
-    msg = msg.trim()
-    if msg.split(':').length >= 3 then msg = ''
+    if msg?.trim?
+        msg = msg.trim()
+        if msg.split(':').length >= 3 then msg = ''
 
     div = taskDiv time:time, icon:'😡' message:msg
 

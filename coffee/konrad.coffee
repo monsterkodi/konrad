@@ -39,7 +39,7 @@ args = args.init """
     logtime    log with time                                true
     """, pkg:pkg
 
-actions = ['bump', 'build', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'diff']
+actions = ['bump' 'build' 'commit' 'publish' 'update' 'test' 'watch' 'run' 'rebuild' 'info' 'status' 'diff']
 
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
     args.run = true # makes run the default action if no other action is set

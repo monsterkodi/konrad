@@ -19,6 +19,8 @@ watcher = null
 
 Watch = (wlk, opt) ->
     
+    # klog 'watch' wlk, opt
+    
     start = (cb) ->
 
         pass = (p) -> 
@@ -29,7 +31,9 @@ Watch = (wlk, opt) ->
         v = "#{pkg.version} ●".dim.gray
         klog pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), colors.white}".gray
         watcher = watch.watch d, recursive:true, ignore:wlk.ignore
-        watcher.on 'change', (info) -> if pass info.path then cb slash.path info.path
+        watcher.on 'change' (info) -> 
+            klog 'info' info.path, info.change
+            if pass info.path then cb slash.path info.path
 
     start (sourceFile) ->
 
@@ -37,10 +41,10 @@ Watch = (wlk, opt) ->
         o = config.obj sourceFile, opt
 
         test = (source) ->
-            if should 'test', o, source
-                runcmd 'test', source, config.path 'test', slash.resolve(source), opt
+            if should 'test' o, source
+                runcmd 'test' source, config.path 'test' slash.resolve(source), opt
 
-        if not should 'ignore', o, sourceFile
+        if not should 'ignore' o, sourceFile
             build sourceFile, opt, test
         else
             test sourceFile

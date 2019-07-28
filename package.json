@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.152.0",
+  "version": "0.154.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -29,7 +29,7 @@
     "colorcat": "^2.12.0",
     "klor": "^1.4.0",
     "koffee": "^1.3.0",
-    "kxk": "^0.332.0",
+    "kxk": "^0.333.0",
     "mkpath": "^1.0.0",
     "npm-check-updates": "^3.1.20",
     "pug": "^2.0.4",
