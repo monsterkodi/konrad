@@ -29,7 +29,7 @@ dependencies
                 pug             ^2.0.4
                 sds             ^3.2.0
                 semver          ^6.3.0
-                simple-git      ^1.123.0
+                simple-git      ^1.124.0
                 stylus          ^0.54.5
                 tree-kill       ^1.2.1
 devDependencies

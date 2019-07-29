@@ -43,6 +43,11 @@ try
         if os.platform() == 'win32'
             if r = exec 'quit' "wxw quit \"#{slash.unslash exepth}\""
                 childp.execSync "sleep 1"
+        else
+            try
+                childp.execSync "killall #{pkg.name}"
+            catch
+                1
         if args.verbose then klog kolor.y4('remove   '), kolor.b6 bindir
         fs.removeSync bindir
     
@@ -63,8 +68,10 @@ try
                 fs.removeSync dir
     if args.start
         if args.verbose then klog kolor.y3('start     '), exepth
-        childp.spawn exepth, encoding:'utf8' shell:true detached:true stdio:'inherit'
-        
+        if os.platform() == 'win32'
+            childp.spawn exepth, encoding:'utf8' shell:true detached:true stdio:'inherit'
+        else
+            childp.spawn "open", [exepth], encoding:'utf8' shell:true detached:true stdio:'inherit'
     process.exit 0
         
 catch err
