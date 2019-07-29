@@ -25,8 +25,9 @@ runcmd = (cmd, cmdargs, cwd) ->
             klog "🔧 " cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
 
         commandargs = ''
-        if process.argv.length > 3
+        if process.argv.length > 3 and cmd == 'make'
             commandargs = ' ' + process.argv.slice(3).join ' '
+            klog "make command", process.argv, command + commandargs
             
         childp.execSync command + commandargs,
             cwd:      cwd
