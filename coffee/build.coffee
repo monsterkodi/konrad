@@ -96,7 +96,8 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
         slash.writeText targetFile, compiled, (file) ->
             if empty file
-                return kerror "can't write text file #{targetFile}!".bold.red
+                # return kerror "can't write text file #{targetFile}!".bold.red
+                return
             if not args.quiet
                 if args.verbose
                     klog pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
