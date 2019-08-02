@@ -41,7 +41,7 @@ try
 
     if slash.dirExists bindir
         if os.platform() == 'win32'
-            if r = exec 'quit' "wxw quit \"#{slash.unslash exepth}\""
+            if r = exec 'quit' "wxw terminate \"#{slash.file exepth}\""
                 childp.execSync "sleep 1"
         else
             try
