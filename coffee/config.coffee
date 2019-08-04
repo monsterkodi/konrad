@@ -6,31 +6,31 @@
  0000000   0000000   000   000  000       000   0000000 
 ###
 
-{ slash, fs, noon, _ } = require 'kxk'
+{ klog, slash, fs, noon, _ } = require 'kxk'
 
 path = (key, p, opt) ->
     
     while slash.dir(p).length and slash.dir(p) not in ['.', '/']
         p = slash.dir p
-        if fs.existsSync slash.join p, '.konrad.noon'
+        if slash.fileExists slash.join p, '.konrad.noon'
             o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt
             if o[key]?
                 return slash.resolve p
     null
 
-obj = (p, opt) ->
+obj = (p, opt={}) ->
     
     while slash.dir(p).length and slash.dir(p) not in ['.', '/'] and not /^\w\:\/$/.test slash.dir(p)
         p = slash.dir p
-        if fs.existsSync slash.join p, '.konrad.noon'
+        if slash.fileExists slash.join p, '.konrad.noon'
             o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt
             if o.ignore?.map?
                 o.ignore = o.ignore.map (i) ->
                     if _.isString i
                         new RegExp i
                     else
-                        i
             return o
+    # klog 'no obj' p
     opt
     
 module.exports = 

@@ -20,6 +20,8 @@ build
     verbose                       . = true
 """
 
+config = require '../js/config'
+
 exec = (msg, cmd, opt={shell:true encoding:'utf8'}) ->
     
     if args.verbose then klog kolor.y5 msg
@@ -27,7 +29,8 @@ exec = (msg, cmd, opt={shell:true encoding:'utf8'}) ->
 
 try    
     pkgdir = slash.pkg process.cwd()
-    pkg    = require slash.join pkgdir, 'package.json'
+    pkgpth = slash.join pkgdir, 'package.json'
+    pkg    = require pkgpth
     bindir = pkg.name + '-' + "#{os.platform()}-x64"
     
     exeext = switch os.platform()
@@ -66,6 +69,16 @@ try
             if slash.dirExists dir
                 if args.verbose then klog kolor.r5 dir
                 fs.removeSync dir
+                
+        if prune = config.obj(pkgpth)?.build?.prune
+            for d in prune        
+                dir = slash.join bindir, 'resources' 'app' d # needs to change on mac
+                if slash.dirExists dir
+                    if args.verbose then klog kolor.r5 dir
+                    fs.removeSync dir
+                else
+                    klog 'no path to prune' dir
+                
     if args.start
         if args.verbose then klog kolor.y3('start     '), exepth
         if os.platform() == 'win32'

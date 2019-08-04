@@ -25,7 +25,7 @@ should = (k, o, p) ->
     for i in keys
         r = i
         r = new RegExp i if _.isString i
-        if r.test p
+        if r?.test? p
             klog pretty.filePath(slash.relative(p, argDir()), colors.gray), 'should '.blue+k.bold.blue if args.debug
             return true
     false

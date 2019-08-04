@@ -136,8 +136,11 @@ if args.status
 
             if slash.dirExists sourceFile
                 for i in opt.ignore
-                    if i.test sourceFile
-                        return false
+                    if i?.test?
+                        if i.test sourceFile
+                            return false
+                    else
+                        klog 'ignore?' i
         true
 
     if not gitcount
