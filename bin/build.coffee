@@ -12,7 +12,7 @@ args = karg """
 
 build
     compile  . ? compile sources  . = true
-    install  . ? run npm install  . = false
+    install  . ? run npm install  . = true
     rebuild  . ? electron-rebuild . = true
     package  . ? package project  . = true
     prune    . ? prune package    . = true . -P
