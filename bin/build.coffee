@@ -62,6 +62,9 @@ try
         icn = slash.win() and 'ico' or 'icns'
         cmd = "#{exe} . --overwrite --icon=img/app.#{icn}"
         exec 'package' cmd
+        # exe = slash.resolve './node_modules/.bin/electron-osx-sign'
+        # cmd = "#{exe} #{exepth}"
+        # exec 'sign' cmd
     if args.prune
         if args.verbose then klog kolor.y4('prune')
         for d in ['inno' 'x64']
