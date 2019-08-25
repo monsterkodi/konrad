@@ -46,7 +46,7 @@ build = (sourceFile, opt, cb) ->
     # 000   000  000       000   000  000   000
     # 000   000  00000000  000   000  0000000
 
-    fs.readFile sourceFile, 'utf8', (err, sourceText) ->
+    fs.readFile sourceFile, 'utf8' (err, sourceText) ->
 
         if err 
             kerror "can't read #{sourceFile}"
@@ -65,20 +65,18 @@ build = (sourceFile, opt, cb) ->
             cb()
             return
         
-        fs.readFile targetFile, 'utf8', (err, targetData) ->
-
-            if err or compiled != targetData
-
-                writeCompiled sourceFile, targetFile, compiled, cb
-
-            else
-                klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
-                if args.verbose
-                    log pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
-                stat = fs.statSync sourceFile
-                ttat = fs.statSync targetFile
-                if stat.mtime.getTime() != ttat.mtime.getTime()
-                    fs.utimesSync slash.resolve(targetFile), stat.atime, stat.mtime
+        slash.logErrors = true
+        
+        if not slash.fileExists(targetFile) or slash.readText(targetFile) != compiled
+            writeCompiled sourceFile, targetFile, compiled, cb
+        else
+            klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
+            if args.verbose
+                log pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
+            stat = fs.statSync sourceFile
+            ttat = fs.statSync targetFile
+            if stat.mtime.getTime() != ttat.mtime.getTime()
+                fs.utimesSync slash.resolve(targetFile), stat.atime, stat.mtime
 
 # 000   000  00000000   000  000000000  00000000
 # 000 0 000  000   000  000     000     000
@@ -87,23 +85,17 @@ build = (sourceFile, opt, cb) ->
 # 00     00  000   000  000     000     00000000
 
 writeCompiled = (sourceFile, targetFile, compiled, cb) ->
-
-    # klog 'writeCompiled:', sourceFile, targetFile if args.debug
     
-    fs.ensureDir slash.dir(targetFile), (err) ->
+    fs.mkdirSync slash.dir(targetFile), recursive:true
 
-        if err then return kerror "can't create output  directory#{slash.dir(targetFile)}"
+    slash.writeText targetFile, compiled
 
-        slash.writeText targetFile, compiled, (file) ->
-            if empty file
-                # return kerror "can't write text file #{targetFile}!".bold.red
-                return
-            if not args.quiet
-                if args.verbose
-                    klog pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
-                else
-                    klog pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
+    if not args.quiet
+        if args.verbose
+            klog pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
+        else
+            klog pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 
-            cb? sourceFile, targetFile
+    cb? sourceFile, targetFile
 
 module.exports = build
