@@ -29,6 +29,7 @@ args = args.init """
     build      make package                                 false  -m
     diff       show git diff of file/dir                    false
     status     show git status of file/dir                  false
+    fetch      fetch and show git status of file/dir        false
     commit     add, commit and push [msg]                   false
     update     update npm packages                          false
     publish    bump, commit & publish to npm [msg]          false
@@ -119,9 +120,9 @@ if args.info
 
 if args.diff
     
-    args.status  = true
+    args.status = true
 
-if args.status
+if args.status or args.fetch
     
     optall = _.defaults opt, all: true
     gitcount = 0
@@ -131,7 +132,10 @@ if args.status
         if not targetFile
 
             if slash.basename(sourceFile) == '.git'
-                status.gitStatus sourceFile
+                if args.fetch
+                    status.gitFetch sourceFile
+                else
+                    status.gitStatus sourceFile
                 gitcount += 1
 
             if slash.dirExists sourceFile
@@ -148,7 +152,10 @@ if args.status
         while gitup.base
             dotGit = slash.join gitup.dir, '.git'
             if fs.existsSync dotGit
-                status.gitStatus dotGit
+                if args.fetch
+                    status.gitFetch dotGit
+                else
+                    status.gitStatus dotGit
                 break
             gitup = slash.parse gitup.dir
             

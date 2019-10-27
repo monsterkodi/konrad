@@ -17,6 +17,13 @@ gitStatus = (sourceFile) ->
 
     gitDir = slash.dir sourceFile
     git = require('simple-git') gitDir
+    # doFetch git, gitDir, sourceFile
+    doStatus git, gitDir, sourceFile
+    
+gitFetch = (sourceFile) ->
+
+    gitDir = slash.dir sourceFile
+    git = require('simple-git') gitDir
     doFetch git, gitDir, sourceFile
     
 # 00000000  00000000  000000000   0000000  000   000  
@@ -39,7 +46,7 @@ doFetch = (git, gitDir, sourceFile) ->
 # 0000000      000     000   000     000      0000000   0000000   
 
 doStatus = (git, gitDir, sourceFile) ->
-        
+     
     git.status (err,status) ->
 
         if err then return kerror "git status error #{err}"
@@ -141,3 +148,4 @@ doStatus = (git, gitDir, sourceFile) ->
 
 module.exports = 
     gitStatus:gitStatus
+    gitFetch:gitFetch
