@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ args, colors, slash, noon, fs, klog, _ } = require 'kxk'
+{ colors, slash, args, noon, fs, klog, _ } = require 'kxk'
 
 argDir = require './argdir'
 build  = require './build'
@@ -40,7 +40,7 @@ args = args.init """
     logtime    log with time                                true
     """, pkg:pkg
 
-actions = ['bump' 'build' 'commit' 'publish' 'update' 'test' 'watch' 'run' 'rebuild' 'info' 'status' 'diff']
+actions = ['bump' 'build' 'commit' 'publish' 'update' 'test' 'watch' 'run' 'rebuild' 'info' 'status' 'fetch' 'diff']
 
 if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
     args.run = true # makes run the default action if no other action is set
@@ -122,6 +122,8 @@ if args.diff
     
     args.status = true
 
+# klog args
+    
 if args.status or args.fetch
     
     optall = _.defaults opt, all: true
