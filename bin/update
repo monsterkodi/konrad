@@ -2,6 +2,10 @@
 DIR=`dirname $0`
 BIN=$DIR/../node_modules/.bin
 
+if [ ! -e $BIN/colorcat ]; then
+    BIN=$DIR/../../.bin
+fi
+
 if [ ! -e package.json ]; then
     echo '[ERROR] no package.json!' | $BIN/colorcat -p "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy"     
     exit 1
