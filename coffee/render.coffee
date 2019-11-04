@@ -19,7 +19,7 @@ render = (rgs) ->
             plain  += ' '
             result += ' '
 
-        cfunc = switch rng.value
+        cfunc = switch rng.clss
             when 'text'
                 colors.white.dim
             when 'comment'

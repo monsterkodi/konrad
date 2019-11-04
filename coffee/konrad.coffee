@@ -203,4 +203,6 @@ for cmd in ['update' 'bump' 'build' 'commit' 'publish' 'test']
 
 if args.watch
     watch wlk, opt
+else if cmd in ['build']
+    process.exit 0
     

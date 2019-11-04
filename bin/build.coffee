@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000    
 ###
 
-{ slash, noon, childp, karg, klog, kolor, os, fs } = require 'kxk'
+{ childp, kolor, slash, karg, args, os, fs, klog } = require 'kxk'
 
 args = karg """
 
@@ -39,7 +39,7 @@ try
         else '' # linux?
     exepth = slash.resolve slash.join bindir, "#{pkg.name}#{exeext}"
     
-    if args.verbose then klog kolor.y3('cwd      '), kolor.w2 pkgdir
+    if args.verbose then klog kolor.y3('cwd      '), kolor.w2 slash.tilde pkgdir
     process.chdir pkgdir
 
     if slash.dirExists bindir
@@ -83,11 +83,11 @@ try
                     klog 'no path to prune' dir
                 
     if args.start
-        if args.verbose then klog kolor.y3('start     '), exepth
+        if args.verbose then klog kolor.y3('start     '), kolor.w2 slash.tilde exepth
         if os.platform() == 'win32'
-            childp.spawn exepth, encoding:'utf8' shell:true detached:true stdio:'inherit'
+            childp.spawn exepth, encoding:'utf8' detached:true
         else
-            childp.spawn "open", [exepth], encoding:'utf8' shell:true detached:true stdio:'inherit'
+            childp.spawn "open" [exepth], encoding:'utf8' shell:true detached:true stdio:'inherit'
     process.exit 0
         
 catch err
