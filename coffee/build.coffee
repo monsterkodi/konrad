@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000  
 ###
 
-{ args, slash, atomic, empty, fs, colors, klog, kerror, _ } = require 'kxk'
+{ colors, slash, empty, args, fs, kerror, klog, _ } = require 'kxk'
 
 pretty  = require './pretty'
 config  = require './config'
@@ -92,9 +92,9 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
     if not args.quiet
         if args.verbose
-            klog pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
+            log pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
         else
-            klog pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
+            log pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 
     cb? sourceFile, targetFile
 
