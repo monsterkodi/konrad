@@ -25,12 +25,12 @@ walk = (wlk, opt, cb) ->
             p = slash.path wp
             o = config.obj p, opt
 
-            if should 'ignore', o, p
+            if should 'ignore' o, p
                 cb p if opt.all
                 @ignore wp
                 return
 
-            if should 'ignore', wlk, p
+            if should 'ignore' wlk, p
                 cb p if opt.all
                 @ignore wp
                 return

@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ win, udp, slash, elem, stopEvent, keyinfo, childp, scheme, prefs, post, popup, noon, klog, $, _ } = require 'kxk'
+{ post, slash, elem, win, udp, $, _ } = require 'kxk'
 
 w = new win
     dir:    __dirname
@@ -22,7 +22,6 @@ w = new win
 
 koSend = null
 openFile = (f) ->
-    klog 'openFile', f
     if not koSend then koSend = new udp port:9779
     koSend.send slash.resolve f
 
@@ -36,11 +35,11 @@ tasks = {}
 
 showOverlay = ->
 
-    img = slash.fileUrl slash.join __dirname, '..', 'img', 'about.png'
+    img = slash.fileUrl slash.join __dirname, '..' 'img' 'about.png'
     $("#overlay")?.remove() 
     overlay = elem id:'overlay'
-    overlay.appendChild elem 'img', class:'info', src:img
-    overlay.addEventListener 'click', (event) -> event.target.remove()
+    overlay.appendChild elem 'img' class:'info' src:img
+    overlay.addEventListener 'click' (event) -> event.target.remove()
     $("main").appendChild overlay
 
 fadeOverlay = ->
@@ -150,7 +149,7 @@ onMessage = (s) ->
 
     [time, msg] = s.split ' 🔧 '
 
-    div = taskDiv time: time, message: msg, key: 'msg', icon: '🔧'
+    div = taskDiv time: time, message: msg, key:'msg' icon:'🔧'
     
 # 00000000  00000000   00000000    0000000   00000000
 # 000       000   000  000   000  000   000  000   000
@@ -209,7 +208,7 @@ onFile = (s, html) ->
     [time, file] = s.split ' 🔺 '
     file = file.trim()
 
-    div = taskDiv time:time, file:file, key:file.split(':')[0], icon:'🔺', fileHtml:fileHtml
+    div = taskDiv time:time, file:file, key:file.split(':')[0], icon:'🔺' fileHtml:fileHtml
 
     div.scrollIntoViewIfNeeded()
     
@@ -219,7 +218,7 @@ onFile = (s, html) ->
 # 000 0 000  000       000  0000  000   000  000   000  000          000     000  000   000  000  0000  
 # 000   000  00000000  000   000   0000000   000   000   0000000     000     000   0000000   000   000  
 
-post.on 'menuAction', (action) ->
+post.on 'menuAction' (action) ->
     
     switch action
         when 'Clear'      then post.emit 'clearLog'

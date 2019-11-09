@@ -6,11 +6,11 @@
  0000000   0000000   000   000  000       000   0000000 
 ###
 
-{ klog, slash, fs, noon, _ } = require 'kxk'
+{ slash, noon, _ } = require 'kxk'
 
 path = (key, p, opt) ->
     
-    while slash.dir(p).length and slash.dir(p) not in ['.', '/']
+    while slash.dir(p).length and slash.dir(p) not in ['.' '/']
         p = slash.dir p
         if slash.fileExists slash.join p, '.konrad.noon'
             o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt
@@ -20,7 +20,7 @@ path = (key, p, opt) ->
 
 obj = (p, opt={}) ->
     
-    while slash.dir(p).length and slash.dir(p) not in ['.', '/'] and not /^\w\:\/$/.test slash.dir(p)
+    while slash.dir(p).length and slash.dir(p) not in ['.' '/'] and not /^\w\:\/$/.test slash.dir(p)
         p = slash.dir p
         if slash.fileExists slash.join p, '.konrad.noon'
             o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt

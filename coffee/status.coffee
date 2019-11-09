@@ -6,9 +6,9 @@
 0000000      000     000   000     000      0000000   0000000 
 ###
 
-{ colors, childp, slash, valid, args, kerror, klog, _ } = require 'kxk'
+{ childp, colors, slash, valid, klor, args, kerror, klog, _ } = require 'kxk'
 
-klor   = require 'klor'
+klor.kolor.globalize()
 render = require './render'
 argDir = require './argdir'
 pretty = require './pretty'
@@ -17,7 +17,6 @@ gitStatus = (sourceFile) ->
 
     gitDir = slash.dir sourceFile
     git = require('simple-git') gitDir
-    # doFetch git, gitDir, sourceFile
     doStatus git, gitDir, sourceFile
     
 gitFetch = (sourceFile) ->
@@ -56,14 +55,28 @@ doStatus = (git, gitDir, sourceFile) ->
         fileLists = _.omitBy status, (v,k) -> _.isEmpty v
 
         for k,v of fileLists
+
+            l =
+                not_added:  w2
+                conflicted: y1
+                modified:   g1
+                created:    m1
+                deleted:    r1
             
             m =
-                not_added:  colors.gray
-                conflicted: colors.yellow
-                modified:   colors.green
-                created:    colors.magenta
-                deleted:    colors.red
+                not_added:  w5
+                conflicted: y4
+                modified:   g4
+                created:    m4
+                deleted:    r4
 
+            b =
+                not_added:  W1
+                conflicted: Y5
+                modified:   G1
+                created:    M4
+                deleted:    R5
+                
             if k in _.keys m
                 
                 for f in status[k] ? []
@@ -77,15 +90,15 @@ doStatus = (git, gitDir, sourceFile) ->
                                 filtered = false
                                 break
                         if filtered
-                            klog 'filtered', slash.resolve(a), f, slash.join(gitDir, f) if args.debug
+                            klog 'filtered' slash.resolve(a), f, slash.join(gitDir, f) if args.debug
                             continue
 
-                    prfx    = "    "
-                    prfx    = m[k] "█   "
+                    prfx    = b[k] "  "
+                    prfx   += reset '  '
                     gitFile = slash.join gitDir, f
                     relPath = slash.relative gitFile, '.'
-                    lame    = slash.extname(gitFile) == '.js' or slash.basename(gitFile) == 'package.json'
-                    change  = prfx + pretty.filePath(relPath, (lame and m[k].dim or m[k]))
+                    lame    = slash.ext(gitFile) in ['js' 'json']
+                    change  = prfx + pretty.filePath(relPath, (lame and l[k] or m[k]))
                     
                     # 0000000    000  00000000  00000000  
                     # 000   000  000  000       000       
@@ -93,7 +106,7 @@ doStatus = (git, gitDir, sourceFile) ->
                     # 000   000  000  000       000       
                     # 0000000    000  000       000       
                     
-                    if k in ['modified', 'created'] and args.diff
+                    if k in ['modified' 'created'] and args.diff
                         
                         continue if lame
                         
@@ -101,18 +114,18 @@ doStatus = (git, gitDir, sourceFile) ->
                             encoding: 'utf8'
                             cwd: gitDir
                         diff = ""
-                        c = '▼'.bold.blue
+                        c = klor.kolor.w1 '●'
                         start = 0
                         for l in res.split /\r?\n/
                             ls = klor.kolor.strip l
-                            if ls.substr(0,4) in ['+++ ', '--- '] then
+                            if ls.substr(0,4) in ['+++ ' '--- '] then
                             else if ls[0] == '@'
                                 split = ls.split '@@'
                                 split = split[1].split ' +'
                                 split = split[1].split ','
                                 start = parseInt split[0]
                                 diff += ("\n"+c)
-                                c = '●'.blue.dim
+                                c = klor.kolor.w1 '●' #.blue.dim
                             else if ls[0] == '+'
                                 diff += "\n "
                                 start++
@@ -123,7 +136,7 @@ doStatus = (git, gitDir, sourceFile) ->
                                     diff += ls.substr(1).white
                             else if ls[0] == '-'
                                 diff += "\n " + (ls.substr(1)).gray.bold.dim
-                        change += diff+"\n"+"▲".blue.dim if diff.length
+                        change += diff+"\n"+klor.kolor.w1 '●' if diff.length
                         
                     changes.push change
 

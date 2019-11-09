@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000    
 ###
 
-{ childp, kolor, slash, karg, args, os, fs, klog } = require 'kxk'
+{ childp, kolor, slash, karg, args, os, fs } = require 'kxk'
 
 args = karg """
 
@@ -24,7 +24,7 @@ config = require '../js/config'
 
 exec = (msg, cmd, opt={shell:true encoding:'utf8'}) ->
     
-    if args.verbose then klog kolor.y5 msg
+    if args.verbose then log kolor.y5 msg
     childp.execSync cmd, opt
 
 try    
@@ -39,7 +39,7 @@ try
         else '' # linux?
     exepth = slash.resolve slash.join bindir, "#{pkg.name}#{exeext}"
     
-    if args.verbose then klog kolor.y3('cwd      '), kolor.w2 slash.tilde pkgdir
+    if args.verbose then log kolor.y3('cwd      '), kolor.w2 slash.tilde pkgdir
     process.chdir pkgdir
 
     if slash.dirExists bindir
@@ -51,7 +51,7 @@ try
                 childp.execSync "killall #{pkg.name}"
             catch
                 1
-        if args.verbose then klog kolor.y4('remove   '), kolor.b6 bindir
+        if args.verbose then log kolor.y4('remove   '), kolor.b6 bindir
         fs.removeSync bindir
     
     if args.compile then exec 'compile' 'node ' + slash.join __dirname, 'konrad'
@@ -66,24 +66,24 @@ try
         # cmd = "#{exe} #{exepth}"
         # exec 'sign' cmd
     if args.prune
-        if args.verbose then klog kolor.y4('prune')
+        if args.verbose then log kolor.y4('prune')
         for d in ['inno' 'x64']
             dir = slash.join bindir, 'resources' 'app' d # needs to change on mac
             if slash.dirExists dir
-                if args.verbose then klog kolor.r5 dir
+                if args.verbose then log kolor.r5 dir
                 fs.removeSync dir
                 
         if prune = config.obj(pkgpth)?.build?.prune
             for d in prune        
                 dir = slash.join bindir, 'resources' 'app' d # needs to change on mac
                 if slash.dirExists dir
-                    if args.verbose then klog kolor.r5 dir
+                    if args.verbose then log kolor.r5 dir
                     fs.removeSync dir
                 else
-                    klog 'no path to prune' dir
+                    log 'no path to prune' dir
                 
     if args.start
-        if args.verbose then klog kolor.y3('start     '), kolor.w2 slash.tilde exepth
+        if args.verbose then log kolor.y3('start     '), kolor.w2 slash.tilde exepth
         if os.platform() == 'win32'
             childp.spawn exepth, encoding:'utf8' detached:true
         else

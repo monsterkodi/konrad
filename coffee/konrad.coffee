@@ -170,7 +170,7 @@ if args.status or args.fetch
 if args.run or args.rebuild
 
     if not args.quiet
-        klog '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+        log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
     
     walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile

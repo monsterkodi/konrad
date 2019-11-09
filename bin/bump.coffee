@@ -6,7 +6,7 @@
 0000000     0000000   000   000  000        
 ###
 
-{ slash, karg, noon, fs } = require 'kxk'
+{ slash, karg, args, noon, fs } = require 'kxk'
 
 semver = require 'semver'
 args   = karg """
@@ -17,7 +17,7 @@ bump
 """
 
 if args.semver? and not semver.valid args.semver
-    if args.semver in ['major', 'minor', 'patch']
+    if args.semver in ['major' 'minor' 'patch']
         args.increment = args.semver
         delete args.semver
     else
