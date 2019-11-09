@@ -1,13 +1,16 @@
-([\/\S]+\/)(\S+)          . y  . yf
-(npm ERR!)\s(\S+[\s:])(.*)    . s: . xd . rf
-(->)(\s+\S+)              . xds:►  . x
-(\S+)(@)([\d\.]+\S*)      . g  . z . m 
-(\S+)(@)([\d\.]+)\s(\S+)  . yf . z . mf . s:
-[\s┬─├└│\+\-\`]+            xd 
-[\/+]                        d
-(npm notice)              . xd 
-(===)([^=]+)(===)         . md . mf . md
-([^:]+)(:)                . xd . xd
-(\d+)(\.)(\d+)\s          . gb . gd . gb
-(\d+)(\.)(\d+)(\.)(\d+)   . rb . rd . rb
-# (\d*)(\.?)(\d*)([k]B)    . xd . xd . xd. xd
+([\/\S]+\/)(\S+)            . y  . yf
+(npm ERR!)\s(\S+[\s:])(.*)  . s: . xd . rf
+(->)(\s+\S+)                . xds:►  . x
+(\S+)(@)([\d\.]+\S*)        . g  . z . m 
+(\S+)(@)([\d\.]+)\s(\S+)    . yf . z . mf . s:
+[\s┬─├└│\+\-\`]+              xd 
+[\/+]                          d
+(npm notice)                . s: 
+([\d\.]*k?B)                . xd
+(===)([^=]+)(===)           . md . mf . md
+([^:]+)(:)                  . xd . xd
+(\d+)(\.)(\d+)\s            . gb . gd . gb
+(\d+)(\.)(\d+)(\.)(\d+)     . rb . rd . rb
+(up to date in.*)           . s:
+(.* packages? in [\d\.]+s)  . s:
+# (\d*)(\.?)(\d*)([k]B)     . xd . xd . xd. xd

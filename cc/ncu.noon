@@ -1,5 +1,8 @@
 The following.+$   rfs: ◯
 (All dependencies match.+$)   . |gfs: ☉ ∘|
+(Run npm install to install new versions.)  . s:
+(All dependencies match.*)  . s:👍
+(Upgrading\s.*)  . s:🔱
 (Upgraded )(.+\/)(\w+)(\/package.json)  . g . x . gf . x
 ^(\s\S+\s*)(..\d+\.\d+\.\d+)(\s*\S\s*)(..\d+\.\d+\.\d+)  . g . x . xf . gf  
 [\>\=\^\~\.\/]  d

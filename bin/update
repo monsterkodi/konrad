@@ -12,6 +12,6 @@ if [ ! -e package.json ]; then
 fi
 
 npm prune           | $BIN/colorcat -sP $DIR/../cc/npm.noon
-$BIN/ncu -u --packageFile package.json 
+$BIN/ncu -u --packageFile package.json | $BIN/colorcat -sP $DIR/../cc/ncu.noon
 npm install         | $BIN/colorcat -sP $DIR/../cc/npm.noon
 npm ls -s --depth 0 | $BIN/colorcat -sP $DIR/../cc/npm.noon
