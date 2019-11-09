@@ -6,7 +6,7 @@
 000   000   0000000   000   000   0000000  000   000  0000000  
 ###
 
-{ args, slash, childp, os, klog, _ } = require 'kxk'
+{ childp, slash, args, klog } = require 'kxk'
 
 pretty      = require './pretty'
 konradError = require './error'
@@ -27,7 +27,7 @@ runcmd = (cmd, cmdargs, cwd) ->
         commandargs = ''
         if process.argv.length > 3 and cmd == 'make'
             commandargs = ' ' + process.argv.slice(3).join ' '
-            klog "make command", process.argv, command + commandargs
+            klog "make command" process.argv, command + commandargs
             
         childp.execSync command + commandargs,
             cwd:      cwd
