@@ -179,7 +179,7 @@ if args.run or args.rebuild
                 src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
                 tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
                 if not args.quiet
-                    klog src, "🔧  ", tgt
+                    log src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
                     if not targetFile
                         process.exit 1
@@ -196,7 +196,7 @@ for cmd in ['update' 'bump' 'build' 'commit' 'publish' 'test']
             process.exit 1
             break
 
-        klog '🔧  done'.gray if args.verbose
+        log '🔧  done'.gray if args.verbose
 
         if args.arguments and cmd in ['commit' 'bump' 'build']
             break
