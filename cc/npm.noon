@@ -14,5 +14,6 @@
 ([\d\.]*k?B)                . xd
 (===)([^=]+)(===)           . md . mf . md
 ([^:]+)(:)                  . xd . xd
+(shasum:.+|integrity:.+)    . :s
 (\d+)(\.)(\d+)\s            . gb . gd . gb
 (\d+)(\.)(\d+)(\.)(\d+)     . rb . rd . rb
