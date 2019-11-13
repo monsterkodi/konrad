@@ -1,6 +1,7 @@
 (up to date in.*)                               . xd
 (added|removed)(.* package.*\d+s)               . xd . xd
-(npm notice|found \d+ vulnerabilities)          . s:
+(shasum:.+|integrity:.+)                        . s:
+(npm notice|found .+ vulnerabilities|.*npm audit.*)  . s:
 (.*node postinstall \|\| echo.*)                . s:
 (.* exists; testing|.*inary is fine; exiting)   . s:
 ([>] .*)                                        . xd
@@ -11,9 +12,8 @@
 (\S+)(@)([\d\.]+)\s(\S+)    . yf . z . mf . s:
 [\s┬─├└│\+\-\`]+              xd 
 [\/+]                          d
-([\d\.]*k?B)                . xd
+([\d\.]*[kM]?B)             . xd
 (===)([^=]+)(===)           . md . mf . md
 ([^:]+)(:)                  . xd . xd
-(shasum:.+|integrity:.+)    . :s
 (\d+)(\.)(\d+)\s            . gb . gd . gb
 (\d+)(\.)(\d+)(\.)(\d+)     . rb . rd . rb
