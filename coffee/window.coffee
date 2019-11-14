@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ post, slash, elem, win, udp, $, _ } = require 'kxk'
+{ post, slash, title, elem, win, udp, klog, $, _ } = require 'kxk'
 
 w = new win
     dir:    __dirname
@@ -36,16 +36,16 @@ tasks = {}
 showOverlay = ->
 
     img = slash.fileUrl slash.join __dirname, '..' 'img' 'about.png'
-    $("#overlay")?.remove() 
+    $('#overlay')?.remove() 
     overlay = elem id:'overlay'
     overlay.appendChild elem 'img' class:'info' src:img
     overlay.addEventListener 'click' (event) -> event.target.remove()
-    $("main").appendChild overlay
+    $('main').appendChild overlay
 
 fadeOverlay = ->
     
     showOverlay()
-    $("#overlay").classList.add 'fade-in'
+    $('#overlay').classList.add 'fade-in'
     
 # 00000000    0000000    0000000  000000000  
 # 000   000  000   000  000          000     
@@ -53,9 +53,9 @@ fadeOverlay = ->
 # 000        000   000       000     000     
 # 000         0000000   0000000      000     
 
-post.on "konradExit" (s) ->
-post.on "konradError" (s, html) -> onError s, html
-post.on "konradOutput" (s, html) ->
+post.on 'konradExit' (s) ->
+post.on 'konradError' (s, html) -> onError s, html
+post.on 'konradOutput' (s, html) ->
     
     if      / 😡 /.test s then onError   s, html
     if      / 🔺 /.test s then onFile    s, html
@@ -63,16 +63,24 @@ post.on "konradOutput" (s, html) ->
     else if / 🔧 /.test s then onMessage s, html
     else log 'konrad' s
 
-post.on "konradVersion", (s) ->
-    
+post.on 'konradVersion' (s) ->
+
+    klog process.argv[0]
     split = s.trim().split /\s+/
+    title = ['path']
+    if process.argv[0].endsWith('Electron Helper') or process.argv[0].endsWith('electron.exe')
+        title = ['version' 'path']
     window.titlebar.setTitle  
-        title: process.argv[0].endsWith('Electron Helper') and ['version' 'path'] or ['path']
+        title:title
         pkg:
             version: split[0]
             path: slash.tilde split[2]
     
-post.on "clearLog", -> $("main").innerHTML = ''; tasks = {}; showOverlay(); 
+post.on 'clearLog' -> 
+    
+    $('main').innerHTML = '' 
+    tasks = {} 
+    showOverlay()
     
 # 000000000   0000000    0000000  000   000  0000000    000  000   000  
 #    000     000   000  000       000  000   000   000  000  000   000  
@@ -124,13 +132,12 @@ onTask = (s) ->
     
     source = slash.tilde source.trim()
     target = slash.tilde target.trim()
-    # source = slash.tilde(source).trim()
     div = taskDiv time: time, file: source, key: source, icon: '👍'
     div.scrollIntoViewIfNeeded()
     
     if slash.dir(target).startsWith slash.tilde slash.dir __filename
         if slash.file(target) == 'window.js' or slash.ext(target) in ['css', 'html']
-            post.emit 'menuAction', 'Reload'
+            post.emit 'menuAction' 'Reload'
         else if slash.file(target) == 'main.js'
             post.toMain 'Restart'
         else
@@ -149,7 +156,7 @@ onMessage = (s) ->
 
     [time, msg] = s.split ' 🔧 '
 
-    div = taskDiv time: time, message: msg, key:'msg' icon:'🔧'
+    div = taskDiv time:time, message:msg, key:'msg' icon:'🔧'
     
 # 00000000  00000000   00000000    0000000   00000000
 # 000       000   000  000   000  000   000  000   000

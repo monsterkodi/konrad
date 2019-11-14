@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, colors, prefs, first, post, noon, os, slash, childp, udp, klog, kstr, fs } = require 'kxk'
+{ post, colors, childp, prefs, slash, valid, args, noon, kstr, app, udp, win, klog } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -176,9 +176,9 @@ setRootDir = ->
         title:      'Open'
         properties: ['openDirectory']
 
-    electron.dialog.showOpenDialog opts, (dirs) =>
-        if dir = first dirs
-            startKonrad dir
+    electron.dialog.showOpenDialog(opts).then (result) =>
+        if not result.canceled and valid result.filePaths
+            startKonrad result.filePaths[0]
 
 post.on 'setRootDir' setRootDir
 
