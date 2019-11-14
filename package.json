@@ -28,7 +28,7 @@
   "dependencies": {
     "colorcat": "^2.13.0",
     "koffee": "^1.4.0",
-    "kxk": "^0.366.0",
+    "kxk": "^0.370.0",
     "mkpath": "^1.0.0",
     "npm-check-updates": "^3.2.1",
     "pug": "^2.0.4",
