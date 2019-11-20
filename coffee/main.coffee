@@ -221,8 +221,8 @@ highlight = ->
         setTimeout unhighlight, 1000
     else
         
-        app.tray.setHighlightMode 'always'
-        unhighlight = -> app.tray.setHighlightMode 'never'
+        app.tray.setHighlightMode? 'always'
+        unhighlight = -> app.tray.setHighlightMode? 'never'
         setTimeout unhighlight, 1000
 
 post.on 'highlight' highlight

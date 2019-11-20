@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.170.0",
+  "version": "0.172.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -39,9 +39,9 @@
     "tree-kill": "^1.2.1"
   },
   "devDependencies": {
-    "electron": "^7.1.1",
+    "electron": "^7.1.2",
     "electron-packager": "^14.1.0",
-    "electron-rebuild": "^1.8.6",
+    "electron-rebuild": "^1.8.8",
     "node-abi": "^2.12.0"
   }
 }
