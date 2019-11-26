@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000    
 ###
 
-{ childp, kolor, slash, karg, args, os, fs } = require 'kxk'
+{ childp, kolor, slash, karg, args, os, fs, kerror } = require 'kxk'
 
 args = karg """
 
@@ -43,14 +43,14 @@ try
     process.chdir pkgdir
 
     if slash.dirExists bindir
-        if os.platform() == 'win32'
-            if r = exec 'quit' "wxw terminate \"#{slash.file exepth}\""
-                childp.execSync "sleep 1"
-        else
-            try
+        try
+            if os.platform() == 'win32'
+                if exec 'quit' "taskkill /f /im #{slash.file exepth} /t"
+                    childp.execSync 'sleep 2'
+            else
                 childp.execSync "killall #{pkg.name}"
-            catch
-                1
+        catch err
+            kerror "kill failed: #{err}"
         if args.verbose then log kolor.y4('remove   '), kolor.b6 bindir
         fs.removeSync bindir
     
@@ -62,9 +62,6 @@ try
         icn = slash.win() and 'ico' or 'icns'
         cmd = "#{exe} . --overwrite --icon=img/app.#{icn}"
         exec 'package' cmd
-        # exe = slash.resolve './node_modules/.bin/electron-osx-sign'
-        # cmd = "#{exe} #{exepth}"
-        # exec 'sign' cmd
     if args.prune
         if args.verbose then log kolor.y4('prune')
         for d in ['inno' 'x64']
