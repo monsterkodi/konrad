@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.173.0",
+  "version": "0.174.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -27,21 +27,21 @@
   "homepage": "https://github.com/monsterkodi/konrad",
   "dependencies": {
     "colorcat": "^2.13.0",
-    "koffee": "^1.4.0",
-    "kxk": "^0.370.0",
+    "koffee": "^1.7.0",
+    "kxk": "^0.376.0",
     "mkpath": "^1.0.0",
-    "npm-check-updates": "^3.2.1",
+    "npm-check-updates": "^4.0.1",
     "pug": "^2.0.4",
     "sds": "^3.2.0",
-    "semver": "^6.3.0",
-    "simple-git": "^1.126.0",
+    "semver": "^7.1.1",
+    "simple-git": "^1.131.0",
     "stylus": "^0.54.7",
-    "tree-kill": "^1.2.1"
+    "tree-kill": "^1.2.2"
   },
   "devDependencies": {
-    "electron": "^7.1.2",
-    "electron-packager": "^14.1.0",
-    "electron-rebuild": "^1.8.8",
-    "node-abi": "^2.12.0"
+    "electron": "^7.1.11",
+    "electron-packager": "^14.2.0",
+    "electron-rebuild": "^1.10.0",
+    "node-abi": "^2.13.0"
   }
 }
