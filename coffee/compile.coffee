@@ -6,7 +6,7 @@
  0000000   0000000   000   000  000        000  0000000  00000000  
 ###
 
-{ noon, slash, klog, fs, _ } = require 'kxk'
+{ klog, noon, slash } = require 'kxk'
 
 koffee = require 'koffee'
 pretty = require './pretty'
@@ -25,10 +25,9 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                         bare:          true
                         sourceMap:     true
                         inlineMap:     true
-                        sourceRoot:    '.'
                         filename:      slash.relative sourceFile, slash.dir targetFile
+                        generatedFile: targetFile
                         feature: header: true
-                        generatedFile: slash.file targetFile
                         
                     jsMap = koffee.compile sourceText, mapcfg
                     jsMap.js
