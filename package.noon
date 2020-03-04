@@ -1,6 +1,6 @@
 name            konrad
 description     builds my stuff
-version         0.175.0
+version         0.176.0
 main            js/index.js
 bin
                 konrad  ./bin/konrad
@@ -22,7 +22,7 @@ homepage        https://github.com/monsterkodi/konrad
 dependencies
                 colorcat        ^2.13.0
                 koffee          ^1.11.0
-                kxk             ^0.378.0
+                kxk             ^0.380.0
                 mkpath          ^1.0.0
                 npm-check-updates  ^4.0.3
                 pug             ^2.0.4
