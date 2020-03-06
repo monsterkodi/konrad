@@ -27,12 +27,13 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                         inlineMap:     true
                         filename:      slash.relative sourceFile, slash.dir targetFile
                         generatedFile: targetFile
+                        metalog:       'klog'
                         feature: header: true
                         
                     jsMap = koffee.compile sourceText, mapcfg
                     jsMap.js
                 else
-                    koffee.compile sourceText, bare:true, source:sourceFile
+                    koffee.compile sourceText, bare:true, source:sourceFile, metalog:'klog'
 
             when 'styl'
                 stylus = require 'stylus'
@@ -45,7 +46,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 
             when 'json'
                 
-                noon.stringify JSON.parse(sourceText), ext: '.'+cfg[ext].ext, indent: '  ', maxalign: 16
+                noon.stringify JSON.parse(sourceText), ext: '.'+cfg[ext].ext, indent:'  ' maxalign: 16
                 
             when 'noon'
                 
@@ -56,7 +57,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
     catch e
         pos = e.location? and ':'+(e.location.first_line+1)+':'+e.location.first_column or ''
         klog pretty.time(), "🔺  #{pretty.filePath slash.tilde sourceFile}#{pos}"
-        konradError 'compile error', e.message, sourceFile
+        konradError 'compile error' e.message, sourceFile
         return null
         
     compiled
