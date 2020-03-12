@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ post, slash, title, elem, win, udp, klog, $, _ } = require 'kxk'
+{ $, _, elem, klog, post, slash, title, udp, win } = require 'kxk'
 
 w = new win
     dir:    __dirname
@@ -35,17 +35,12 @@ tasks = {}
 
 showOverlay = ->
 
-    img = slash.fileUrl slash.join __dirname, '..' 'img' 'about.png'
+    img = slash.fileUrl slash.join __dirname, '..' 'img' 'konrad_idle.png'
     $('#overlay')?.remove() 
     overlay = elem id:'overlay'
     overlay.appendChild elem 'img' class:'info' src:img
     overlay.addEventListener 'click' (event) -> event.target.remove()
     $('main').appendChild overlay
-
-fadeOverlay = ->
-    
-    showOverlay()
-    $('#overlay').classList.add 'fade-in'
     
 # 00000000    0000000    0000000  000000000  
 # 000   000  000   000  000          000     
@@ -144,8 +139,6 @@ onTask = (s) ->
             # klog "should restart konrad '#{slash.file(target)}'", target, slash.path __filename
             post.toMain 'Restart konrad'
     
-    fadeOverlay()
-
 # 00     00  00000000   0000000   0000000   0000000    0000000   00000000
 # 000   000  000       000       000       000   000  000        000
 # 000000000  0000000   0000000   0000000   000000000  000  0000  0000000
