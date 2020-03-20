@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ colors, slash, args, noon, fs, klog, _ } = require 'kxk'
+{ _, args, colors, fs, klog, noon, slash, watch } = require 'kxk'
 
 argDir = require './argdir'
 build  = require './build'
@@ -67,10 +67,8 @@ pug     . ext html . replace .. /pug/ /js/
 # 000   0000000   000   000   0000000   000   000  00000000
 
 opt.ignore = [
-    /gulpfile.coffee$/
-    /Gruntfile.coffee$/
-    /\.konrad\.noon$/
-    /menu.noon$/
+    /.*\.konrad\.noon$/
+    /.*menu\.noon$/
 ]
 
 wlk =
