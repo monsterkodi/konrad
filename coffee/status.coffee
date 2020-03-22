@@ -6,7 +6,7 @@
 0000000      000     000   000     000      0000000   0000000 
 ###
 
-{ childp, colors, slash, valid, klor, args, kerror, klog, _ } = require 'kxk'
+{ _, args, childp, kerror, klog, klor, slash, valid } = require 'kxk'
 
 klor.kolor.globalize()
 render = require './render'
@@ -114,7 +114,7 @@ doStatus = (git, gitDir, sourceFile) ->
                             encoding: 'utf8'
                             cwd: gitDir
                         diff = ""
-                        c = klor.kolor.w1 '●'
+                        c = w1 '●'
                         start = 0
                         for l in res.split /\r?\n/
                             ls = klor.kolor.strip l
@@ -125,7 +125,7 @@ doStatus = (git, gitDir, sourceFile) ->
                                 split = split[1].split ','
                                 start = parseInt split[0]
                                 diff += ("\n"+c)
-                                c = klor.kolor.w1 '●' #.blue.dim
+                                c = w1 '●'
                             else if ls[0] == '+'
                                 diff += "\n "
                                 start++
@@ -133,29 +133,29 @@ doStatus = (git, gitDir, sourceFile) ->
                                 if valid rgs
                                     diff += render rgs
                                 else
-                                    diff += ls.substr(1).white
+                                    diff += w8 ls.substr(1)
                             else if ls[0] == '-'
-                                diff += "\n " + (ls.substr(1)).gray.bold.dim
-                        change += diff+"\n"+klor.kolor.w1 '●' if diff.length
+                                diff += "\n " + w3 ls.substr(1)
+                        change += diff+"\n"+w1 '●' if diff.length
                         
                     changes.push change
 
         relPath = slash.relative gitDir, '.'
         relPath = '.' if relPath == ''
-        gitPath = pretty.filePath relPath, colors.white
+        gitPath = pretty.filePath relPath, w8
 
         aheadBehind = () ->
             if status.ahead or status.behind
                 st = ''
                 if status.ahead
-                    st += "▲ #{status.ahead}".gray.bold.bgBlack
+                    st += w3 "▲ #{status.ahead}"
                 if status.behind
-                    st += "▼ #{status.behind}".red.bold.bgBlack
+                    st += r5 "▼ #{status.behind}"
                 st = _.padEnd st, 4
             else
                 ''
 
-        log ('    ' + gitPath + ' ').bgBlue + ' ' + aheadBehind()
+        log B5('    ' + gitPath + ' ') + ' ' + aheadBehind()
         for c in changes
             log c
 
