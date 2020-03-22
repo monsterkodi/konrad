@@ -20,7 +20,6 @@ path = (key, p, opt) ->
 
 obj = (p, opt={}) ->
     
-    # klog 'obj' p, opt
     while slash.dir(p).length and slash.dir(p) not in ['.' '/'] and not /^\w\:\/$/.test slash.dir(p)
         p = slash.dir p
         if slash.fileExists slash.join p, '.konrad.noon'
@@ -31,9 +30,7 @@ obj = (p, opt={}) ->
                         new RegExp i
                     else 
                         i
-            # klog 'konrad.noon' o
             return o
-    klog 'no obj' p
     opt
     
 module.exports = 
