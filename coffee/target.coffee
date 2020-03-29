@@ -6,7 +6,7 @@
    000     000   000  000   000   0000000   00000000     000   
 ###
 
-{ args, slash, colors, klog, _ } = require 'kxk'
+{ _, args, klog, kolor, slash } = require 'kxk'
 
 argDir = require './argdir'
 config = require './config'
@@ -23,7 +23,7 @@ target = (sourceFile, opt) ->
             if new RegExp(r).test(sourceFile)
                 matches = true
         if not matches
-            klog pretty.filePath slash.relative(sourceFile, argDir()), colors.blue if args.debug
+            klog pretty.filePath slash.relative(sourceFile, argDir()), kolor.blue if args.debug
             return
 
     targetFile = _.clone sourceFile

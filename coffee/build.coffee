@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000  
 ###
 
-{ colors, slash, empty, args, fs, kerror, klog, _ } = require 'kxk'
+{ _, args, empty, fs, kerror, klog, kolor, slash } = require 'kxk'
 
 pretty  = require './pretty'
 config  = require './config'
@@ -29,7 +29,7 @@ build = (sourceFile, opt, cb) ->
         out  = cfg.browserify.out
         pwd  = config.path 'browserify', slash.resolve(sourceFile), opt
         if out != slash.relative sourceFile, pwd
-            klog pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), colors.blue)
+            klog pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), kolor.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), kolor.blue)
             runcmd 'browserify', "#{main} #{out}", pwd
         return
 
@@ -70,7 +70,7 @@ build = (sourceFile, opt, cb) ->
         if not slash.fileExists(targetFile) or slash.readText(targetFile) != compiled
             writeCompiled sourceFile, targetFile, compiled, cb
         else
-            klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.gray) if args.debug
+            klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
             if args.verbose
                 log pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
             stat = fs.statSync sourceFile

@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ _, args, colors, fs, klog, noon, slash, watch } = require 'kxk'
+{ _, args, fs, klog, kolor, noon, slash, watch } = require 'kxk'
 
 argDir = require './argdir'
 build  = require './build'
@@ -112,9 +112,9 @@ if args.info
 
         log "source: #{sourceFile} target: #{targetFile}" if args.verbose
         if dirty sourceFile, targetFile
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.red)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), kolor.red)
         else if args.verbose
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), colors.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), kolor.green)
 
 if args.diff
     
@@ -174,8 +174,8 @@ if args.run or args.rebuild
         if targetFile
             isDirty = dirty sourceFile, targetFile
             if args.rebuild or isDirty
-                src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and colors.red or colors.yellow)
-                tgt = pretty.filePath(slash.relative(targetFile, argDir()), colors.green)
+                src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty and kolor.red or kolor.yellow)
+                tgt = pretty.filePath(slash.relative(targetFile, argDir()), kolor.green)
                 if not args.quiet
                     log src, "🔧  ", tgt
                 build sourceFile, opt, (sourceFile, targetFile) ->
@@ -183,7 +183,7 @@ if args.run or args.rebuild
                         process.exit 1
                     o = config.obj targetFile, opt
                     if should 'browserify', o, targetFile
-                        console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), colors.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), colors.blue)
+                        console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), kolor.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), kolor.blue)
                         runcmd 'browserify' "#{o.browserify.main} #{o.browserify.out}" config.path 'browserify', slash.resolve(targetFile), opt
 
 for cmd in ['update' 'bump' 'build' 'commit' 'publish' 'test']

@@ -6,7 +6,7 @@
 000   000  00000000  000   000  0000000    00000000  000   000
 ###
 
-{ colors } = require 'kxk'
+{ kolor } = require 'kxk'
 
 render = (rgs) ->
 
@@ -21,29 +21,29 @@ render = (rgs) ->
 
         cfunc = switch rng.clss
             when 'text'
-                colors.white.dim
+                (s) -> kolor.white kolor.dim s
             when 'comment'
-                colors.gray.bold
+                (s) -> kolor.gray kolor.bold s
             when 'punct comment' 'punct'
-                colors.gray.dim
+                (s) -> kolor.gray kolor.dim s
             when 'function' 'function call' 'string single' 'string double' 'dir text' 'property'
-                colors.green.bold
+                (s) -> kolor.green kolor.bold s
             when 'punct function call' 'punct string single' 'punct string double' 'punct dir'
-                colors.green.dim
+                (s) -> kolor.green kolor.dim s
             when 'obj' 'class' 'git file'
-                colors.yellow.bold
+                (s) -> kolor.yellow kolor.bold s
             when 'punct git' 'git ext'
-                colors.yellow.dim
+                (s) -> kolor.yellow kolor.dim s
             when 'number' 'keyword' 'url domain'
-                colors.blue.bold
+                (s) -> kolor.blue kolor.bold s
             when 'require' 'punct property'
-                colors.green.dim
+                (s) -> kolor.green kolor.dim s
             when 'punct semver' 'url protocol' 'punct url'
-                colors.magenta
+                (s) -> kolor.magenta s
             when 'semver' 'dir url tld' 'punct url tld'
-                colors.magenta.bold
+                (s) -> kolor.magenta kolor.bold s
             else
-                colors.white.bold
+                (s) -> kolor.white kolor.bold s
             
         plain  += rng.match
         result += cfunc rng.match

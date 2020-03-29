@@ -6,7 +6,7 @@
 00     00  000   000     000      0000000  000   000
 ###
 
-{ colors, slash, args, klog, _ } = require 'kxk'
+{ _, args, klog, kolor, slash } = require 'kxk'
 
 pretty = require './pretty'
 should = require './should'
@@ -27,7 +27,7 @@ Watch = (wlk, opt) ->
 
         d = args.arguments[0] ? '.'
         v = "#{pkg.version} ●".dim.gray
-        klog pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), colors.white}".gray
+        klog pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), kolor.white}".gray
         watcher = require('kxk').watch.watch d, recursive:true, ignore:wlk.ignore
         watcher.on 'change' (info) -> 
             if pass info.path then cb slash.path info.path
