@@ -6,7 +6,7 @@
  0000000   0000000   000   000  000       000   0000000 
 ###
 
-{ _, klog, noon, slash } = require 'kxk'
+{ _, noon, slash } = require 'kxk'
 
 path = (key, p, opt) ->
     
