@@ -6,7 +6,7 @@
 00000000  000   000  000   000   0000000   000   000
 ###
 
-{ klog, kstr, kolor } = require 'kxk'
+{ klog, kolor, kstr, title } = require 'kxk'
 
 pretty = require './pretty'
 
@@ -17,7 +17,7 @@ konradError = (title, msg, srcFile) ->
     else
         msgsplit = msg.split '\n'
         stripped = msgsplit.map (s) -> kstr.stripAnsi s
-        klog "#{title.bold.yellow} #{kolor.r5 stripped}"
+        klog "#{kolor.bold kolor.yellow title} #{kolor.r5 stripped}"
     false
     
 module.exports = konradError

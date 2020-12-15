@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp, valid, win } = require 'kxk'
+{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -77,7 +77,7 @@ startKonrad = (rootDir) ->
     if '/usr/local/bin' not in process.env.PATH.split ':'
         process.env.PATH = process.env.PATH + ':/usr/local/bin'
     
-    konrad = childp.spawn 'node' [path, '-w' '-v'],
+    konrad = childp.spawn 'node' ['--trace-warnings' path, '-w' '-v'],
         cwd:      rootDir
         shell:    true
         env:      process.env

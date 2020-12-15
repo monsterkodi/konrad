@@ -6,7 +6,7 @@
 0000000     0000000   000   000  000        
 ###
 
-{ slash, karg, args, noon, fs } = require 'kxk'
+{ args, fs, karg, kolor, noon, slash } = require 'kxk'
 
 semver = require 'semver'
 args   = karg """
@@ -29,7 +29,7 @@ pack         = require file
 oldversion   = pack.version
 oldversion   = "0.0.0" if not semver.valid oldversion
 pack.version = args.semver ? semver.inc oldversion, args.increment
-log slash.basename(slash.dir file).green, oldversion.gray, '►'.gray.dim, pack.version.bold.red
+log kolor.green(slash.basename(slash.dir file)), kolor.gray(oldversion), kolor.dim(kolor.gray('►')), kolor.red(kolor.bold(pack.version))
 
 # write package.json
 fs.writeFileSync file, JSON.stringify(pack, null, '  '), encoding: 'utf8'

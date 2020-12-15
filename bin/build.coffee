@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000    
 ###
 
-{ childp, kolor, slash, karg, args, os, fs, kerror } = require 'kxk'
+{ args, childp, fs, karg, kerror, kolor, os, slash } = require 'kxk'
 
 args = karg """
 
@@ -54,7 +54,7 @@ try
         if args.verbose then log kolor.y4('remove   '), kolor.b6 bindir
         fs.removeSync bindir
     
-    if args.compile then exec 'compile' 'node ' + slash.join __dirname, 'konrad'
+    if args.compile then exec 'compile' 'node --trace-warnings ' + slash.join __dirname, 'konrad'
     if args.install then exec 'install' 'npm install'
     if args.rebuild then exec 'rebuild' slash.resolve './node_modules/.bin/electron-rebuild'
     if args.package

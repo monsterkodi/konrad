@@ -26,8 +26,8 @@ Watch = (wlk, opt) ->
         pass = (p) -> slash.ext(p) in _.keys(opt)
 
         d = args.arguments[0] ? '.'
-        v = "#{pkg.version} ●".dim.gray
-        klog pretty.time(), "👁   #{v} #{pretty.filePath slash.resolve(d), kolor.white}".gray
+        v = kolor.dim.gray "#{pkg.version} ●"
+        klog pretty.time(), kolor.gray "👁   #{v} #{pretty.filePath slash.resolve(d), kolor.white}"
         watcher = require('kxk').watch.watch d, recursive:true, ignore:wlk.ignore
         watcher.on 'change' (info) -> 
             if pass info.path then cb slash.path info.path

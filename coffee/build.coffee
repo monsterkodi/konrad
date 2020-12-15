@@ -70,9 +70,9 @@ build = (sourceFile, opt, cb) ->
         if not slash.fileExists(targetFile) or slash.readText(targetFile) != compiled
             writeCompiled sourceFile, targetFile, compiled, cb
         else
-            klog 'unchanged'.green.dim, pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
+            klog kolor.green.dim('unchanged'), pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
             if args.verbose
-                log pretty.time(), "👍  #{pretty.filePath sourceFile} #{'►'.bold.yellow} #{pretty.filePath targetFile}"
+                log pretty.time(), "👍  #{pretty.filePath sourceFile} #{kolor.bold(kolor.yellow('►'))} #{pretty.filePath targetFile}"
             stat = fs.statSync sourceFile
             ttat = fs.statSync targetFile
             if stat.mtime.getTime() != ttat.mtime.getTime()
@@ -92,7 +92,7 @@ writeCompiled = (sourceFile, targetFile, compiled, cb) ->
 
     if not args.quiet
         if args.verbose
-            log pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{'►'.bold.yellow} #{pretty.filePath slash.tilde targetFile}"
+            log pretty.time(), "👍   #{pretty.filePath slash.tilde sourceFile} #{kolor.bold(kolor.yellow('►'))} #{pretty.filePath slash.tilde targetFile}"
         else
             log pretty.time(), "👍   #{pretty.filePath slash.tilde targetFile}"
 

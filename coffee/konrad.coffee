@@ -106,15 +106,15 @@ dirty = (sourceFile, targetFile) ->
 
 if args.info
 
-    log '○● info'.gray
+    log kolor.gray '○● info'
 
     walk wlk, opt, (sourceFile, targetFile) ->
 
         log "source: #{sourceFile} target: #{targetFile}" if args.verbose
         if dirty sourceFile, targetFile
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.yellow), " ► ".red.dim, pretty.filePath(slash.relative(targetFile, argDir()), kolor.red)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.yellow), kolor.red.dim(" ► "), pretty.filePath(slash.relative(targetFile, argDir()), kolor.red)
         else if args.verbose
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.magenta), " ► ".green.dim, pretty.filePath(slash.relative(targetFile, argDir()), kolor.green)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.magenta), kolor.green.dim(" ► "), pretty.filePath(slash.relative(targetFile, argDir()), kolor.green)
 
 if args.diff
     
@@ -168,7 +168,7 @@ if args.status or args.fetch
 if args.run or args.rebuild
 
     if not args.quiet
-        log '🔧🔧 ' + (args.rebuild and 'rebuild' or 'run').gray
+        log '🔧🔧 ' + kolor.gray(args.rebuild and 'rebuild' or 'run')
     
     walk wlk, opt, (sourceFile, targetFile) ->
         if targetFile
@@ -194,7 +194,7 @@ for cmd in ['update' 'bump' 'build' 'commit' 'publish' 'test']
             process.exit 1
             break
 
-        log '🔧  done'.gray if args.verbose
+        log kolor.gray '🔧  done' if args.verbose
 
         if args.arguments and cmd in ['commit' 'bump' 'build']
             break

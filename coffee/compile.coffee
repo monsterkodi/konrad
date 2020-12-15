@@ -6,7 +6,7 @@
  0000000   0000000   000   000  000        000  0000000  00000000  
 ###
 
-{ klog, noon, slash } = require 'kxk'
+{ klog, kolor, noon, slash } = require 'kxk'
 
 koffee = require 'koffee'
 pretty = require './pretty'
@@ -52,7 +52,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 
                 noon.stringify noon.parse(sourceText), ext: '.'+cfg[ext].ext, indent: '  '
             else
-                throw "don't know how to build files with extname .#{ext.bold}!".yellow
+                throw kolor.yellow("don't know how to build files with extname .#{kolor.bold(ext)}!")
 
     catch e
         pos = e.location? and ':'+(e.location.first_line+1)+':'+e.location.first_column or ''

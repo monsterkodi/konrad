@@ -12,15 +12,15 @@ pretty = {}
 
 pretty.path = (p, c=kolor.yellow) ->
     
-    p.split('/').map((n) -> c(n)).join c('/').dim
+    p.split('/').map((n) -> c(n)).join kolor.dim(c('/'))
 
 pretty.ext = (e, c=kolor.yellow) ->
     
-    if e.length then c('.').dim + c(e.substr 1) else ''
+    if e.length then kolor.dim(c('.')) + c(e.substr 1) else ''
     
 pretty.file = (f, c=kolor.yellow) ->
     
-    "#{c(slash.base(f)).bold}#{pretty.ext slash.extname(f), c}"
+    "#{kolor.bold(c(slash.base(f)))}#{pretty.ext slash.extname(f), c}"
     
 pretty.filePath = (p, c=kolor.yellow) ->
     

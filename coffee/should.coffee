@@ -26,7 +26,7 @@ should = (k, o, p) ->
         r = i
         r = new RegExp i if _.isString i
         if r?.test? p
-            klog pretty.filePath(slash.relative(p, argDir()), kolor.gray), 'should '.blue+k.bold.blue if args.debug
+            klog pretty.filePath(slash.relative(p, argDir()), kolor.gray), kolor.blue('should ') + kolor.bold(kolor.blue(k)) if args.debug
             return true
     false
 
