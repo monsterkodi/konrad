@@ -70,7 +70,7 @@ build = (sourceFile, opt, cb) ->
         if not slash.fileExists(targetFile) or slash.readText(targetFile) != compiled
             writeCompiled sourceFile, targetFile, compiled, cb
         else
-            klog kolor.green.dim('unchanged'), pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
+            klog kolor.green(kolor.dim('unchanged')), pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
             if args.verbose
                 log pretty.time(), "👍  #{pretty.filePath sourceFile} #{kolor.bold(kolor.yellow('►'))} #{pretty.filePath targetFile}"
             stat = fs.statSync sourceFile
