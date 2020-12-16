@@ -1,2 +1,2 @@
-#!/usr/local/bin/node --trace-warnings
+#!/usr/bin/env node
 require('../js/konrad');

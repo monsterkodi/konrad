@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.185.0",
+  "version": "0.186.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -28,11 +28,11 @@
   "dependencies": {
     "colorcat": "^2.13.0",
     "koffee": "^1.14.0",
-    "kxk": "^0.396.0",
+    "kxk": "^0.397.0",
     "mkpath": "^1.0.0",
     "npm-check-updates": "^10.2.5",
     "pug": "^3.0.0",
-    "sds": "^3.2.0",
+    "sds": "^4.0.0",
     "semver": "^7.3.4",
     "simple-git": "^2.29.0",
     "stylus": "^0.54.8",

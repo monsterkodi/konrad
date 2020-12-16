@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp } = require 'kxk'
+{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp, valid } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -129,9 +129,9 @@ startKonrad = (rootDir) ->
 
 createWindow = (msg, s, h) ->
     
-    app.createWindow (win) ->
-        klog 'winReadyToShow' win.id, msg #, s, h
-        post.toWin win.id, msg, s, h
+    app.createWindow (w) ->
+        klog 'winReadyToShow' w.id, msg
+        post.toWin w.id, msg, s, h
                 
 #  0000000   000   000  000  000000000  
 # 000   000  000   000  000     000     
