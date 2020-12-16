@@ -6,7 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp, valid, win } = require 'kxk'
+{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'

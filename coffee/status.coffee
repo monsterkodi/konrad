@@ -114,7 +114,7 @@ doStatus = (git, gitDir, sourceFile) ->
                             encoding: 'utf8'
                             cwd: gitDir
                         diff = ""
-                        c = w1 '●'
+                        c = w2 '●'
                         start = 0
                         for l in res.split /\r?\n/
                             ls = klor.kolor.strip l
@@ -125,7 +125,7 @@ doStatus = (git, gitDir, sourceFile) ->
                                 split = split[1].split ','
                                 start = parseInt split[0]
                                 diff += ("\n"+c)
-                                c = w1 '●'
+                                c = w2 '●'
                             else if ls[0] == '+'
                                 diff += "\n "
                                 start++
@@ -136,7 +136,7 @@ doStatus = (git, gitDir, sourceFile) ->
                                     diff += w8 ls.substr(1)
                             else if ls[0] == '-'
                                 diff += "\n " + w3 ls.substr(1)
-                        change += diff+"\n"+w1 '●' if diff.length
+                        change += diff+"\n"+w2 '●' if diff.length
                         
                     changes.push change
 
