@@ -112,9 +112,9 @@ if args.info
 
         log "source: #{sourceFile} target: #{targetFile}" if args.verbose
         if dirty sourceFile, targetFile
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.yellow), kolor.red.dim(" ► "), pretty.filePath(slash.relative(targetFile, argDir()), kolor.red)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.yellow), kolor.red(kolor.dim(" ► ")), pretty.filePath(slash.relative(targetFile, argDir()), kolor.red)
         else if args.verbose
-            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.magenta), kolor.green.dim(" ► "), pretty.filePath(slash.relative(targetFile, argDir()), kolor.green)
+            log pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.magenta), kolor.green(kolor.dim(" ► ")), pretty.filePath(slash.relative(targetFile, argDir()), kolor.green)
 
 if args.diff
     
