@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
+
 DIR=`dirname $0`
 BIN=$DIR/../node_modules/.bin
 
 MOCHA=`$BIN/sds scripts.mocha`
 TEST=`$BIN/sds scripts.test`
+
 if [ -n "$MOCHA" ] ; then
     if ! npm run mocha --silent; then
         exit 1
     fi
 elif [ -n "$TEST" ] ; then
-    if ! npm test --silent; then
+    if ! npm run test --silent; then
         exit 1
     fi
 else

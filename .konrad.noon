@@ -1,3 +1,5 @@
 ignore
     /konrad-win32-x64/
     menu.noon
+    .konrad.noon
+    package-lock.json
