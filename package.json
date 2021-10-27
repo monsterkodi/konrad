@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.187.0",
+  "version": "0.188.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -28,20 +28,20 @@
   "dependencies": {
     "colorcat": "^2.13.0",
     "koffee": "^1.14.0",
-    "kxk": "^0.397.0",
+    "kxk": "^0.406.0",
     "mkpath": "^1.0.0",
-    "npm-check-updates": "^10.2.5",
-    "pug": "^3.0.0",
-    "sds": "^4.0.0",
-    "semver": "^7.3.4",
-    "simple-git": "^2.29.0",
-    "stylus": "^0.54.8",
+    "npm-check-updates": "^11.8.5",
+    "pug": "^3.0.2",
+    "sds": "^4.4.0",
+    "semver": "^7.3.5",
+    "simple-git": "^2.47.0",
+    "stylus": "^0.55.0",
     "tree-kill": "^1.2.2"
   },
   "devDependencies": {
-    "electron": "^11.1.0",
-    "electron-packager": "^15.2.0",
-    "electron-rebuild": "^2.3.4",
-    "node-abi": "^2.19.3"
+    "electron": "^15.3.0",
+    "electron-packager": "^15.4.0",
+    "electron-rebuild": "^3.2.3",
+    "node-abi": "^3.3.0"
   }
 }

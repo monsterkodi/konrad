@@ -31,7 +31,7 @@ try
     pkgdir = slash.pkg process.cwd()
     pkgpth = slash.join pkgdir, 'package.json'
     pkg    = require pkgpth
-    bindir = pkg.name + '-' + "#{os.platform()}-x64"
+    bindir = pkg.name + '-' + "#{os.platform()}-#{os.arch()}"
     
     exeext = switch os.platform()
         when 'win32'  then '.exe'

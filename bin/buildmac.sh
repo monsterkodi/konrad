@@ -15,7 +15,7 @@ if rm -rf konrad-darwin-x64; then
     if $BIN/electron-packager . --overwrite --icon=img/app.icns --ignore=$IGNORE; then
     
         rm -rf /Applications/konrad.app
-        cp -R konrad-darwin-x64/konrad.app /Applications
+        cp -R konrad-darwin-arm64/konrad.app /Applications
         
         open /Applications/konrad.app 
     fi

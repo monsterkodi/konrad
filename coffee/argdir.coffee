@@ -6,9 +6,9 @@
 000   000  000   000   0000000   0000000    000  000   000
 ###
 
-{ args, slash } = require 'kxk'
-
 argDir = ->
+    
+    { args, slash } = require 'kxk'
     
     if args.arguments[0]
         d = slash.resolve args.arguments[0]

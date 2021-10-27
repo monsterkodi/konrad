@@ -76,6 +76,9 @@ startKonrad = (rootDir) ->
     
     if '/usr/local/bin' not in process.env.PATH.split ':'
         process.env.PATH = process.env.PATH + ':/usr/local/bin'
+        
+    if '/opt/homebrew/bin' not in process.env.PATH.split ':'
+        process.env.PATH = process.env.PATH + ':/opt/homebrew/bin'
     
     konrad = childp.spawn 'node' ['--trace-warnings' path, '-w' '-v'],
         cwd:      rootDir
