@@ -101,7 +101,7 @@ startKonrad = (rootDir) ->
         klog data.toString()
         s = kstr.stripAnsi data.toString()
         konradSend 'error' s
-        if app.win?
+        if app?.win?
             post.toWins 'konradError' "konrad error: #{s}" kstr.ansi2html data.toString()
         else
             createWindow 'konradError' "konrad error: #{s}" kstr.ansi2html data.toString()

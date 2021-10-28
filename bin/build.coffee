@@ -13,8 +13,7 @@ args = karg """
 build
     compile  . ? compile sources  . = true
     install  . ? run npm install  . = true
-    rebuild  . ? electron-rebuild . = true
-    package  . ? package project  . = true
+    builder  . ? electron-builder . = true
     prune    . ? prune package    . = true . -P
     start    . ? run executable   . = true
     verbose                       . = true
@@ -31,7 +30,7 @@ try
     pkgdir = slash.pkg process.cwd()
     pkgpth = slash.join pkgdir, 'package.json'
     pkg    = require pkgpth
-    bindir = pkg.name + '-' + "#{os.platform()}-#{os.arch()}"
+    bindir = "dist/mac-#{os.arch()}/" # fix needed for windows!
     
     exeext = switch os.platform()
         when 'win32'  then '.exe'
@@ -56,12 +55,7 @@ try
     
     if args.compile then exec 'compile' 'node --trace-warnings ' + slash.join __dirname, 'konrad'
     if args.install then exec 'install' 'npm install'
-    if args.rebuild then exec 'rebuild' slash.resolve './node_modules/.bin/electron-rebuild'
-    if args.package
-        exe = slash.resolve './node_modules/.bin/electron-packager'
-        icn = slash.win() and 'ico' or 'icns'
-        cmd = "#{exe} . --overwrite --icon=img/app.#{icn}"
-        exec 'package' cmd
+    if args.builder then exec 'builder' "#{slash.resolve('./node_modules/.bin/electron-builder')} --dir"
     if args.prune
         if args.verbose then log kolor.y4('prune')
         for d in ['inno' 'x64']
