@@ -8,7 +8,7 @@ fi
 if [ $# -eq 0 ]; then
     MSG="v`$BIN/sds version`"
     if [ -z "$MSG" ]; then
-        echo '[ERROR] no commit message and no package.json!' | $BIN/colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
+        echo '[ERROR] no commit message and no sds version!' | $BIN/colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
         exit 1
     fi
 else
