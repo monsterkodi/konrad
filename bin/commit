@@ -6,11 +6,6 @@ else
     BIN=$DIR/../node_modules/.bin
 fi
 if [ $# -eq 0 ]; then
-    # if [ -e package.json ]; then
-    #     MSG="v`$BIN/sds version package.json`"
-    # elif [ -e ../package.json ]; then
-    #     MSG="v`$BIN/sds version ../package.json`"
-    # fi
     MSG="v`$BIN/sds version`"
     if [ -z "$MSG" ]; then
         echo '[ERROR] no commit message and no package.json!' | $BIN/colorcat -sp "(\[)(.+)(\])(.*) . Rfr . Rfy . Rfr . fy" 
