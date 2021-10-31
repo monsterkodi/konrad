@@ -11,12 +11,13 @@
 args = karg """
 
 build
-    compile  . ? compile sources  . = true
-    install  . ? run npm install  . = true
-    builder  . ? electron-builder . = true
-    prune    . ? prune package    . = true . -P
-    start    . ? run executable   . = true
-    verbose                       . = true
+    compile  . ? compile sources        . = true
+    npminst  . ? run npm install        . = true
+    builder  . ? electron-builder       . = true
+    install  . ? move to /Applications  . = true
+    prune    . ? prune package          . = true . -P
+    start    . ? run executable         . = true
+    verbose                             . = true
 """
 
 config = require '../js/config'
@@ -54,8 +55,15 @@ try
         fs.removeSync bindir
     
     if args.compile then exec 'compile' 'node --trace-warnings ' + slash.join __dirname, 'konrad'
-    if args.install then exec 'install' 'npm install'
+    if args.npminst then exec 'npminst' 'npm install'
     if args.builder then exec 'builder' "#{slash.resolve('./node_modules/.bin/electron-builder')} --dir"
+    if args.install
+        log kolor.y5 'install'
+        appDir = "/Applications/#{slash.file exepth}"
+        if slash.dirExists appDir
+            # klog "remove #{appDir}"
+            fs.removeSync appDir
+        fs.moveSync exepth, appDir
     if args.prune
         if args.verbose then log kolor.y4('prune')
         for d in ['inno' 'x64']
@@ -74,6 +82,7 @@ try
                     log 'no path to prune' dir
                 
     if args.start
+        if args.install then exepth = appDir
         if args.verbose then log kolor.y3('start     '), kolor.w2 slash.tilde exepth
         if os.platform() == 'win32'
             childp.spawn exepth, encoding:'utf8' detached:true
