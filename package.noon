@@ -26,7 +26,7 @@ homepage        https://github.com/monsterkodi/konrad
 dependencies
                 colorcat        ^2.13.0
                 koffee          ^1.14.0
-                kxk             ^0.414.0
+                kxk             ^0.418.0
                 mkpath          ^1.0.0
                 npm-check-updates  ^11.8.5
                 pug             ^3.0.2
