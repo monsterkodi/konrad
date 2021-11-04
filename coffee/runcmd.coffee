@@ -18,7 +18,12 @@ runcmd = (cmd, cmdargs, cwd) ->
             if valid(cmdargs) and 0 < cmdargs.indexOf('.coffee')
                 cmdpath = 'mocha -c --require koffee/js/register '
             else
-                cmdpath = 'npm run test'
+                pkg = require slash.join cwd, 'package.json'
+                if not pkg?.scripts?.test
+                    klog 'no test script'
+                    return true
+                else
+                    cmdpath = 'npm run test'
         else
             cmdpath = slash.resolve slash.join __dirname, '..' 'bin' cmd
         
@@ -28,7 +33,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             command = "#{cmdpath} #{cmdargs}"
                         
         if args.verbose
-            klog "🔧 " kolor.gray(cmd), pretty.filePath(command)
+            klog " 🔧 " kolor.gray(cmd), pretty.filePath(command)
                 
         result = childp.execSync command,
             cwd:      cwd

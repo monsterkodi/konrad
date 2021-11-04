@@ -186,11 +186,11 @@ if args.run or args.rebuild
                     if should 'browserify', o, targetFile
                         console.log pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), kolor.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), kolor.blue)
                         runcmd 'browserify' "#{o.browserify.main} #{o.browserify.out}" config.path 'browserify', slash.resolve(targetFile), opt
-
-for cmd in ['update' 'bump' 'build' 'commit' 'publish' 'test']
+                        
+for cmd in ['update' 'bump' 'build' 'test' 'commit' 'publish']
 
     if args[cmd]
-
+        
         if not runcmd cmd, args.arguments.join(' '), process.cwd()
             process.exit 1
             break

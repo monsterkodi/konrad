@@ -6,7 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ post, slash, title, elem, win, udp, klog, $, _ } = require 'kxk'
+{ $, _, elem, post, slash, title, udp, win } = require 'kxk'
 
 w = new win
     dir:    __dirname
@@ -61,11 +61,11 @@ post.on 'konradOutput' (s, html) ->
     if      / 🔺 /.test s then onFile    s, html
     else if / 👍 /.test s then onTask    s, html
     else if / 🔧 /.test s then onMessage s, html
-    else log 'konrad' s
+    # else log 'konrad' s
 
 post.on 'konradVersion' (s) ->
 
-    klog process.argv[0]
+    # klog process.argv[0]
     split = s.trim().split /\s+/
     title = ['path']
     if process.argv[0].endsWith('Electron Helper') or process.argv[0].endsWith('electron.exe')
