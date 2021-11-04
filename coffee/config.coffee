@@ -23,13 +23,15 @@ obj = (p, opt={}) ->
     while slash.dir(p).length and slash.dir(p) not in ['.' '/'] and not /^\w\:\/$/.test slash.dir(p)
         p = slash.dir p
         if slash.fileExists slash.join p, '.konrad.noon'
-            o = _.defaultsDeep noon.load(slash.join p, '.konrad.noon'), opt
-            if o.ignore?.map?
-                o.ignore = o.ignore.map (i) ->
-                    if _.isString i
-                        new RegExp i
-                    else 
-                        i
+
+            dotkonrad = noon.load slash.join p, '.konrad.noon'
+            ignore = [].concat dotkonrad.ignore, opt.ignore
+            o = _.defaultsDeep dotkonrad, opt
+            o.ignore = ignore.map (i) ->
+                if _.isString i
+                    new RegExp i
+                else 
+                    i
             return o
     opt
     

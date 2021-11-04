@@ -12,7 +12,7 @@ pretty = require './pretty'
 
 konradError = (title, msg, srcFile) ->
     
-    if title == 'compile error'
+    if title == 'compile error' or 'command error'
         klog pretty.time(), "😡  #{msg}"
     else
         msgsplit = msg.split '\n'

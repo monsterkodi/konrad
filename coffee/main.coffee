@@ -68,7 +68,7 @@ startKonrad = (rootDir) ->
     prefs.set 'rootDir' rootDir
 
     if konrad?
-        klog 'killing konrad' konrad.pid
+        log 'killing konrad' konrad.pid
         treekill = require 'tree-kill'
         treekill konrad.pid
 
@@ -79,7 +79,7 @@ startKonrad = (rootDir) ->
         
     if '/opt/homebrew/bin' not in process.env.PATH.split ':'
         process.env.PATH = process.env.PATH + ':/opt/homebrew/bin'
-    
+
     konrad = childp.spawn 'node' ['--trace-warnings' path, '-w' '-v'],
         cwd:      rootDir
         shell:    true
@@ -88,7 +88,7 @@ startKonrad = (rootDir) ->
         
     konrad.on 'exit' (code, signal) -> 
         
-        klog 'konrad.on exit' code, signal
+        log 'konrad.on exit' code, signal
         konradSend 'exit'
 
     konrad.on 'close' (code, signal) ->
@@ -98,8 +98,8 @@ startKonrad = (rootDir) ->
 
     konrad.stderr.on 'data' (data) ->
         
-        klog data.toString()
         s = kstr.stripAnsi data.toString()
+                
         konradSend 'error' s
         if app?.win?
             post.toWins 'konradError' "konrad error: #{s}" kstr.ansi2html data.toString()
@@ -115,12 +115,13 @@ startKonrad = (rootDir) ->
             post.toWins 'konradVersion' konradVersion
             konradSend 'version' konradVersion
         else if app.win?
-            post.toWins 'konradOutput' s, kstr.ansi2html data.toString()
             if / 😡 /.test s
+                post.toWins 'konradError' s, kstr.ansi2html data.toString()
                 konradSend 'error' s
                 app.win.show()
                 app.win.focus()
             else
+                post.toWins 'konradOutput' s, kstr.ansi2html data.toString()
                 konradSend 'output' s
         else
             if / 😡 /.test s
@@ -133,7 +134,6 @@ startKonrad = (rootDir) ->
 createWindow = (msg, s, h) ->
     
     app.createWindow (w) ->
-        klog 'winReadyToShow' w.id, msg
         post.toWin w.id, msg, s, h
                 
 #  0000000   000   000  000  000000000  

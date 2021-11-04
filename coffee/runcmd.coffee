@@ -6,7 +6,7 @@
 000   000   0000000   000   000   0000000  000   000  0000000  
 ###
 
-{ childp, slash, args, klog } = require 'kxk'
+{ args, childp, klog, kolor, slash, valid } = require 'kxk'
 
 pretty      = require './pretty'
 konradError = require './error'
@@ -14,26 +14,29 @@ konradError = require './error'
 runcmd = (cmd, cmdargs, cwd) ->
     
     try
-        cmdpath = slash.resolve slash.join __dirname, '..' 'bin' cmd
+        if cmd == 'test'
+            if valid(cmdargs) and 0 < cmdargs.indexOf('.coffee')
+                cmdpath = 'mocha -c --require koffee/js/register '
+            else
+                cmdpath = 'npm run test'
+        else
+            cmdpath = slash.resolve slash.join __dirname, '..' 'bin' cmd
         
         if slash.win()
             command = "bash #{cmdpath} #{cmdargs}"
         else
             command = "#{cmdpath} #{cmdargs}"
-            
+                        
         if args.verbose
-            klog "🔧 " cmd.gray.reset, pretty.filePath(cmdpath), cmdargs.green
-
-        commandargs = ''
-        if process.argv.length > 3 and cmd == 'make'
-            commandargs = ' ' + process.argv.slice(3).join ' '
-            klog "make command" process.argv, command + commandargs
-            
-        childp.execSync command + commandargs,
+            klog "🔧 " kolor.gray(cmd), pretty.filePath(command)
+                
+        result = childp.execSync command,
             cwd:      cwd
             encoding: 'utf8'
             stdio:    'inherit'
             shell:    true
+            
+        # klog 'result' result
           
     catch err
         konradError "command error" "command '#{cmd}' (#{command}) #{'failed!'}" err
