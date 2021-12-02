@@ -12,6 +12,13 @@ argDir = require './argdir'
 config = require './config'
 pretty = require './pretty'
 
+swapLastDir = (path, from, to) ->
+    
+    lastIndex = path.lastIndexOf "/#{from}/"
+    if lastIndex >= 0
+        path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
+    path
+
 target = (sourceFile, opt) ->
     
     ext = slash.ext sourceFile
@@ -31,6 +38,10 @@ target = (sourceFile, opt) ->
     if o[ext]?.replace?
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
+            
+    if o[ext]?.out?
+        targetFile = swapLastDir targetFile, ext, o[ext]?.out
+        log 'konrad out' sourceFile, targetFile
 
     return if not o[ext]?.ext?
 

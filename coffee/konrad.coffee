@@ -53,7 +53,7 @@ if not actions.map((a) -> args[a]).reduce((acc,val) -> acc or val)
 
 opt = noon.parse """
 coffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ 
-kode    . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ .. /kode/ /js/ .. ^kode/ js/ 
+kode    . ext js   . out js            
 noon    . ext json
 json    . ext noon . filter  .. package.json$
 styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/

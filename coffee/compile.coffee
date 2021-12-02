@@ -38,7 +38,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                     
             when 'kode'
                 
-                kode.compile sourceText
+                kode.compile sourceText, header:true
 
             when 'styl'
                 stylus = require 'stylus'
