@@ -9,6 +9,7 @@
 { klog, kolor, noon, slash } = require 'kxk'
 
 koffee = require 'koffee'
+kode   = require 'kode'
 pretty = require './pretty'
 konradError = require './error'
 
@@ -33,7 +34,11 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                     jsMap = koffee.compile sourceText, mapcfg
                     jsMap.js
                 else
-                    koffee.compile sourceText, bare:true, source:sourceFile, metalog:'klog'
+                    koffee.compile sourceText, bare:true, source:sourceFile, metalog:'log'
+                    
+            when 'kode'
+                
+                kode.compile sourceText
 
             when 'styl'
                 stylus = require 'stylus'
@@ -49,7 +54,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 noon.stringify JSON.parse(sourceText), ext: '.'+cfg[ext].ext, indent:'  ' maxalign: 16
                 
             when 'noon'
-                
+                log 'noon.parse' sourceText
                 noon.stringify noon.parse(sourceText), ext: '.'+cfg[ext].ext, indent: '  '
             else
                 throw kolor.yellow("don't know how to build files with extname .#{kolor.bold(ext)}!")
