@@ -41,7 +41,6 @@ target = (sourceFile, opt) ->
             
     if o[ext]?.out?
         targetFile = swapLastDir targetFile, ext, o[ext]?.out
-        log 'konrad out' sourceFile, targetFile
 
     return if not o[ext]?.ext?
 
