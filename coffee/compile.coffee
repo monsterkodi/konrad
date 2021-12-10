@@ -28,7 +28,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                         inlineMap:     true
                         filename:      slash.relative sourceFile, slash.dir targetFile
                         generatedFile: targetFile
-                        metalog:       'klog'
+                        metalog:       'log'
                         feature: header: true
                         
                     jsMap = koffee.compile sourceText, mapcfg
@@ -46,7 +46,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                     .render()
                     
             when 'pug'
-                pug    = require 'pug'
+                pug = require 'pug'
                 pug.render sourceText, pretty: true
                 
             when 'json'
@@ -54,8 +54,9 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 noon.stringify JSON.parse(sourceText), ext: '.'+cfg[ext].ext, indent:'  ' maxalign: 16
                 
             when 'noon'
-                log 'noon.parse' sourceText
+                
                 noon.stringify noon.parse(sourceText), ext: '.'+cfg[ext].ext, indent: '  '
+                
             else
                 throw kolor.yellow("don't know how to build files with extname .#{kolor.bold(ext)}!")
 

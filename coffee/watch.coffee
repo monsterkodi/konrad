@@ -20,7 +20,7 @@ watcher = null
 
 Watch = (wlk, opt) ->
     
-    # klog 'watch' wlk, opt
+    # log 'watch' wlk, opt
     
     start = (cb) ->
 
@@ -43,6 +43,7 @@ Watch = (wlk, opt) ->
                 runcmd 'test' source, config.path 'test' slash.resolve(source), opt
 
         if not should 'ignore' o, sourceFile
+            log 'build?' sourceFile, opt, test
             build sourceFile, opt, test
         else
             test sourceFile

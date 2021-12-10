@@ -18,9 +18,9 @@ runcmd  = require './runcmd'
 
 build = (sourceFile, opt, cb) ->
 
-    klog "source file".gray, sourceFile if args.debug
+    klog gray("source file"), sourceFile if args.debug
 
-    ext = slash.extname(sourceFile).substr(1)
+    ext = slash.ext sourceFile
 
     cfg = config.obj sourceFile, opt
 
@@ -38,7 +38,7 @@ build = (sourceFile, opt, cb) ->
         warn "no targetFile for source: #{sourceFile}", opt
         return
 
-    klog "target file".gray, targetFile if args.debug
+    klog gray("target file"), targetFile if args.debug
 
     # 00000000   00000000   0000000   0000000
     # 000   000  000       000   000  000   000
@@ -58,8 +58,9 @@ build = (sourceFile, opt, cb) ->
         # 000       000   000  000000000  00000000   000  000      0000000   
         # 000       000   000  000 0 000  000        000  000      000       
         #  0000000   0000000   000   000  000        000  0000000  00000000  
-        
+ 
         compiled = compile sourceText, ext, sourceFile, targetFile, cfg
+        # log 'compiled' sourceText, compiled
         
         if empty compiled
             cb()
@@ -70,6 +71,7 @@ build = (sourceFile, opt, cb) ->
         if not slash.fileExists(targetFile) or slash.readText(targetFile) != compiled
             writeCompiled sourceFile, targetFile, compiled, cb
         else
+            # log 'noWrite?' targetFile, slash.fileExists(targetFile), slash.readText(targetFile)
             klog kolor.green(kolor.dim('unchanged')), pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
             if args.verbose
                 log pretty.time(), "👍  #{pretty.filePath sourceFile} #{kolor.bold(kolor.yellow('►'))} #{pretty.filePath targetFile}"

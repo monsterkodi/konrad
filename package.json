@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.197.0",
+  "version": "0.198.0",
   "main": "js/index.js",
   "bin": {
     "konrad": "./bin/konrad"
@@ -32,10 +32,10 @@
   },
   "homepage": "https://github.com/monsterkodi/konrad",
   "dependencies": {
-    "colorcat": "^2.13.0",
+    "colorcat": "monsterkodi/colorcat",
     "kode": "monsterkodi/kode",
-    "koffee": "^1.20.0",
-    "kxk": "^0.424.0",
+    "koffee": "monsterkodi/koffee",
+    "kxk": "monsterkodi/kxk",
     "mkpath": "^1.0.0",
     "npm-check-updates": "^12.0.2",
     "pug": "^3.0.2",
