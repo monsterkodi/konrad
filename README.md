@@ -1,3 +1,9 @@
+<style
+  type="text/css">
+table {border:none;}
+tr {border:none;}
+td {border:none;}
+</style>
 <table style="border:none;">
 <tr>
   <td style="border:none;"><img align='center' src="https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_sleep.png"></td>
