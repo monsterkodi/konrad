@@ -6,7 +6,8 @@
 000   000   0000000   000   000   0000000  000   000  0000000  
 ###
 
-{ args, childp, klog, kolor, slash, valid } = require 'kxk'
+kxk = require 'kxk'
+{ args, childp, klog, kolor, slash } = kxk
 
 pretty      = require './pretty'
 konradError = require './error'
@@ -36,9 +37,9 @@ runcmd = (cmd, cmdargs, cwd) ->
             klog " 🔧 " kolor.gray(cmd), pretty.filePath(command)
                 
         result = childp.execSync command,
-            cwd:      cwd
-            encoding: 'utf8'
-            stdio:    'inherit'
+            cwd:      cwd
+            encoding: 'utf8'
+            stdio:    'inherit'
             shell:    true
             
         # klog 'result' result

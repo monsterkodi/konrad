@@ -1,49 +1,55 @@
-// koffee 1.19.0
+// monsterkodi/kode 0.139.0
 
-/*
- 0000000  000   000   0000000   000   000  000      0000000  
-000       000   000  000   000  000   000  000      000   000
-0000000   000000000  000   000  000   000  000      000   000
-     000  000   000  000   000  000   000  000      000   000
-0000000   000   000   0000000    0000000   0000000  0000000
- */
-var _, argDir, args, klog, kolor, pretty, ref, should, slash;
+var _k_ = {list: function (l) {return (l != null ? typeof l.length === 'number' ? l : [] : [])}}
 
-ref = require('kxk'), _ = ref._, args = ref.args, klog = ref.klog, kolor = ref.kolor, slash = ref.slash;
+var args, klog, kolor, slash, argDir, pretty, should
 
-argDir = require('./argdir');
+args = require('kxk').args
+klog = require('kxk').klog
+kolor = require('kxk').kolor
+slash = require('kxk').slash
 
-pretty = require('./pretty');
+argDir = require('./argdir')
+pretty = require('./pretty')
 
-should = function(k, o, p) {
-    var i, j, keys, len, r;
-    if (o[k] == null) {
-        return false;
+should = function (k, o, p)
+{
+    var keys, i, r
+
+    if (!(o[k] != null))
+    {
+        return false
     }
-    if (_.isArray(o[k])) {
-        keys = o[k];
-    } else if (_.isObject(o[k])) {
-        keys = _.keys(o[k]);
-    } else {
-        keys = [o[k]];
+    if (o[k] instanceof Array)
+    {
+        keys = o[k]
     }
-    for (j = 0, len = keys.length; j < len; j++) {
-        i = keys[j];
-        r = i;
-        if (_.isString(i)) {
-            r = new RegExp(i);
+    else if (o[k] instanceof Object)
+    {
+        keys = Object.keys(o[k])
+    }
+    else
+    {
+        keys = [o[k]]
+    }
+    var list = _k_.list(keys)
+    for (var _27_10_ = 0; _27_10_ < list.length; _27_10_++)
+    {
+        i = list[_27_10_]
+        r = i
+        if (typeof(i) == 'string')
+        {
+            r = new RegExp(i)
         }
-        if (r != null ? typeof r.test === "function" ? r.test(p) : void 0 : void 0) {
-            if (args.debug) {
-                klog(pretty.filePath(slash.relative(p, argDir()), kolor.gray), kolor.blue('should ') + kolor.bold(kolor.blue(k)));
+        if (p && r && r.test(p))
+        {
+            if (args.debug)
+            {
+                klog(pretty.filePath(slash.relative(p,argDir()),kolor.gray),kolor.blue('should ') + kolor.bold(kolor.blue(k)))
             }
-            return true;
+            return true
         }
     }
-    return false;
-};
-
-module.exports = should;
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2hvdWxkLmpzIiwic291cmNlUm9vdCI6Ii4uL2NvZmZlZSIsInNvdXJjZXMiOlsic2hvdWxkLmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUFrQyxPQUFBLENBQVEsS0FBUixDQUFsQyxFQUFFLFNBQUYsRUFBSyxlQUFMLEVBQVcsZUFBWCxFQUFpQixpQkFBakIsRUFBd0I7O0FBRXhCLE1BQUEsR0FBUyxPQUFBLENBQVEsVUFBUjs7QUFDVCxNQUFBLEdBQVMsT0FBQSxDQUFRLFVBQVI7O0FBRVQsTUFBQSxHQUFTLFNBQUMsQ0FBRCxFQUFJLENBQUosRUFBTyxDQUFQO0FBRUwsUUFBQTtJQUFBLElBQW9CLFlBQXBCO0FBQUEsZUFBTyxNQUFQOztJQUVBLElBQUcsQ0FBQyxDQUFDLE9BQUYsQ0FBVSxDQUFFLENBQUEsQ0FBQSxDQUFaLENBQUg7UUFDSSxJQUFBLEdBQU8sQ0FBRSxDQUFBLENBQUEsRUFEYjtLQUFBLE1BRUssSUFBRyxDQUFDLENBQUMsUUFBRixDQUFXLENBQUUsQ0FBQSxDQUFBLENBQWIsQ0FBSDtRQUNELElBQUEsR0FBTyxDQUFDLENBQUMsSUFBRixDQUFPLENBQUUsQ0FBQSxDQUFBLENBQVQsRUFETjtLQUFBLE1BQUE7UUFHRCxJQUFBLEdBQU8sQ0FBQyxDQUFFLENBQUEsQ0FBQSxDQUFILEVBSE47O0FBS0wsU0FBQSxzQ0FBQTs7UUFDSSxDQUFBLEdBQUk7UUFDSixJQUFvQixDQUFDLENBQUMsUUFBRixDQUFXLENBQVgsQ0FBcEI7WUFBQSxDQUFBLEdBQUksSUFBSSxNQUFKLENBQVcsQ0FBWCxFQUFKOztRQUNBLCtDQUFHLENBQUMsQ0FBRSxLQUFNLG9CQUFaO1lBQ0ksSUFBb0gsSUFBSSxDQUFDLEtBQXpIO2dCQUFBLElBQUEsQ0FBSyxNQUFNLENBQUMsUUFBUCxDQUFnQixLQUFLLENBQUMsUUFBTixDQUFlLENBQWYsRUFBa0IsTUFBQSxDQUFBLENBQWxCLENBQWhCLEVBQTZDLEtBQUssQ0FBQyxJQUFuRCxDQUFMLEVBQStELEtBQUssQ0FBQyxJQUFOLENBQVcsU0FBWCxDQUFBLEdBQXdCLEtBQUssQ0FBQyxJQUFOLENBQVcsS0FBSyxDQUFDLElBQU4sQ0FBVyxDQUFYLENBQVgsQ0FBdkYsRUFBQTs7QUFDQSxtQkFBTyxLQUZYOztBQUhKO1dBTUE7QUFqQks7O0FBbUJULE1BQU0sQ0FBQyxPQUFQLEdBQWlCIiwic291cmNlc0NvbnRlbnQiOlsiIyMjXG4gMDAwMDAwMCAgMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMCAgMDAwICAgICAgMDAwMDAwMCAgXG4wMDAgICAgICAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgICAgMDAwICAgMDAwXG4wMDAwMDAwICAgMDAwMDAwMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgICAgMDAwICAgMDAwXG4gICAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgICAgMDAwICAgMDAwXG4wMDAwMDAwICAgMDAwICAgMDAwICAgMDAwMDAwMCAgICAwMDAwMDAwICAgMDAwMDAwMCAgMDAwMDAwMCAgXG4jIyNcblxueyBfLCBhcmdzLCBrbG9nLCBrb2xvciwgc2xhc2ggfSA9IHJlcXVpcmUgJ2t4aydcblxuYXJnRGlyID0gcmVxdWlyZSAnLi9hcmdkaXInXG5wcmV0dHkgPSByZXF1aXJlICcuL3ByZXR0eSdcblxuc2hvdWxkID0gKGssIG8sIHApIC0+XG5cbiAgICByZXR1cm4gZmFsc2UgaWYgbm90IG9ba10/XG5cbiAgICBpZiBfLmlzQXJyYXkgb1trXVxuICAgICAgICBrZXlzID0gb1trXVxuICAgIGVsc2UgaWYgXy5pc09iamVjdCBvW2tdXG4gICAgICAgIGtleXMgPSBfLmtleXMgb1trXVxuICAgIGVsc2VcbiAgICAgICAga2V5cyA9IFtvW2tdXVxuXG4gICAgZm9yIGkgaW4ga2V5c1xuICAgICAgICByID0gaVxuICAgICAgICByID0gbmV3IFJlZ0V4cCBpIGlmIF8uaXNTdHJpbmcgaVxuICAgICAgICBpZiByPy50ZXN0PyBwXG4gICAgICAgICAgICBrbG9nIHByZXR0eS5maWxlUGF0aChzbGFzaC5yZWxhdGl2ZShwLCBhcmdEaXIoKSksIGtvbG9yLmdyYXkpLCBrb2xvci5ibHVlKCdzaG91bGQgJykgKyBrb2xvci5ib2xkKGtvbG9yLmJsdWUoaykpIGlmIGFyZ3MuZGVidWdcbiAgICAgICAgICAgIHJldHVybiB0cnVlXG4gICAgZmFsc2VcblxubW9kdWxlLmV4cG9ydHMgPSBzaG91bGRcbiJdfQ==
-//# sourceURL=../coffee/should.coffee
+    return false
+}
+module.exports = should

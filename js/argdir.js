@@ -1,31 +1,30 @@
-// koffee 1.19.0
+// monsterkodi/kode 0.139.0
 
-/*
- 0000000   00000000    0000000   0000000    000  00000000 
-000   000  000   000  000        000   000  000  000   000
-000000000  0000000    000  0000  000   000  000  0000000  
-000   000  000   000  000   000  000   000  000  000   000
-000   000  000   000   0000000   0000000    000  000   000
- */
-var argDir;
+var _k_
 
-argDir = function() {
-    var args, d, ref, slash;
-    ref = require('kxk'), args = ref.args, slash = ref.slash;
-    if (args["arguments"][0]) {
-        d = slash.resolve(args["arguments"][0]);
-        if (slash.dirExists(d)) {
-            return d;
+var argDir
+
+
+argDir = function ()
+{
+    var args, slash, d
+
+    args = require('kxk').args
+slash = require('kxk').slash
+
+    if (args.arguments[0])
+    {
+        d = slash.resolve(args.arguments[0])
+        if (slash.dirExists(d))
+        {
+            return d
         }
-        d = slash.dir(d);
-        if (slash.dirExists(d)) {
-            return d;
+        d = slash.dir(d)
+        if (slash.dirExists(d))
+        {
+            return d
         }
     }
-    return slash.resolve('.');
-};
-
-module.exports = argDir;
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXJnZGlyLmpzIiwic291cmNlUm9vdCI6Ii4uL2NvZmZlZSIsInNvdXJjZXMiOlsiYXJnZGlyLmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUFBLEdBQVMsU0FBQTtBQUVMLFFBQUE7SUFBQSxNQUFrQixPQUFBLENBQVEsS0FBUixDQUFsQixFQUFFLGVBQUYsRUFBUTtJQUVSLElBQUcsSUFBSSxFQUFDLFNBQUQsRUFBVyxDQUFBLENBQUEsQ0FBbEI7UUFDSSxDQUFBLEdBQUksS0FBSyxDQUFDLE9BQU4sQ0FBYyxJQUFJLEVBQUMsU0FBRCxFQUFXLENBQUEsQ0FBQSxDQUE3QjtRQUNKLElBQUcsS0FBSyxDQUFDLFNBQU4sQ0FBZ0IsQ0FBaEIsQ0FBSDtBQUNJLG1CQUFPLEVBRFg7O1FBRUEsQ0FBQSxHQUFJLEtBQUssQ0FBQyxHQUFOLENBQVUsQ0FBVjtRQUNKLElBQUcsS0FBSyxDQUFDLFNBQU4sQ0FBZ0IsQ0FBaEIsQ0FBSDtBQUNJLG1CQUFPLEVBRFg7U0FMSjs7V0FPQSxLQUFLLENBQUMsT0FBTixDQUFjLEdBQWQ7QUFYSzs7QUFhVCxNQUFNLENBQUMsT0FBUCxHQUFpQiIsInNvdXJjZXNDb250ZW50IjpbIiMjI1xuIDAwMDAwMDAgICAwMDAwMDAwMCAgICAwMDAwMDAwICAgMDAwMDAwMCAgICAwMDAgIDAwMDAwMDAwIFxuMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgICAgICAgMDAwICAgMDAwICAwMDAgIDAwMCAgIDAwMFxuMDAwMDAwMDAwICAwMDAwMDAwICAgIDAwMCAgMDAwMCAgMDAwICAgMDAwICAwMDAgIDAwMDAwMDAgIFxuMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgIDAwMCAgIDAwMFxuMDAwICAgMDAwICAwMDAgICAwMDAgICAwMDAwMDAwICAgMDAwMDAwMCAgICAwMDAgIDAwMCAgIDAwMFxuIyMjXG5cbmFyZ0RpciA9IC0+XG4gICAgXG4gICAgeyBhcmdzLCBzbGFzaCB9ID0gcmVxdWlyZSAna3hrJ1xuICAgIFxuICAgIGlmIGFyZ3MuYXJndW1lbnRzWzBdXG4gICAgICAgIGQgPSBzbGFzaC5yZXNvbHZlIGFyZ3MuYXJndW1lbnRzWzBdXG4gICAgICAgIGlmIHNsYXNoLmRpckV4aXN0cyBkXG4gICAgICAgICAgICByZXR1cm4gZFxuICAgICAgICBkID0gc2xhc2guZGlyIGQgIyA/Pz9cbiAgICAgICAgaWYgc2xhc2guZGlyRXhpc3RzIGRcbiAgICAgICAgICAgIHJldHVybiBkXG4gICAgc2xhc2gucmVzb2x2ZSAnLidcblxubW9kdWxlLmV4cG9ydHMgPSBhcmdEaXJcbiJdfQ==
-//# sourceURL=../coffee/argdir.coffee
+    return slash.resolve('.')
+}
+module.exports = argDir

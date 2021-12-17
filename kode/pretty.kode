@@ -6,32 +6,33 @@
 000        000   000  00000000     000        000        000
 ###
 
-{ _, args, kolor, os, slash, valid } = require 'kxk'
+kxk = require 'kxk'
+{ _, args, kolor, os, slash } = kxk
 
 pretty = {}
 
 pretty.path = (p, c=kolor.yellow) ->
-    
+
     p.split('/').map((n) -> c(n)).join kolor.dim(c('/'))
 
 pretty.ext = (e, c=kolor.yellow) ->
-    
+
     if e.length then kolor.dim(c('.')) + c(e.substr 1) else ''
-    
+
 pretty.file = (f, c=kolor.yellow) ->
-    
+
     "#{kolor.bold(c(slash.base(f)))}#{pretty.ext slash.extname(f), c}"
-    
+
 pretty.filePath = (p, c=kolor.yellow) ->
-    
+
     p = p.replace os.homedir(), "~"
-    if valid slash.dir p 
+    if valid slash.dir p
         "#{pretty.path slash.dir(p), c}#{pretty.path '/', c}#{pretty.file slash.basename(p), c}"
     else
         "#{pretty.file slash.basename(p), c}"
 
 pretty.time = ->
-    
+
     if args.logtime
         d = new Date()
         ["#{kolor.gray _.padStart(String(d.getHours()),   2, '0')}#{kolor.dim kolor.gray ':'}"
@@ -39,5 +40,5 @@ pretty.time = ->
          "#{kolor.gray _.padStart(String(d.getSeconds()), 2, '0')}"].join('')
     else
         ''
-        
+
 module.exports = pretty

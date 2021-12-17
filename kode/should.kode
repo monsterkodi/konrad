@@ -6,7 +6,7 @@
 0000000   000   000   0000000    0000000   0000000  0000000  
 ###
 
-{ _, args, klog, kolor, slash } = require 'kxk'
+{ args, klog, kolor, slash } = require 'kxk'
 
 argDir = require './argdir'
 pretty = require './pretty'
@@ -15,17 +15,20 @@ should = (k, o, p) ->
 
     return false if not o[k]?
 
-    if _.isArray o[k]
+    if o[k] is Array
         keys = o[k]
-    else if _.isObject o[k]
-        keys = _.keys o[k]
+    else if o[k] is Object
+        keys = Object.keys o[k]
     else
         keys = [o[k]]
 
+    # log 'should keys' keys
+        
     for i in keys
         r = i
-        r = new RegExp i if _.isString i
-        if r?.test? p
+        r = new RegExp i if i is 'string'
+        if p and r and r.test p
+            # log r, p
             klog pretty.filePath(slash.relative(p, argDir()), kolor.gray), kolor.blue('should ') + kolor.bold(kolor.blue(k)) if args.debug
             return true
     false

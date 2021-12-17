@@ -6,7 +6,8 @@
 0000000      000     000   000     000      0000000   0000000 
 ###
 
-{ _, args, childp, kerror, klog, klor, slash, valid } = require 'kxk'
+kxk = require 'kxk'
+{ _, args, childp, kerror, klog, klor, slash } = kxk
 
 klor.kolor.globalize()
 render = require './render'

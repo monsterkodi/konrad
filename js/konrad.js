@@ -1,187 +1,233 @@
-// koffee 1.20.0
+// monsterkodi/kode 0.139.0
 
-/*
-000   000   0000000   000   000  00000000    0000000   0000000
-000  000   000   000  0000  000  000   000  000   000  000   000
-0000000    000   000  000 0 000  0000000    000000000  000   000
-000  000   000   000  000  0000  000   000  000   000  000   000
-000   000   0000000   000   000  000   000  000   000  0000000
- */
-var _, actions, argDir, args, build, cmd, config, dirty, dotGit, fs, gitcount, gitup, j, klog, kolor, len, noon, opt, optall, pkg, pretty, ref, ref1, runcmd, should, slash, status, walk, watch, wlk;
+var _k_ = {list: function (l) {return (l != null ? typeof l.length === 'number' ? l : [] : [])}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-ref = require('kxk'), _ = ref._, args = ref.args, fs = ref.fs, klog = ref.klog, kolor = ref.kolor, noon = ref.noon, slash = ref.slash, watch = ref.watch;
+var _, args, fs, klog, kolor, noon, slash, watch, argDir, build, config, pretty, runcmd, should, status, walk, pkg, actions, opt, wlk, dirty, optall, gitcount, gitup, dotGit, cmd
 
-argDir = require('./argdir');
+_ = require('kxk')._
+args = require('kxk').args
+fs = require('kxk').fs
+klog = require('kxk').klog
+kolor = require('kxk').kolor
+noon = require('kxk').noon
+slash = require('kxk').slash
+watch = require('kxk').watch
 
-build = require('./build');
-
-config = require('./config');
-
-pretty = require('./pretty');
-
-runcmd = require('./runcmd');
-
-should = require('./should');
-
-status = require('./status');
-
-watch = require('./watch');
-
-walk = require('./walk');
-
-pkg = require(__dirname + "/../package");
-
-args = args.init("arguments  depend on options                            **\nrun        build dirty or missing targets in dir        false\nrebuild    rebuild all targets in dir                   false  -R\nwatch      watch directory for changes                  false\ninfo       show build status of dir                     false\nbump       bump package.* version [major|minor|patch]   false\nbuild      make package                                 false  -m\ndiff       show git diff of file/dir                    false\nstatus     show git status of file/dir                  false\nfetch      fetch and show git status of file/dir        false\ncommit     add, commit and push [msg]                   false\nupdate     update npm packages                          false\npublish    bump, commit & publish to npm [msg]          false\ntest       run tests                                    false\nverbose    log more                                     false\nquiet      log nothing                                  false\ndebug      log debug                                    false  -D\nlogtime    log with time                                true", {
-    pkg: pkg
-});
-
-actions = ['bump', 'build', 'commit', 'publish', 'update', 'test', 'watch', 'run', 'rebuild', 'info', 'status', 'fetch', 'diff'];
-
-if (!actions.map(function(a) {
-    return args[a];
-}).reduce(function(acc, val) {
-    return acc || val;
-})) {
-    args.run = true;
+argDir = require('./argdir')
+build = require('./build')
+config = require('./config')
+pretty = require('./pretty')
+runcmd = require('./runcmd')
+should = require('./should')
+status = require('./status')
+watch = require('./watch')
+walk = require('./walk')
+pkg = require(`${__dirname}/../package`)
+args = args.init(`arguments  depend on options                            **
+run        build dirty or missing targets in dir        false
+rebuild    rebuild all targets in dir                   false  -R
+watch      watch directory for changes                  false
+info       show build status of dir                     false
+bump       bump package.* version [major|minor|patch]   false
+build      make package                                 false  -m
+diff       show git diff of file/dir                    false
+status     show git status of file/dir                  false
+fetch      fetch and show git status of file/dir        false
+commit     add, commit and push [msg]                   false
+update     update npm packages                          false
+publish    bump, commit & publish to npm [msg]          false
+test       run tests                                    false
+verbose    log more                                     false
+quiet      log nothing                                  false
+debug      log debug                                    false  -D
+logtime    log with time                                true`,{pkg:pkg})
+actions = ['bump','build','commit','publish','update','test','watch','run','rebuild','info','status','fetch','diff']
+if (!actions.map(function (a)
+    {
+        return args[a]
+    }).reduce(function (acc, val)
+    {
+        return acc || val
+    }))
+{
+    args.run = true
 }
+opt = noon.parse(`coffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ 
+kode    . ext js   . out js            
+noon    . ext json
+json    . ext noon . filter  .. package.json$
+styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
+pug     . ext html . replace .. /pug/ /js/`)
+opt.ignore = [/.*\.konrad\.noon$/,/.*menu\.noon$/]
+wlk = {ignore:[/node_modules$/,/bower_components$/,/\/img$/,/\/\..+$/,/\.git$/,/\.app$/,/.*-x64$/,/.*-arm64$/,/.*-ia32$/,/\/?inno$/,/\/?js$/]}
 
-opt = noon.parse("coffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ \nkode    . ext js   . out js            \nnoon    . ext json\njson    . ext noon . filter  .. package.json$\nstyl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/\npug     . ext html . replace .. /pug/ /js/");
+dirty = function (sourceFile, targetFile)
+{
+    var ss, ts
 
-opt.ignore = [/.*\.konrad\.noon$/, /.*menu\.noon$/];
-
-wlk = {
-    ignore: [/node_modules$/, /bower_components$/, /\/img$/, /\/\..+$/, /\.git$/, /\.app$/, /.*-x64$/, /.*-arm64$/, /.*-ia32$/, /\/?inno$/, /\/?js$/]
-};
-
-dirty = function(sourceFile, targetFile) {
-    var ss, ts;
-    if (!fs.existsSync(targetFile)) {
-        return true;
+    if (!fs.existsSync(targetFile))
+    {
+        return true
     }
-    ss = fs.statSync(sourceFile);
-    ts = fs.statSync(targetFile);
-    return ss.mtime.getTime() > ts.mtime.getTime();
-};
-
-if (args.info) {
-    console.log(kolor.gray('○● info'));
-    walk(wlk, opt, function(sourceFile, targetFile) {
-        if (args.verbose) {
-            console.log("source: " + sourceFile + " target: " + targetFile);
-        }
-        if (dirty(sourceFile, targetFile)) {
-            return console.log(pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.yellow), kolor.red(kolor.dim(" ► ")), pretty.filePath(slash.relative(targetFile, argDir()), kolor.red));
-        } else if (args.verbose) {
-            return console.log(pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), kolor.magenta), kolor.green(kolor.dim(" ► ")), pretty.filePath(slash.relative(targetFile, argDir()), kolor.green));
-        }
-    });
+    ss = fs.statSync(sourceFile)
+    ts = fs.statSync(targetFile)
+    return ss.mtime.getTime() > ts.mtime.getTime()
 }
-
-if (args.diff) {
-    args.status = true;
+if (args.info)
+{
+    console.log(kolor.gray('○● info'))
+    walk(wlk,opt,function (sourceFile, targetFile)
+    {
+        if (args.verbose)
+        {
+            console.log(`source: ${sourceFile} target: ${targetFile}`)
+        }
+        if (dirty(sourceFile,targetFile))
+        {
+            console.log(pretty.filePath(_.padEnd(slash.relative(sourceFile,argDir()),40),kolor.yellow),kolor.red(kolor.dim(" ► ")),pretty.filePath(slash.relative(targetFile,argDir()),kolor.red))
+        }
+        else if (args.verbose)
+        {
+            console.log(pretty.filePath(_.padEnd(slash.relative(sourceFile,argDir()),40),kolor.magenta),kolor.green(kolor.dim(" ► ")),pretty.filePath(slash.relative(targetFile,argDir()),kolor.green))
+        }
+    })
 }
+if (args.diff)
+{
+    args.status = true
+}
+if (args.status || args.fetch)
+{
+    optall = _.defaults(opt,{all:true})
+    gitcount = 0
+    walk(wlk,optall,function (sourceFile, targetFile)
+    {
+        var i, _144_30_
 
-if (args.status || args.fetch) {
-    optall = _.defaults(opt, {
-        all: true
-    });
-    gitcount = 0;
-    walk(wlk, optall, function(sourceFile, targetFile) {
-        var i, j, len, ref1;
-        if (!targetFile) {
-            if (slash.basename(sourceFile) === '.git') {
-                if (args.fetch) {
-                    status.gitFetch(sourceFile);
-                } else {
-                    status.gitStatus(sourceFile);
+        if (!targetFile)
+        {
+            if (slash.basename(sourceFile) === '.git')
+            {
+                if (args.fetch)
+                {
+                    status.gitFetch(sourceFile)
                 }
-                gitcount += 1;
+                else
+                {
+                    status.gitStatus(sourceFile)
+                }
+                gitcount += 1
             }
-            if (slash.dirExists(sourceFile)) {
-                ref1 = opt.ignore;
-                for (j = 0, len = ref1.length; j < len; j++) {
-                    i = ref1[j];
-                    if ((i != null ? i.test : void 0) != null) {
-                        if (i.test(sourceFile)) {
-                            return false;
+            if (slash.dirExists(sourceFile))
+            {
+                var list = _k_.list(opt.ignore)
+                for (var _143_22_ = 0; _143_22_ < list.length; _143_22_++)
+                {
+                    i = list[_143_22_]
+                    if (((i != null ? i.test : undefined) != null))
+                    {
+                        if (i.test(sourceFile))
+                        {
+                            return false
                         }
-                    } else {
-                        klog('ignore?', i);
+                    }
+                    else
+                    {
+                        klog('ignore?',i)
                     }
                 }
             }
         }
-        return true;
-    });
-    if (!gitcount) {
-        gitup = slash.parse(argDir());
-        while (gitup.base) {
-            dotGit = slash.join(gitup.dir, '.git');
-            if (fs.existsSync(dotGit)) {
-                if (args.fetch) {
-                    status.gitFetch(dotGit);
-                } else {
-                    status.gitStatus(dotGit);
+        return true
+    })
+    if (!gitcount)
+    {
+        gitup = slash.parse(argDir())
+        while (gitup.base)
+        {
+            dotGit = slash.join(gitup.dir,'.git')
+            if (fs.existsSync(dotGit))
+            {
+                if (args.fetch)
+                {
+                    status.gitFetch(dotGit)
                 }
-                break;
-            }
-            gitup = slash.parse(gitup.dir);
-        }
-    }
-}
-
-if (args.run || args.rebuild) {
-    if (!args.quiet) {
-        console.log('🔧🔧 ' + kolor.gray(args.rebuild && 'rebuild' || 'run'));
-    }
-    walk(wlk, opt, function(sourceFile, targetFile) {
-        var isDirty, src, tgt;
-        if (targetFile) {
-            isDirty = dirty(sourceFile, targetFile);
-            if (args.rebuild || isDirty) {
-                src = pretty.filePath(_.padEnd(slash.relative(sourceFile, argDir()), 40), isDirty && kolor.red || kolor.yellow);
-                tgt = pretty.filePath(slash.relative(targetFile, argDir()), kolor.green);
-                if (!args.quiet) {
-                    console.log(src, "🔧  ", tgt);
+                else
+                {
+                    status.gitStatus(dotGit)
                 }
-                return build(sourceFile, opt, function(sourceFile, targetFile) {
-                    var o;
-                    if (!targetFile) {
-                        process.exit(1);
-                    }
-                    o = config.obj(targetFile, opt);
-                    if (should('browserify', o, targetFile)) {
-                        console.log(pretty.filePath(_.padEnd(slash.relative(o.browserify.main, argDir()), 40), kolor.yellow), "🔧  ", pretty.filePath(slash.relative(o.browserify.out, argDir()), kolor.blue));
-                        return runcmd('browserify', o.browserify.main + " " + o.browserify.out, config.path('browserify', slash.resolve(targetFile), opt));
-                    }
-                });
+                break
             }
-        }
-    });
-}
-
-ref1 = ['update', 'bump', 'build', 'test', 'commit', 'publish'];
-for (j = 0, len = ref1.length; j < len; j++) {
-    cmd = ref1[j];
-    if (args[cmd]) {
-        if (!runcmd(cmd, args["arguments"].join(' '), process.cwd())) {
-            process.exit(1);
-            break;
-        }
-        if (args.verbose) {
-            console.log(kolor.gray('🔧  done'));
-        }
-        if (args["arguments"] && (cmd === 'commit' || cmd === 'bump' || cmd === 'build')) {
-            break;
+            gitup = slash.parse(gitup.dir)
         }
     }
 }
+if (args.run || args.rebuild)
+{
+    if (!args.quiet)
+    {
+        console.log('🔧🔧 ' + kolor.gray(args.rebuild && 'rebuild' || 'run'))
+    }
+    walk(wlk,opt,function (sourceFile, targetFile)
+    {
+        var isDirty, src, tgt
 
-if (args.watch) {
-    watch(wlk, opt);
-} else if (cmd === 'build') {
-    process.exit(0);
+        if (targetFile)
+        {
+            isDirty = dirty(sourceFile,targetFile)
+            if (args.rebuild || isDirty)
+            {
+                src = pretty.filePath(_.padEnd(slash.relative(sourceFile,argDir()),40),isDirty && kolor.red || kolor.yellow)
+                tgt = pretty.filePath(slash.relative(targetFile,argDir()),kolor.green)
+                if (!args.quiet)
+                {
+                    console.log(src,"🔧  ",tgt)
+                }
+                return build(sourceFile,opt,function (sourceFile, targetFile)
+                {
+                    var o
+
+                    if (!targetFile)
+                    {
+                        process.exit(1)
+                    }
+                    o = config.obj(targetFile,opt)
+                    if (should('browserify',o,targetFile))
+                    {
+                        console.log(pretty.filePath(_.padEnd(slash.relative(o.browserify.main,argDir()),40),kolor.yellow),"🔧  ",pretty.filePath(slash.relative(o.browserify.out,argDir()),kolor.blue))
+                        return runcmd('browserify',`${o.browserify.main} ${o.browserify.out}`,config.path('browserify',slash.resolve(targetFile),opt))
+                    }
+                })
+            }
+        }
+    })
 }
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoia29ucmFkLmpzIiwic291cmNlUm9vdCI6Ii4uL2NvZmZlZSIsInNvdXJjZXMiOlsia29ucmFkLmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUFtRCxPQUFBLENBQVEsS0FBUixDQUFuRCxFQUFFLFNBQUYsRUFBSyxlQUFMLEVBQVcsV0FBWCxFQUFlLGVBQWYsRUFBcUIsaUJBQXJCLEVBQTRCLGVBQTVCLEVBQWtDLGlCQUFsQyxFQUF5Qzs7QUFFekMsTUFBQSxHQUFTLE9BQUEsQ0FBUSxVQUFSOztBQUNULEtBQUEsR0FBUyxPQUFBLENBQVEsU0FBUjs7QUFDVCxNQUFBLEdBQVMsT0FBQSxDQUFRLFVBQVI7O0FBQ1QsTUFBQSxHQUFTLE9BQUEsQ0FBUSxVQUFSOztBQUNULE1BQUEsR0FBUyxPQUFBLENBQVEsVUFBUjs7QUFDVCxNQUFBLEdBQVMsT0FBQSxDQUFRLFVBQVI7O0FBQ1QsTUFBQSxHQUFTLE9BQUEsQ0FBUSxVQUFSOztBQUNULEtBQUEsR0FBUyxPQUFBLENBQVEsU0FBUjs7QUFDVCxJQUFBLEdBQVMsT0FBQSxDQUFRLFFBQVI7O0FBQ1QsR0FBQSxHQUFTLE9BQUEsQ0FBVyxTQUFELEdBQVcsYUFBckI7O0FBRVQsSUFBQSxHQUFPLElBQUksQ0FBQyxJQUFMLENBQVUsc25DQUFWLEVBbUJFO0lBQUEsR0FBQSxFQUFJLEdBQUo7Q0FuQkY7O0FBcUJQLE9BQUEsR0FBVSxDQUFDLE1BQUQsRUFBUSxPQUFSLEVBQWdCLFFBQWhCLEVBQXlCLFNBQXpCLEVBQW1DLFFBQW5DLEVBQTRDLE1BQTVDLEVBQW1ELE9BQW5ELEVBQTJELEtBQTNELEVBQWlFLFNBQWpFLEVBQTJFLE1BQTNFLEVBQWtGLFFBQWxGLEVBQTJGLE9BQTNGLEVBQW1HLE1BQW5HOztBQUVWLElBQUcsQ0FBSSxPQUFPLENBQUMsR0FBUixDQUFZLFNBQUMsQ0FBRDtXQUFPLElBQUssQ0FBQSxDQUFBO0FBQVosQ0FBWixDQUEyQixDQUFD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LENBQUosRUFBQTs7UUFFQSxJQUFHLElBQUksRUFBQyxTQUFELEVBQUosSUFBbUIsQ0FBQSxHQUFBLEtBQVEsUUFBUixJQUFBLEdBQUEsS0FBaUIsTUFBakIsSUFBQSxHQUFBLEtBQXdCLE9BQXhCLENBQXRCO0FBQ0ksa0JBREo7U0FSSjs7QUFGSjs7QUFhQSxJQUFHLElBQUksQ0FBQyxLQUFSO0lBQ0ksS0FBQSxDQUFNLEdBQU4sRUFBVyxHQUFYLEVBREo7Q0FBQSxNQUVLLElBQUcsR0FBQSxLQUFRLE9BQVg7SUFDRCxPQUFPLENBQUMsSUFBUixDQUFhLENBQWIsRUFEQyIsInNvdXJjZXNDb250ZW50IjpbIiMjI1xuMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMCAgMDAwMDAwMDAgICAgMDAwMDAwMCAgIDAwMDAwMDBcbjAwMCAgMDAwICAgMDAwICAgMDAwICAwMDAwICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDBcbjAwMDAwMDAgICAgMDAwICAgMDAwICAwMDAgMCAwMDAgIDAwMDAwMDAgICAgMDAwMDAwMDAwICAwMDAgICAwMDBcbjAwMCAgMDAwICAgMDAwICAgMDAwICAwMDAgIDAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDBcbjAwMCAgIDAwMCAgIDAwMDAwMDAgICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAwMDAwXG4jIyNcblxueyBfLCBhcmdzLCBmcywga2xvZywga29sb3IsIG5vb24sIHNsYXNoLCB3YXRjaCB9ID0gcmVxdWlyZSAna3hrJ1xuXG5hcmdEaXIgPSByZXF1aXJlICcuL2FyZ2RpcidcbmJ1aWxkICA9IHJlcXVpcmUgJy4vYnVpbGQnXG5jb25maWcgPSByZXF1aXJlICcuL2NvbmZpZydcbnByZXR0eSA9IHJlcXVpcmUgJy4vcHJldHR5J1xucnVuY21kID0gcmVxdWlyZSAnLi9ydW5jbWQnIFxuc2hvdWxkID0gcmVxdWlyZSAnLi9zaG91bGQnXG5zdGF0dXMgPSByZXF1aXJlICcuL3N0YXR1cydcbndhdGNoICA9IHJlcXVpcmUgJy4vd2F0Y2gnXG53YWxrICAgPSByZXF1aXJlICcuL3dhbGsnXG5wa2cgICAgPSByZXF1aXJlIFwiI3tfX2Rpcm5hbWV9Ly4uL3BhY2thZ2VcIlxuXG5hcmdzID0gYXJncy5pbml0IFwiXCJcIlxuICAgIGFyZ3VtZW50cyAgZGVwZW5kIG9uIG9wdGlvbnMgICAgICAgICAgICAgICAgICAgICAgICAgICAgKipcbiAgICBydW4gICAgICAgIGJ1aWxkIGRpcnR5IG9yIG1pc3NpbmcgdGFyZ2V0cyBpbiBkaXIgICAgICAgIGZhbHNlXG4gICAgcmVidWlsZCAgICByZWJ1aWxkIGFsbCB0YXJnZXRzIGluIGRpciAgICAgICAgICAgICAgICAgICBmYWxzZSAgLVJcbiAgICB3YXRjaCAgICAgIHdhdGNoIGRpcmVjdG9yeSBmb3IgY2hhbmdlcyAgICAgICAgICAgICAgICAgIGZhbHNlXG4gICAgaW5mbyAgICAgICBzaG93IGJ1aWxkIHN0YXR1cyBvZiBkaXIgICAgICAgICAgICAgICAgICAgICBmYWxzZVxuICAgIGJ1bXAgICAgICAgYnVtcCBwYWNrYWdlLiogdmVyc2lvbiBbbWFqb3J8bWlub3J8cGF0Y2hdICAgZmFsc2VcbiAgICBidWlsZCAgICAgIG1ha2UgcGFja2FnZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZhbHNlICAtbVxuICAgIGRpZmYgICAgICAgc2hvdyBnaXQgZGlmZiBvZiBmaWxlL2RpciAgICAgICAgICAgICAgICAgICAgZmFsc2VcbiAgICBzdGF0dXMgICAgIHNob3cgZ2l0IHN0YXR1cyBvZiBmaWxlL2RpciAgICAgICAgICAgICAgICAgIGZhbHNlXG4gICAgZmV0Y2ggICAgICBmZXRjaCBhbmQgc2hvdyBnaXQgc3RhdHVzIG9mIGZpbGUvZGlyICAgICAgICBmYWxzZVxuICAgIGNvbW1pdCAgICAgYWRkLCBjb21taXQgYW5kIHB1c2ggW21zZ10gICAgICAgICAgICAgICAgICAgZmFsc2VcbiAgICB1cGRhdGUgICAgIHVwZGF0ZSBucG0gcGFja2FnZXMgICAgICAgICAgICAgICAgICAgICAgICAgIGZhbHNlXG4gICAgcHVibGlzaCAgICBidW1wLCBjb21taXQgJiBwdWJsaXNoIHRvIG5wbSBbbXNnXSAgICAgICAgICBmYWxzZVxuICAgIHRlc3QgICAgICAgcnVuIHRlc3RzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZmFsc2VcbiAgICB2ZXJib3NlICAgIGxvZyBtb3JlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGZhbHNlXG4gICAgcXVpZXQgICAgICBsb2cgbm90aGluZyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmYWxzZVxuICAgIGRlYnVnICAgICAgbG9nIGRlYnVnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZmFsc2UgIC1EXG4gICAgbG9ndGltZSAgICBsb2cgd2l0aCB0aW1lICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0cnVlXG4gICAgXCJcIlwiLCBwa2c6cGtnXG5cbmFjdGlvbnMgPSBbJ2J1bXAnICdidWlsZCcgJ2NvbW1pdCcgJ3B1Ymxpc2gnICd1cGRhdGUnICd0ZXN0JyAnd2F0Y2gnICdydW4nICdyZWJ1aWxkJyAnaW5mbycgJ3N0YXR1cycgJ2ZldGNoJyAnZGlmZiddXG5cbmlmIG5vdCBhY3Rpb25zLm1hcCgoYSkgLT4gYXJnc1thXSkucmVkdWNlKChhY2MsdmFsKSAtPiBhY2Mgb3IgdmFsKVxuICAgIGFyZ3MucnVuID0gdHJ1ZSAjIG1ha2VzIHJ1biB0aGUgZGVmYXVsdCBhY3Rpb24gaWYgbm8gb3RoZXIgYWN0aW9uIGlzIHNldFxuICAgIFxuIyAwMDAwMDAwICAgIDAwMDAwMDAwICAwMDAwMDAwMCAgIDAwMDAwMDAgICAwMDAgICAwMDAgIDAwMCAgICAgIDAwMDAwMDAwMCAgIDAwMDAwMDBcbiMgMDAwICAgMDAwICAwMDAgICAgICAgMDAwICAgICAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAgICAgICAwMDAgICAgIDAwMFxuIyAwMDAgICAwMDAgIDAwMDAwMDAgICAwMDAwMDAgICAgMDAwMDAwMDAwICAwMDAgICAwMDAgIDAwMCAgICAgICAgIDAwMCAgICAgMDAwMDAwMFxuIyAwMDAgICAwMDAgIDAwMCAgICAgICAwMDAgICAgICAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgICAgICAgIDAwMCAgICAgICAgICAwMDBcbiMgMDAwMDAwMCAgICAwMDAwMDAwMCAgMDAwICAgICAgIDAwMCAgIDAwMCAgIDAwMDAwMDAgICAwMDAwMDAwICAgICAwMDAgICAgIDAwMDAwMDBcblxub3B0ID0gbm9vbi5wYXJzZSBcIlwiXCJcbmNvZmZlZSAgLiBleHQganMgICAuIG1hcCB0cnVlIC4gcmVwbGFjZSAuLiAvY29mZmVlLyAvanMvIC4uIF5jb2ZmZWUvIGpzLyBcbmtvZGUgICAgLiBleHQganMgICAuIG91dCBqcyAgICAgICAgICAgIFxubm9vbiAgICAuIGV4dCBqc29uXG5qc29uICAgIC4gZXh0IG5vb24gLiBmaWx0ZXIgIC4uIHBhY2thZ2UuanNvbiRcbnN0eWwgICAgLiBleHQgY3NzICAuIHJlcGxhY2UgLi4gL3N0eWxlLyAvY3NzLyAuLiAvc3R5bC8gL2pzL2Nzcy9cbnB1ZyAgICAgLiBleHQgaHRtbCAuIHJlcGxhY2UgLi4gL3B1Zy8gL2pzL1xuXCJcIlwiXG5cbiMgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMCAgIDAwMDAwMDAgICAwMDAwMDAwMCAgIDAwMDAwMDAwXG4jIDAwMCAgMDAwICAgICAgICAwMDAwICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDBcbiMgMDAwICAwMDAgIDAwMDAgIDAwMCAwIDAwMCAgMDAwICAgMDAwICAwMDAwMDAwICAgIDAwMDAwMDBcbiMgMDAwICAwMDAgICAwMDAgIDAwMCAgMDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMFxuIyAwMDAgICAwMDAwMDAwICAgMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMCAgMDAwMDAwMDBcblxub3B0Lmlnbm9yZSA9IFtcbiAgICAvLipcXC5rb25yYWRcXC5ub29uJC9cbiAgICAvLiptZW51XFwubm9vbiQvXG5dXG5cbndsayA9XG4gICAgaWdub3JlOiBbXG4gICAgICAgIC9ub2RlX21vZHVsZXMkL1xuICAgICAgICAvYm93ZXJfY29tcG9uZW50cyQvXG4gICAgICAgIC9cXC9pbWckL1xuICAgICAgICAvXFwvXFwuLiskL1xuICAgICAgICAvXFwuZ2l0JC9cbiAgICAgICAgL1xcLmFwcCQvXG4gICAgICAgIC8uKi14NjQkL1xuICAgICAgICAvLiotYXJtNjQkL1xuICAgICAgICAvLiotaWEzMiQvXG4gICAgICAgIC9cXC8/aW5ubyQvXG4gICAgICAgIC9cXC8/anMkL1xuICAgIF1cblxuIyAwMDAwMDAwICAgIDAwMCAgMDAwMDAwMDAgICAwMDAwMDAwMDAgIDAwMCAgIDAwMFxuIyAwMDAgICAwMDAgIDAwMCAgMDAwICAgMDAwICAgICAwMDAgICAgICAwMDAgMDAwXG4jIDAwMCAgIDAwMCAgMDAwICAwMDAwMDAwICAgICAgIDAwMCAgICAgICAwMDAwMFxuIyAwMDAgICAwMDAgIDAwMCAgMDAwICAgMDAwICAgICAwMDAgICAgICAgIDAwMFxuIyAwMDAwMDAwICAgIDAwMCAgMDAwICAgMDAwICAgICAwMDAgICAgICAgIDAwMFxuXG5kaXJ0eSA9IChzb3VyY2VGaWxlLCB0YXJnZXRGaWxlKSAtPlxuICAgIFxuICAgIGlmIG5vdCBmcy5leGlzdHNTeW5jIHRhcmdldEZpbGUgdGhlbiByZXR1cm4gdHJ1ZVxuICAgIHNzID0gZnMuc3RhdFN5bmMgc291cmNlRmlsZVxuICAgIHRzID0gZnMuc3RhdFN5bmMgdGFyZ2V0RmlsZVxuICAgIHNzLm10aW1lLmdldFRpbWUoKSA+IHRzLm10aW1lLmdldFRpbWUoKVxuXG4jIDAwMCAgMDAwICAgMDAwICAwMDAwMDAwMCAgIDAwMDAwMDBcbiMgMDAwICAwMDAwICAwMDAgIDAwMCAgICAgICAwMDAgICAwMDBcbiMgMDAwICAwMDAgMCAwMDAgIDAwMDAwMCAgICAwMDAgICAwMDBcbiMgMDAwICAwMDAgIDAwMDAgIDAwMCAgICAgICAwMDAgICAwMDBcbiMgMDAwICAwMDAgICAwMDAgIDAwMCAgICAgICAgMDAwMDAwMFxuXG5pZiBhcmdzLmluZm9cblxuICAgIGxvZyBrb2xvci5ncmF5ICfil4vil48gaW5mbydcblxuICAgIHdhbGsgd2xrLCBvcHQsIChzb3VyY2VGaWxlLCB0YXJnZXRGaWxlKSAtPlxuXG4gICAgICAgIGxvZyBcInNvdXJjZTogI3tzb3VyY2VGaWxlfSB0YXJnZXQ6ICN7dGFyZ2V0RmlsZX1cIiBpZiBhcmdzLnZlcmJvc2VcbiAgICAgICAgaWYgZGlydHkgc291cmNlRmlsZSwgdGFyZ2V0RmlsZVxuICAgICAgICAgICAgbG9nIHByZXR0eS5maWxlUGF0aChfLnBhZEVuZChzbGFzaC5yZWxhdGl2ZShzb3VyY2VGaWxlLCBhcmdEaXIoKSksIDQwKSwga29sb3IueWVsbG93KSwga29sb3IucmVkKGtvbG9yLmRpbShcIiDilrogXCIpKSwgcHJldHR5LmZpbGVQYXRoKHNsYXNoLnJlbGF0aXZlKHRhcmdldEZpbGUsIGFyZ0RpcigpKSwga29sb3IucmVkKVxuICAgICAgICBlbHNlIGlmIGFyZ3MudmVyYm9zZVxuICAgICAgICAgICAgbG9nIHByZXR0eS5maWxlUGF0aChfLnBhZEVuZChzbGFzaC5yZWxhdGl2ZShzb3VyY2VGaWxlLCBhcmdEaXIoKSksIDQwKSwga29sb3IubWFnZW50YSksIGtvbG9yLmdyZWVuKGtvbG9yLmRpbShcIiDilrogXCIpKSwgcHJldHR5LmZpbGVQYXRoKHNsYXNoLnJlbGF0aXZlKHRhcmdldEZpbGUsIGFyZ0RpcigpKSwga29sb3IuZ3JlZW4pXG5cbmlmIGFyZ3MuZGlmZlxuICAgIFxuICAgIGFyZ3Muc3RhdHVzID0gdHJ1ZVxuXG4jIGtsb2cgYXJnc1xuICAgIFxuaWYgYXJncy5zdGF0dXMgb3IgYXJncy5mZXRjaFxuICAgIFxuICAgIG9wdGFsbCA9IF8uZGVmYXVsdHMgb3B0LCBhbGw6IHRydWVcbiAgICBnaXRjb3VudCA9IDBcblxuICAgIHdhbGsgd2xrLCBvcHRhbGwsIChzb3VyY2VGaWxlLCB0YXJnZXRGaWxlKSAtPlxuXG4gICAgICAgIGlmIG5vdCB0YXJnZXRGaWxlXG5cbiAgICAgICAgICAgIGlmIHNsYXNoLmJhc2VuYW1lKHNvdXJjZUZpbGUpID09ICcuZ2l0J1xuICAgICAgICAgICAgICAgIGlmIGFyZ3MuZmV0Y2hcbiAgICAgICAgICAgICAgICAgICAgc3RhdHVzLmdpdEZldGNoIHNvdXJjZUZpbGVcbiAgICAgICAgICAgICAgICBlbHNlXG4gICAgICAgICAgICAgICAgICAgIHN0YXR1cy5naXRTdGF0dXMgc291cmNlRmlsZVxuICAgICAgICAgICAgICAgIGdpdGNvdW50ICs9IDFcblxuICAgICAgICAgICAgaWYgc2xhc2guZGlyRXhpc3RzIHNvdXJjZUZpbGVcbiAgICAgICAgICAgICAgICBmb3IgaSBpbiBvcHQuaWdub3JlXG4gICAgICAgICAgICAgICAgICAgIGlmIGk/LnRlc3Q/XG4gICAgICAgICAgICAgICAgICAgICAgICBpZiBpLnRlc3Qgc291cmNlRmlsZVxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiBmYWxzZVxuICAgICAgICAgICAgICAgICAgICBlbHNlXG4gICAgICAgICAgICAgICAgICAgICAgICBrbG9nICdpZ25vcmU/JyBpXG4gICAgICAgIHRydWVcblxuICAgIGlmIG5vdCBnaXRjb3VudFxuICAgICAgICBnaXR1cCA9IHNsYXNoLnBhcnNlIGFyZ0RpcigpXG4gICAgICAgIHdoaWxlIGdpdHVwLmJhc2VcbiAgICAgICAgICAgIGRvdEdpdCA9IHNsYXNoLmpvaW4gZ2l0dXAuZGlyLCAnLmdpdCdcbiAgICAgICAgICAgIGlmIGZzLmV4aXN0c1N5bmMgZG90R2l0XG4gICAgICAgICAgICAgICAgaWYgYXJncy5mZXRjaFxuICAgICAgICAgICAgICAgICAgICBzdGF0dXMuZ2l0RmV0Y2ggZG90R2l0XG4gICAgICAgICAgICAgICAgZWxzZVxuICAgICAgICAgICAgICAgICAgICBzdGF0dXMuZ2l0U3RhdHVzIGRvdEdpdFxuICAgICAgICAgICAgICAgIGJyZWFrXG4gICAgICAgICAgICBnaXR1cCA9IHNsYXNoLnBhcnNlIGdpdHVwLmRpclxuICAgICAgICAgICAgXG4jIDAwMDAwMDAwICAgMDAwICAgMDAwICAwMDAgICAwMDBcbiMgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMDAgIDAwMFxuIyAwMDAwMDAwICAgIDAwMCAgIDAwMCAgMDAwIDAgMDAwXG4jIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgIDAwMDBcbiMgMDAwICAgMDAwICAgMDAwMDAwMCAgIDAwMCAgIDAwMFxuXG5pZiBhcmdzLnJ1biBvciBhcmdzLnJlYnVpbGRcblxuICAgIGlmIG5vdCBhcmdzLnF1aWV0XG4gICAgICAgIGxvZyAn8J+Up/CflKcgJyArIGtvbG9yLmdyYXkoYXJncy5yZWJ1aWxkIGFuZCAncmVidWlsZCcgb3IgJ3J1bicpXG4gICAgXG4gICAgd2FsayB3bGssIG9wdCwgKHNvdXJjZUZpbGUsIHRhcmdldEZpbGUpIC0+XG4gICAgICAgIGlmIHRhcmdldEZpbGVcbiAgICAgICAgICAgIGlzRGlydHkgPSBkaXJ0eSBzb3VyY2VGaWxlLCB0YXJnZXRGaWxlXG4gICAgICAgICAgICBpZiBhcmdzLnJlYnVpbGQgb3IgaXNEaXJ0eVxuICAgICAgICAgICAgICAgIHNyYyA9IHByZXR0eS5maWxlUGF0aChfLnBhZEVuZChzbGFzaC5yZWxhdGl2ZShzb3VyY2VGaWxlLCBhcmdEaXIoKSksIDQwKSwgaXNEaXJ0eSBhbmQga29sb3IucmVkIG9yIGtvbG9yLnllbGxvdylcbiAgICAgICAgICAgICAgICB0Z3QgPSBwcmV0dHkuZmlsZVBhdGgoc2xhc2gucmVsYXRpdmUodGFyZ2V0RmlsZSwgYXJnRGlyKCkpLCBrb2xvci5ncmVlbilcbiAgICAgICAgICAgICAgICBpZiBub3QgYXJncy5xdWlldFxuICAgICAgICAgICAgICAgICAgICBsb2cgc3JjLCBcIvCflKcgIFwiLCB0Z3RcbiAgICAgICAgICAgICAgICBidWlsZCBzb3VyY2VGaWxlLCBvcHQsIChzb3VyY2VGaWxlLCB0YXJnZXRGaWxlKSAtPlxuICAgICAgICAgICAgICAgICAgICBpZiBub3QgdGFyZ2V0RmlsZVxuICAgICAgICAgICAgICAgICAgICAgICAgcHJvY2Vzcy5leGl0IDFcbiAgICAgICAgICAgICAgICAgICAgbyA9IGNvbmZpZy5vYmogdGFyZ2V0RmlsZSwgb3B0XG4gICAgICAgICAgICAgICAgICAgIGlmIHNob3VsZCAnYnJvd3NlcmlmeScsIG8sIHRhcmdldEZpbGVcbiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnNvbGUubG9nIHByZXR0eS5maWxlUGF0aChfLnBhZEVuZChzbGFzaC5yZWxhdGl2ZShvLmJyb3dzZXJpZnkubWFpbiwgYXJnRGlyKCkpLCA0MCksIGtvbG9yLnllbGxvdyksIFwi8J+UpyAgXCIsIHByZXR0eS5maWxlUGF0aChzbGFzaC5yZWxhdGl2ZShvLmJyb3dzZXJpZnkub3V0LCBhcmdEaXIoKSksIGtvbG9yLmJsdWUpXG4gICAgICAgICAgICAgICAgICAgICAgICBydW5jbWQgJ2Jyb3dzZXJpZnknIFwiI3tvLmJyb3dzZXJpZnkubWFpbn0gI3tvLmJyb3dzZXJpZnkub3V0fVwiIGNvbmZpZy5wYXRoICdicm93c2VyaWZ5Jywgc2xhc2gucmVzb2x2ZSh0YXJnZXRGaWxlKSwgb3B0XG4gICAgICAgICAgICAgICAgICAgICAgICBcbmZvciBjbWQgaW4gWyd1cGRhdGUnICdidW1wJyAnYnVpbGQnICd0ZXN0JyAnY29tbWl0JyAncHVibGlzaCddXG5cbiAgICBpZiBhcmdzW2NtZF1cbiAgICAgICAgXG4gICAgICAgIGlmIG5vdCBydW5jbWQgY21kLCBhcmdzLmFyZ3VtZW50cy5qb2luKCcgJyksIHByb2Nlc3MuY3dkKClcbiAgICAgICAgICAgIHByb2Nlc3MuZXhpdCAxXG4gICAgICAgICAgICBicmVha1xuXG4gICAgICAgIGxvZyBrb2xvci5ncmF5ICfwn5SnICBkb25lJyBpZiBhcmdzLnZlcmJvc2VcblxuICAgICAgICBpZiBhcmdzLmFyZ3VtZW50cyBhbmQgY21kIGluIFsnY29tbWl0JyAnYnVtcCcgJ2J1aWxkJ11cbiAgICAgICAgICAgIGJyZWFrXG5cbmlmIGFyZ3Mud2F0Y2hcbiAgICB3YXRjaCB3bGssIG9wdFxuZWxzZSBpZiBjbWQgaW4gWydidWlsZCddXG4gICAgcHJvY2Vzcy5leGl0IDBcbiAgICAiXX0=
-//# sourceURL=../coffee/konrad.coffee
+var list = ['update','bump','build','test','commit','publish']
+for (var _190_8_ = 0; _190_8_ < list.length; _190_8_++)
+{
+    cmd = list[_190_8_]
+    if (args[cmd])
+    {
+        if (!runcmd(cmd,args.arguments.join(' '),process.cwd()))
+        {
+            process.exit(1)
+            break
+        }
+        if (args.verbose)
+        {
+            console.log(kolor.gray('🔧  done'))
+        }
+        if (args.arguments && _k_.in(cmd,['commit','bump','build']))
+        {
+            break
+        }
+    }
+}
+if (args.watch)
+{
+    watch(wlk,opt)
+}
+else if (_k_.in(cmd,['build']))
+{
+    process.exit(0)
+}

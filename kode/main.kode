@@ -6,7 +6,8 @@
 000   000  000   000  000  000   000
 ###
 
-{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp, valid } = require 'kxk'
+kxk = require 'kxk'
+{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp } = kxk
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -39,7 +40,7 @@ konradSend = (msg, args...) ->
     konradUdp.send s
 
 if args.verbose
-    
+
     klog kolor.white kolor.bold "\n#{pkg.name}", kolor.gray "v#{pkg.version}\n"
     klog kolor.yellow kolor.bold 'process'
     p = cwd: process.cwd()
@@ -49,7 +50,7 @@ if args.verbose
     klog ''
 
 if args.prefs
-    
+
     klog kolor.yellow kolor.bold 'prefs'
     klog kolor.green kolor.bold prefs.store.file
     if slash.fileExists prefs.store.file

@@ -19,5 +19,5 @@ konradError = (title, msg, srcFile) ->
         stripped = msgsplit.map (s) -> kstr.stripAnsi s
         klog "#{kolor.bold kolor.yellow title} #{kolor.r5 stripped}"
     false
-    
+
 module.exports = konradError

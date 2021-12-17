@@ -1,61 +1,68 @@
-// koffee 1.19.0
+// monsterkodi/kode 0.139.0
 
-/*
-00000000   000   000  000   000   0000000  00     00  0000000  
-000   000  000   000  0000  000  000       000   000  000   000
-0000000    000   000  000 0 000  000       000000000  000   000
-000   000  000   000  000  0000  000       000 0 000  000   000
-000   000   0000000   000   000   0000000  000   000  0000000
- */
-var args, childp, klog, kolor, konradError, pretty, ref, runcmd, slash, valid;
+var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, valid: undefined}
 
-ref = require('kxk'), args = ref.args, childp = ref.childp, klog = ref.klog, kolor = ref.kolor, slash = ref.slash, valid = ref.valid;
+var kxk, args, childp, klog, kolor, slash, pretty, konradError, runcmd
 
-pretty = require('./pretty');
+kxk = require('kxk')
+args = kxk.args
+childp = kxk.childp
+klog = kxk.klog
+kolor = kxk.kolor
+slash = kxk.slash
 
-konradError = require('./error');
+pretty = require('./pretty')
+konradError = require('./error')
 
-runcmd = function(cmd, cmdargs, cwd) {
-    var cmdpath, command, err, pkg, ref1, result;
-    try {
-        if (cmd === 'test') {
-            if (valid(cmdargs) && 0 < cmdargs.indexOf('.coffee')) {
-                cmdpath = 'mocha -c --require koffee/js/register ';
-            } else {
-                pkg = require(slash.join(cwd, 'package.json'));
-                if (!(pkg != null ? (ref1 = pkg.scripts) != null ? ref1.test : void 0 : void 0)) {
-                    klog('no test script');
-                    return true;
-                } else {
-                    cmdpath = 'npm run test';
+runcmd = function (cmd, cmdargs, cwd)
+{
+    var cmdpath, pkg, _23_35_, command, result
+
+    try
+    {
+        if (cmd === 'test')
+        {
+            if (!_k_.empty((cmdargs)) && 0 < cmdargs.indexOf('.coffee'))
+            {
+                cmdpath = 'mocha -c --require koffee/js/register '
+            }
+            else
+            {
+                pkg = require(slash.join(cwd,'package.json'))
+                if (!(pkg != null ? (_23_35_=pkg.scripts) != null ? _23_35_.test : undefined : undefined))
+                {
+                    klog('no test script')
+                    return true
+                }
+                else
+                {
+                    cmdpath = 'npm run test'
                 }
             }
-        } else {
-            cmdpath = slash.resolve(slash.join(__dirname, '..', 'bin', cmd));
         }
-        if (slash.win()) {
-            command = "bash " + cmdpath + " " + cmdargs;
-        } else {
-            command = cmdpath + " " + cmdargs;
+        else
+        {
+            cmdpath = slash.resolve(slash.join(__dirname,'..','bin',cmd))
         }
-        if (args.verbose) {
-            klog(" 🔧 ", kolor.gray(cmd), pretty.filePath(command));
+        if (slash.win())
+        {
+            command = `bash ${cmdpath} ${cmdargs}`
         }
-        result = childp.execSync(command, {
-            cwd: cwd,
-            encoding: 'utf8',
-            stdio: 'inherit',
-            shell: true
-        });
-    } catch (error) {
-        err = error;
-        konradError("command error", "command '" + cmd + "' (" + command + ") " + 'failed!', err);
-        return false;
+        else
+        {
+            command = `${cmdpath} ${cmdargs}`
+        }
+        if (args.verbose)
+        {
+            klog(" 🔧 ",kolor.gray(cmd),pretty.filePath(command))
+        }
+        result = childp.execSync(command,{cwd:cwd,encoding:'utf8',stdio:'inherit',shell:true})
     }
-    return true;
-};
-
-module.exports = runcmd;
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicnVuY21kLmpzIiwic291cmNlUm9vdCI6Ii4uL2NvZmZlZSIsInNvdXJjZXMiOlsicnVuY21kLmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7O0FBQUEsSUFBQTs7QUFRQSxNQUE4QyxPQUFBLENBQVEsS0FBUixDQUE5QyxFQUFFLGVBQUYsRUFBUSxtQkFBUixFQUFnQixlQUFoQixFQUFzQixpQkFBdEIsRUFBNkIsaUJBQTdCLEVBQW9DOztBQUVwQyxNQUFBLEdBQWMsT0FBQSxDQUFRLFVBQVI7O0FBQ2QsV0FBQSxHQUFjLE9BQUEsQ0FBUSxTQUFSOztBQUVkLE1BQUEsR0FBUyxTQUFDLEdBQUQsRUFBTSxPQUFOLEVBQWUsR0FBZjtBQUVMLFFBQUE7QUFBQTtRQUNJLElBQUcsR0FBQSxLQUFPLE1BQVY7WUFDSSxJQUFHLEtBQUEsQ0FBTSxPQUFOLENBQUEsSUFBbUIsQ0FBQSxHQUFJLE9BQU8sQ0FBQyxPQUFSLENBQWdCLFNBQWhCLENBQTFCO2dCQUNJLE9BQUEsR0FBVSx5Q0FEZDthQUFBLE1BQUE7Z0JBR0ksR0FBQSxHQUFNLE9BQUEsQ0FBUSxLQUFLLENBQUMsSUFBTixDQUFXLEdBQVgsRUFBZ0IsY0FBaEIsQ0FBUjtnQkFDTixJQUFHLG1EQUFnQixDQUFFLHVCQUFyQjtvQkFDSSxJQUFBLENBQUssZ0JBQUw7QUFDQSwyQkFBTyxLQUZYO2lCQUFBLE1BQUE7b0JBSUksT0FBQSxHQUFVLGVBSmQ7aUJBSko7YUFESjtTQUFBLE1BQUE7WUFXSSxPQUFBLEdBQVUsS0FBSyxDQUFDLE9BQU4sQ0FBYyxLQUFLLENBQUMsSUFBTixDQUFXLFNBQVgsRUFBc0IsSUFBdEIsRUFBMkIsS0FBM0IsRUFBaUMsR0FBakMsQ0FBZCxFQVhkOztRQWFBLElBQUcsS0FBSyxDQUFDLEdBQU4sQ0FBQSxDQUFIO1lBQ0ksT0FBQSxHQUFVLE9BQUEsR0FBUSxPQUFSLEdBQWdCLEdBQWhCLEdBQW1CLFFBRGpDO1NBQUEsTUFBQTtZQUdJLE9BQUEsR0FBYSxPQUFELEdBQVMsR0FBVCxHQUFZLFFBSDVCOztRQUtBLElBQUcsSUFBSSxDQUFDLE9BQVI7WUFDSSxJQUFBLENBQUssTUFBTCxFQUFZLEtBQUssQ0FBQyxJQUFOLENBQVcsR0FBWCxDQUFaLEVBQTZCLE1BQU0sQ0FBQyxRQUFQLENBQWdCLE9BQWhCLENBQTdCLEVBREo7O1FBR0EsTUFBQSxHQUFTLE1BQU0sQ0FBQyxRQUFQLENBQWdCLE9BQWhCLEVBQ0w7WUFBQSxHQUFBLEVBQVUsR0FBVjtZQUNBLFFBQUEsRUFBVSxNQURWO1lBRUEsS0FBQSxFQUFVLFNBRlY7WUFHQSxLQUFBLEVBQVUsSUFIVjtTQURLLEVBdEJiO0tBQUEsYUFBQTtRQThCTTtRQUNGLFdBQUEsQ0FBWSxlQUFaLEVBQTRCLFdBQUEsR0FBWSxHQUFaLEdBQWdCLEtBQWhCLEdBQXFCLE9BQXJCLEdBQTZCLElBQTdCLEdBQWlDLFNBQTdELEVBQXlFLEdBQXpFO0FBQ0EsZUFBTyxNQWhDWDs7V0FpQ0E7QUFuQ0s7O0FBcUNULE1BQU0sQ0FBQyxPQUFQLEdBQWlCIiwic291cmNlc0NvbnRlbnQiOlsiIyMjXG4wMDAwMDAwMCAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAgMDAwMDAwMCAgMDAgICAgIDAwICAwMDAwMDAwICBcbjAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAwICAwMDAgIDAwMCAgICAgICAwMDAgICAwMDAgIDAwMCAgIDAwMFxuMDAwMDAwMCAgICAwMDAgICAwMDAgIDAwMCAwIDAwMCAgMDAwICAgICAgIDAwMDAwMDAwMCAgMDAwICAgMDAwXG4wMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAwMDAwICAwMDAgICAgICAgMDAwIDAgMDAwICAwMDAgICAwMDBcbjAwMCAgIDAwMCAgIDAwMDAwMDAgICAwMDAgICAwMDAgICAwMDAwMDAwICAwMDAgICAwMDAgIDAwMDAwMDAgIFxuIyMjXG5cbnsgYXJncywgY2hpbGRwLCBrbG9nLCBrb2xvciwgc2xhc2gsIHZhbGlkIH0gPSByZXF1aXJlICdreGsnXG5cbnByZXR0eSAgICAgID0gcmVxdWlyZSAnLi9wcmV0dHknXG5rb25yYWRFcnJvciA9IHJlcXVpcmUgJy4vZXJyb3InXG5cbnJ1bmNtZCA9IChjbWQsIGNtZGFyZ3MsIGN3ZCkgLT5cbiAgICBcbiAgICB0cnlcbiAgICAgICAgaWYgY21kID09ICd0ZXN0J1xuICAgICAgICAgICAgaWYgdmFsaWQoY21kYXJncykgYW5kIDAgPCBjbWRhcmdzLmluZGV4T2YoJy5jb2ZmZWUnKVxuICAgICAgICAgICAgICAgIGNtZHBhdGggPSAnbW9jaGEgLWMgLS1yZXF1aXJlIGtvZmZlZS9qcy9yZWdpc3RlciAnXG4gICAgICAgICAgICBlbHNlXG4gICAgICAgICAgICAgICAgcGtnID0gcmVxdWlyZSBzbGFzaC5qb2luIGN3ZCwgJ3BhY2thZ2UuanNvbidcbiAgICAgICAgICAgICAgICBpZiBub3QgcGtnPy5zY3JpcHRzPy50ZXN0XG4gICAgICAgICAgICAgICAgICAgIGtsb2cgJ25vIHRlc3Qgc2NyaXB0J1xuICAgICAgICAgICAgICAgICAgICByZXR1cm4gdHJ1ZVxuICAgICAgICAgICAgICAgIGVsc2VcbiAgICAgICAgICAgICAgICAgICAgY21kcGF0aCA9ICducG0gcnVuIHRlc3QnXG4gICAgICAgIGVsc2VcbiAgICAgICAgICAgIGNtZHBhdGggPSBzbGFzaC5yZXNvbHZlIHNsYXNoLmpvaW4gX19kaXJuYW1lLCAnLi4nICdiaW4nIGNtZFxuICAgICAgICBcbiAgICAgICAgaWYgc2xhc2gud2luKClcbiAgICAgICAgICAgIGNvbW1hbmQgPSBcImJhc2ggI3tjbWRwYXRofSAje2NtZGFyZ3N9XCJcbiAgICAgICAgZWxzZVxuICAgICAgICAgICAgY29tbWFuZCA9IFwiI3tjbWRwYXRofSAje2NtZGFyZ3N9XCJcbiAgICAgICAgICAgICAgICAgICAgICAgIFxuICAgICAgICBpZiBhcmdzLnZlcmJvc2VcbiAgICAgICAgICAgIGtsb2cgXCIg8J+UpyBcIiBrb2xvci5ncmF5KGNtZCksIHByZXR0eS5maWxlUGF0aChjb21tYW5kKVxuICAgICAgICAgICAgICAgIFxuICAgICAgICByZXN1bHQgPSBjaGlsZHAuZXhlY1N5bmMgY29tbWFuZCxcbiAgICAgICAgICAgIGN3ZDrCoCAgICAgY3dkXG4gICAgICAgICAgICBlbmNvZGluZzrCoCd1dGY4J1xuICAgICAgICAgICAgc3RkaW86wqAgICAnaW5oZXJpdCdcbiAgICAgICAgICAgIHNoZWxsOiAgICB0cnVlXG4gICAgICAgICAgICBcbiAgICAgICAgIyBrbG9nICdyZXN1bHQnIHJlc3VsdFxuICAgICAgICAgIFxuICAgIGNhdGNoIGVyclxuICAgICAgICBrb25yYWRFcnJvciBcImNvbW1hbmQgZXJyb3JcIiBcImNvbW1hbmQgJyN7Y21kfScgKCN7Y29tbWFuZH0pICN7J2ZhaWxlZCEnfVwiIGVyclxuICAgICAgICByZXR1cm4gZmFsc2VcbiAgICB0cnVlXG5cbm1vZHVsZS5leHBvcnRzID0gcnVuY21kXG4iXX0=
-//# sourceURL=../coffee/runcmd.coffee
+    catch (err)
+    {
+        konradError("command error",`command '${cmd}' (${command}) ${'failed!'}`,err)
+        return false
+    }
+    return true
+}
+module.exports = runcmd

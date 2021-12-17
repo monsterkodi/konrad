@@ -42,8 +42,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
 
             when 'styl'
                 stylus = require 'stylus'
-                stylus sourceText
-                    .render()
+                stylus(sourceText).render()
                     
             when 'pug'
                 pug = require 'pug'

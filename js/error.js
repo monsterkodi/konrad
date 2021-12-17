@@ -1,33 +1,33 @@
-// koffee 1.19.0
+// monsterkodi/kode 0.139.0
 
-/*
-00000000  00000000   00000000    0000000   00000000
-000       000   000  000   000  000   000  000   000
-0000000   0000000    0000000    000   000  0000000
-000       000   000  000   000  000   000  000   000
-00000000  000   000  000   000   0000000   000   000
- */
-var klog, kolor, konradError, kstr, pretty, ref, title;
+var _k_
 
-ref = require('kxk'), klog = ref.klog, kolor = ref.kolor, kstr = ref.kstr, title = ref.title;
+var klog, kolor, kstr, title, pretty, konradError
 
-pretty = require('./pretty');
+klog = require('kxk').klog
+kolor = require('kxk').kolor
+kstr = require('kxk').kstr
+title = require('kxk').title
 
-konradError = function(title, msg, srcFile) {
-    var msgsplit, stripped;
-    if (title === 'compile error' || 'command error') {
-        klog(pretty.time(), "😡  " + msg);
-    } else {
-        msgsplit = msg.split('\n');
-        stripped = msgsplit.map(function(s) {
-            return kstr.stripAnsi(s);
-        });
-        klog((kolor.bold(kolor.yellow(title))) + " " + (kolor.r5(stripped)));
+pretty = require('./pretty')
+
+konradError = function (title, msg, srcFile)
+{
+    var msgsplit, stripped
+
+    if (title === 'compile error' || 'command error')
+    {
+        klog(pretty.time(),`😡  ${msg}`)
     }
-    return false;
-};
-
-module.exports = konradError;
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXJyb3IuanMiLCJzb3VyY2VSb290IjoiLi4vY29mZmVlIiwic291cmNlcyI6WyJlcnJvci5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQTs7Ozs7OztBQUFBLElBQUE7O0FBUUEsTUFBK0IsT0FBQSxDQUFRLEtBQVIsQ0FBL0IsRUFBRSxlQUFGLEVBQVEsaUJBQVIsRUFBZSxlQUFmLEVBQXFCOztBQUVyQixNQUFBLEdBQVMsT0FBQSxDQUFRLFVBQVI7O0FBRVQsV0FBQSxHQUFjLFNBQUMsS0FBRCxFQUFRLEdBQVIsRUFBYSxPQUFiO0FBRVYsUUFBQTtJQUFBLElBQUcsS0FBQSxLQUFTLGVBQVQsSUFBNEIsZUFBL0I7UUFDSSxJQUFBLENBQUssTUFBTSxDQUFDLElBQVAsQ0FBQSxDQUFMLEVBQW9CLE1BQUEsR0FBTyxHQUEzQixFQURKO0tBQUEsTUFBQTtRQUdJLFFBQUEsR0FBVyxHQUFHLENBQUMsS0FBSixDQUFVLElBQVY7UUFDWCxRQUFBLEdBQVcsUUFBUSxDQUFDLEdBQVQsQ0FBYSxTQUFDLENBQUQ7bUJBQU8sSUFBSSxDQUFDLFNBQUwsQ0FBZSxDQUFmO1FBQVAsQ0FBYjtRQUNYLElBQUEsQ0FBTyxDQUFDLEtBQUssQ0FBQyxJQUFOLENBQVcsS0FBSyxDQUFDLE1BQU4sQ0FBYSxLQUFiLENBQVgsQ0FBRCxDQUFBLEdBQStCLEdBQS9CLEdBQWlDLENBQUMsS0FBSyxDQUFDLEVBQU4sQ0FBUyxRQUFULENBQUQsQ0FBeEMsRUFMSjs7V0FNQTtBQVJVOztBQVVkLE1BQU0sQ0FBQyxPQUFQLEdBQWlCIiwic291cmNlc0NvbnRlbnQiOlsiIyMjXG4wMDAwMDAwMCAgMDAwMDAwMDAgICAwMDAwMDAwMCAgICAwMDAwMDAwICAgMDAwMDAwMDBcbjAwMCAgICAgICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDBcbjAwMDAwMDAgICAwMDAwMDAwICAgIDAwMDAwMDAgICAgMDAwICAgMDAwICAwMDAwMDAwXG4wMDAgICAgICAgMDAwICAgMDAwICAwMDAgICAwMDAgIDAwMCAgIDAwMCAgMDAwICAgMDAwXG4wMDAwMDAwMCAgMDAwICAgMDAwICAwMDAgICAwMDAgICAwMDAwMDAwICAgMDAwICAgMDAwXG4jIyNcblxueyBrbG9nLCBrb2xvciwga3N0ciwgdGl0bGUgfSA9IHJlcXVpcmUgJ2t4aydcblxucHJldHR5ID0gcmVxdWlyZSAnLi9wcmV0dHknXG5cbmtvbnJhZEVycm9yID0gKHRpdGxlLCBtc2csIHNyY0ZpbGUpIC0+XG4gICAgXG4gICAgaWYgdGl0bGUgPT0gJ2NvbXBpbGUgZXJyb3InIG9yICdjb21tYW5kIGVycm9yJ1xuICAgICAgICBrbG9nIHByZXR0eS50aW1lKCksIFwi8J+YoSAgI3ttc2d9XCJcbiAgICBlbHNlXG4gICAgICAgIG1zZ3NwbGl0ID0gbXNnLnNwbGl0ICdcXG4nXG4gICAgICAgIHN0cmlwcGVkID0gbXNnc3BsaXQubWFwIChzKSAtPiBrc3RyLnN0cmlwQW5zaSBzXG4gICAgICAgIGtsb2cgXCIje2tvbG9yLmJvbGQga29sb3IueWVsbG93IHRpdGxlfSAje2tvbG9yLnI1IHN0cmlwcGVkfVwiXG4gICAgZmFsc2VcbiAgICBcbm1vZHVsZS5leHBvcnRzID0ga29ucmFkRXJyb3JcbiJdfQ==
-//# sourceURL=../coffee/error.coffee
+    else
+    {
+        msgsplit = msg.split('\n')
+        stripped = msgsplit.map(function (s)
+        {
+            return kstr.stripAnsi(s)
+        })
+        klog(`${kolor.bold(kolor.yellow(title))} ${kolor.r5(stripped)}`)
+    }
+    return false
+}
+module.exports = konradError

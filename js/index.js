@@ -1,19 +1,14 @@
-// koffee 1.19.0
+// monsterkodi/kode 0.139.0
 
-/*
-000  000   000  0000000    00000000  000   000  
-000  0000  000  000   000  000        000 000   
-000  000 0 000  000   000  0000000     00000    
-000  000  0000  000   000  000        000 000   
-000  000   000  0000000    00000000  000   000
- */
-var ref;
+var _k_
 
-if ((((ref = module.parent) != null ? ref.filename : void 0) == null) || module.parent.filename.endsWith('default_app.asar\\main.js') || module.parent.filename.endsWith('default_app.asar/main.js')) {
-    require('./main');
-} else {
-    require('./konrad');
+var _9_30_, _9_20_
+
+if (!((module.parent != null ? module.parent.filename : undefined) != null) || module.parent.filename.endsWith('default_app.asar\\main.js') || module.parent.filename.endsWith('default_app.asar/main.js'))
+{
+    require('./main')
 }
-
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiLi4vY29mZmVlIiwic291cmNlcyI6WyJpbmRleC5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQTs7Ozs7OztBQUFBLElBQUE7O0FBUUEsSUFBTyxpRUFBSixJQUFnQyxNQUFNLENBQUMsTUFBTSxDQUFDLFFBQVEsQ0FBQyxRQUF2QixDQUFnQywyQkFBaEMsQ0FBaEMsSUFBZ0csTUFBTSxDQUFDLE1BQU0sQ0FBQyxRQUFRLENBQUMsUUFBdkIsQ0FBZ0MsMEJBQWhDLENBQW5HO0lBQ0ksT0FBQSxDQUFRLFFBQVIsRUFESjtDQUFBLE1BQUE7SUFHSSxPQUFBLENBQVEsVUFBUixFQUhKIiwic291cmNlc0NvbnRlbnQiOlsiIyMjXG4wMDAgIDAwMCAgIDAwMCAgMDAwMDAwMCAgICAwMDAwMDAwMCAgMDAwICAgMDAwICBcbjAwMCAgMDAwMCAgMDAwICAwMDAgICAwMDAgIDAwMCAgICAgICAgMDAwIDAwMCAgIFxuMDAwICAwMDAgMCAwMDAgIDAwMCAgIDAwMCAgMDAwMDAwMCAgICAgMDAwMDAgICAgXG4wMDAgIDAwMCAgMDAwMCAgMDAwICAgMDAwICAwMDAgICAgICAgIDAwMCAwMDAgICBcbjAwMCAgMDAwICAgMDAwICAwMDAwMDAwICAgIDAwMDAwMDAwICAwMDAgICAwMDAgIFxuIyMjXG5cbmlmIG5vdCBtb2R1bGUucGFyZW50Py5maWxlbmFtZT8gb3IgbW9kdWxlLnBhcmVudC5maWxlbmFtZS5lbmRzV2l0aCgnZGVmYXVsdF9hcHAuYXNhclxcXFxtYWluLmpzJykgb3IgbW9kdWxlLnBhcmVudC5maWxlbmFtZS5lbmRzV2l0aCgnZGVmYXVsdF9hcHAuYXNhci9tYWluLmpzJylcbiAgICByZXF1aXJlICcuL21haW4nXG5lbHNlXG4gICAgcmVxdWlyZSAnLi9rb25yYWQnXG4gICAgIl19
-//# sourceURL=../coffee/index.coffee
+else
+{
+    require('./konrad')
+}
