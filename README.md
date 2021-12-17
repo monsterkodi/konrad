@@ -1,4 +1,4 @@
-<table>
+<table style="border:none;">
 <tr>
   <td><img align='center' src="https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_sleep.png"></td>
   <td><img align='center' src="https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_idle.png"></td>
