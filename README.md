@@ -1,7 +1,12 @@
-
-##### builds my stuff
-
-![konrad_sleep](img/konrad_sleep.png)
-![konrad_idle](img/konrad_idle.png)
-![konrad_ok](img/konrad_ok.png)
-![konrad_error](img/konrad_error.png)
+<center>
+    <img id='img' src="https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_sleep.png">
+</center>
+<script type="text/javascript">
+var i = 0
+imgs = ["https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_sleep.png",
+        "https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_idle.png",
+        "https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_ok.png",
+        "https://raw.githubusercontent.com/monsterkodi/konrad/master/img/konrad_error.png"]
+swap = function() { document.getElementById("img").src = imgs[++i%4] }
+window.setInterval(swap, 1000);
+</script>
