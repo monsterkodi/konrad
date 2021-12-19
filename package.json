@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.202.0",
+  "version": "0.203.0",
   "keywords": [
     "build",
     "tool"
@@ -10,6 +10,9 @@
   "author": "monsterkodi",
   "repository": "github:monsterkodi/konrad.git",
   "main": "js/index.js",
+  "scripts": {
+    "build": "./node_modules/.bin/kode -Ho js kode/*.kode"
+  },
   "bin": {
     "konrad": "./bin/konrad"
   },

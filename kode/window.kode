@@ -11,7 +11,7 @@
 w = new win
     dir:    __dirname
     pkg:    require '../package.json'
-    menu:   '../coffee/menu.noon'
+    menu:   '../kode/menu.noon'
     icon:   '../img/menu@2x.png'
 
 #  0000000   00000000   00000000  000   000  

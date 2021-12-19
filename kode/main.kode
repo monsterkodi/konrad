@@ -34,7 +34,7 @@ konrad         = null
 konradVersion  = null
 
 konradUdp = new udp port:9559
-konradSend = (msg, args...) -> 
+konradSend = (msg, args...) ->
     s = [msg+':'].concat(args).join ' '
     # klog 'konradSend' s
     konradUdp.send s
