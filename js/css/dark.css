@@ -1,0 +1,83 @@
+/*
+0000000     0000000   00000000   000   000  
+000   000  000   000  000   000  000  000   
+000   000  000000000  0000000    0000000    
+000   000  000   000  000   000  000  000   
+0000000    000   000  000   000  000   000  
+*/
+#overlay {
+  background: #0d0d0d;
+}
+.task .time {
+  color: #555;
+}
+.task .file {
+  color: #ff0;
+}
+.task .message {
+  color: #888;
+}
+@-moz-keyframes highlightTime {
+  0%, 100% {
+    color: #555;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@-webkit-keyframes highlightTime {
+  0%, 100% {
+    color: #555;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@-o-keyframes highlightTime {
+  0%, 100% {
+    color: #555;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@keyframes highlightTime {
+  0%, 100% {
+    color: #555;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@-moz-keyframes highlightFile {
+  0%, 100% {
+    color: #ff0;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@-webkit-keyframes highlightFile {
+  0%, 100% {
+    color: #ff0;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@-o-keyframes highlightFile {
+  0%, 100% {
+    color: #ff0;
+  }
+  50% {
+    color: #89f;
+  }
+}
+@keyframes highlightFile {
+  0%, 100% {
+    color: #ff0;
+  }
+  50% {
+    color: #89f;
+  }
+}

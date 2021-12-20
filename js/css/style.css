@@ -1,0 +1,110 @@
+body {
+  font-family: fontMono;
+  font-size: 14px;
+}
+#main {
+  padding: 6px;
+  overflow: auto;
+  -webkit-user-select: text;
+}
+.task {
+  cursor: pointer;
+  white-space: nowrap;
+  animation: highlightTask 0.7s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+}
+.task .time {
+  animation: highlightTime 1s;
+  animation-timing-function: ease-in;
+  animation-iteration-count: 1;
+}
+.task .file {
+  animation: highlightFile 1.3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+}
+#overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+.fade-in {
+  animation: fadeIn 120s;
+  animation-timing-function: ease-in-out;
+}
+.info {
+  position: absolute;
+  pointer-events: none;
+  max-height: 300px;
+  height: 70%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+@-moz-keyframes highlightTask {
+  0%, 100% {
+    font-size: 14px;
+  }
+  50% {
+    font-size: 12px;
+  }
+}
+@-webkit-keyframes highlightTask {
+  0%, 100% {
+    font-size: 14px;
+  }
+  50% {
+    font-size: 12px;
+  }
+}
+@-o-keyframes highlightTask {
+  0%, 100% {
+    font-size: 14px;
+  }
+  50% {
+    font-size: 12px;
+  }
+}
+@keyframes highlightTask {
+  0%, 100% {
+    font-size: 14px;
+  }
+  50% {
+    font-size: 12px;
+  }
+}
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
