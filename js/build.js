@@ -1,12 +1,12 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var _, args, fs, kerror, klog, kolor, slash, pretty, config, argDir, should, target, compile, runcmd, build, writeCompiled
+var argDir, args, build, compile, config, fs, kerror, klog, kolor, pretty, runcmd, should, slash, target, writeCompiled, _
 
 _ = require('kxk')._
 args = require('kxk').args
-undefined = require('kxk').undefined
+empty = require('kxk').empty
 fs = require('kxk').fs
 kerror = require('kxk').kerror
 klog = require('kxk').klog
@@ -23,7 +23,7 @@ runcmd = require('./runcmd')
 
 build = function (sourceFile, opt, cb)
 {
-    var ext, cfg, main, out, pwd, targetFile
+    var cfg, ext, main, out, pwd, targetFile
 
     if (args.debug)
     {

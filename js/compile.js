@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_
 
-var klog, kolor, noon, slash, koffee, kode, pretty, konradError, compile
+var compile, klog, kode, koffee, kolor, konradError, pretty, slash
 
 klog = require('kxk').klog
 kolor = require('kxk').kolor
@@ -22,7 +22,7 @@ compile = function (sourceText, ext, sourceFile, targetFile, cfg)
     {
         compiled = ((function ()
         {
-            var mapcfg, jsMap, stylus, pug
+            var jsMap, mapcfg, pug, stylus
 
             switch (ext)
             {

@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, valid: undefined}
 
-var kxk, app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp, pkg, electron, konrad, konradVersion, konradUdp, konradSend, p, startKonrad, createWindow, quit, setRootDir, highlight
+var app, args, childp, createWindow, electron, highlight, klog, kolor, konrad, konradSend, konradUdp, konradVersion, kstr, kxk, p, pkg, post, prefs, quit, setRootDir, slash, startKonrad, udp
 
 kxk = require('kxk')
 app = kxk.app
@@ -61,7 +61,7 @@ post.on('Restart konrad',function ()
 
 startKonrad = function (rootDir)
 {
-    var treekill, path
+    var path, treekill
 
     prefs.set('rootDir',rootDir)
     if ((konrad != null))
@@ -222,7 +222,7 @@ post.on('winReady',function (wID)
 
 highlight = function ()
 {
-    var _220_26_, unhighlight, _228_33_
+    var unhighlight, _220_26_, _228_33_
 
     if (!(app.tray != null))
     {

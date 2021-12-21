@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return (l != null ? typeof l.length === 'number' ? l : [] : [])}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, valid: undefined}
 
-var kxk, _, args, childp, kerror, klog, klor, slash, render, argDir, pretty, gitStatus, gitFetch, doFetch, doStatus
+var argDir, args, childp, doFetch, doStatus, gitFetch, gitStatus, kerror, klog, klor, kxk, pretty, render, slash, _
 
 kxk = require('kxk')
 _ = kxk._
@@ -20,7 +20,7 @@ pretty = require('./pretty')
 
 gitStatus = function (sourceFile)
 {
-    var gitDir, git
+    var git, gitDir
 
     gitDir = slash.dir(sourceFile)
     git = require('simple-git')(gitDir)
@@ -29,7 +29,7 @@ gitStatus = function (sourceFile)
 
 gitFetch = function (sourceFile)
 {
-    var gitDir, git
+    var git, gitDir
 
     gitDir = slash.dir(sourceFile)
     git = require('simple-git')(gitDir)
@@ -52,7 +52,7 @@ doStatus = function (git, gitDir, sourceFile)
 {
     return git.status(function (err, status)
     {
-        var changes, fileLists, k, v, l, m, b, f, _83_35_, d, arglist, filtered, a, prfx, gitFile, relPath, lame, change, res, diff, c, start, ls, split, rgs, gitPath, aheadBehind
+        var a, aheadBehind, arglist, b, c, change, changes, d, diff, f, fileLists, filtered, gitFile, gitPath, k, l, lame, ls, m, prfx, relPath, res, rgs, split, start, v, _83_35_
 
         if (err)
         {

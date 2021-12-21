@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {list: function (l) {return (l != null ? typeof l.length === 'number' ? l : [] : [])}}
 
-var args, klog, kolor, slash, argDir, pretty, should
+var argDir, args, klog, kolor, pretty, should, slash
 
 args = require('kxk').args
 klog = require('kxk').klog
@@ -14,7 +14,7 @@ pretty = require('./pretty')
 
 should = function (k, o, p)
 {
-    var keys, i, r
+    var i, keys, r
 
     if (!(o[k] != null))
     {
@@ -37,7 +37,7 @@ should = function (k, o, p)
     {
         i = list[_27_10_]
         r = i
-        if (typeof(i) == 'string')
+        if (typeof(i) === 'string')
         {
             r = new RegExp(i)
         }

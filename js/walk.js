@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var kerror, slash, walkdir, argDir, should, target, config, walk
+var argDir, config, kerror, should, slash, target, walk, walkdir
 
 kerror = require('kxk').kerror
 slash = require('kxk').slash
@@ -15,7 +15,7 @@ config = require('./config')
 
 walk = function (wlk, opt, cb)
 {
-    if (typeof(opt) == 'function')
+    if (typeof(opt) === 'function')
     {
         cb = opt
         opt = {}
@@ -24,7 +24,7 @@ walk = function (wlk, opt, cb)
     {
         return walkdir.sync(argDir(),function (wp)
         {
-            var p, o
+            var o, p
 
             p = slash.path(wp)
             o = config.obj(p,opt)

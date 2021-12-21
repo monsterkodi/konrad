@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var kxk, _, args, klog, kolor, slash, watch, pretty, should, runcmd, config, build, pkg, watcher, Watch
+var args, build, config, klog, kolor, kxk, pkg, pretty, runcmd, should, slash, watch, Watch, watcher, _
 
 kxk = require('kxk')
 _ = kxk._
@@ -26,7 +26,7 @@ Watch = function (wlk, opt)
 
     start = function (cb)
     {
-        var pass, d, _29_30_, v
+        var d, pass, v, _29_30_
 
         pass = function (p)
         {

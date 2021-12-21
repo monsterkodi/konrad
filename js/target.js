@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {list: function (l) {return (l != null ? typeof l.length === 'number' ? l : [] : [])}}
 
-var _, args, klog, kolor, slash, argDir, config, pretty, swapLastDir, target
+var argDir, args, config, klog, kolor, pretty, slash, swapLastDir, target, _
 
 _ = require('kxk')._
 args = require('kxk').args
@@ -28,7 +28,7 @@ swapLastDir = function (path, from, to)
 
 target = function (sourceFile, opt)
 {
-    var ext, o, _27_21_, matches, r, targetFile, _38_22_, k, v, _42_18_, _45_29_
+    var ext, k, matches, o, r, targetFile, v, _27_21_, _38_22_, _42_18_, _45_29_
 
     ext = slash.ext(sourceFile)
     o = config.obj(sourceFile,opt)

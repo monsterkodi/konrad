@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, valid: undefined}
 
-var kxk, args, childp, klog, kolor, slash, pretty, konradError, runcmd
+var args, childp, klog, kolor, konradError, kxk, pretty, runcmd, slash
 
 kxk = require('kxk')
 args = kxk.args
@@ -16,7 +16,7 @@ konradError = require('./error')
 
 runcmd = function (cmd, cmdargs, cwd)
 {
-    var cmdpath, pkg, _23_35_, command, result
+    var cmdpath, command, pkg, result, _23_35_
 
     try
     {

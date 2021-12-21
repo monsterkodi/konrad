@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_
 
@@ -9,7 +9,7 @@ kolor = require('kxk').kolor
 
 render = function (rgs)
 {
-    var result, plain, index, rng, cfunc
+    var cfunc, index, plain, result, rng
 
     result = ''
     plain = ''

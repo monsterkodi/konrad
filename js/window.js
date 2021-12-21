@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var $, _, elem, post, slash, title, udp, win, w, koSend, openFile, tasks, showOverlay, fadeOverlay, taskDiv, onTask, onMessage, onError, onFile
+var $, elem, fadeOverlay, koSend, onError, onFile, onMessage, onTask, openFile, post, showOverlay, slash, taskDiv, tasks, title, udp, w, win, _
 
 $ = require('kxk').$
 _ = require('kxk')._
@@ -28,7 +28,7 @@ tasks = {}
 
 showOverlay = function ()
 {
-    var img, _39_17_, overlay
+    var img, overlay, _39_17_
 
     img = slash.fileUrl(slash.join(__dirname,'..','img','about.png'))
     ;($('#overlay') != null ? $('#overlay').remove() : undefined)
@@ -92,7 +92,7 @@ post.on('clearLog',function ()
 
 taskDiv = function (opt)
 {
-    var main, div, tim, fil, _108_30_, _109_33_, _1_9_
+    var div, fil, main, tim, _1_9_, _108_30_, _109_33_
 
     main = $('main')
     if (_.isEmpty(tasks))
@@ -126,7 +126,7 @@ taskDiv = function (opt)
 
 onTask = function (s)
 {
-    var time, sourceTarget, source, target, div
+    var div, source, sourceTarget, target, time
 
     post.toMain('highlight')
     var _130_25_ = s.split(' 👍 ') ; time = _130_25_[0]    ; sourceTarget = _130_25_[1]
@@ -157,7 +157,7 @@ onTask = function (s)
 
 onMessage = function (s)
 {
-    var time, msg, div
+    var div, msg, time
 
     var _157_16_ = s.split(' 🔧 ') ; time = _157_16_[0]    ; msg = _157_16_[1]
 
@@ -166,7 +166,7 @@ onMessage = function (s)
 
 onError = function (s, html)
 {
-    var key, task, lines, htmls, fileHtml, time, msg, _183_16_, div, i, pre
+    var div, fileHtml, htmls, i, key, lines, msg, pre, task, time, _183_16_
 
     post.toMain('showWindow')
     post.toMain('highlight')
@@ -215,7 +215,7 @@ onError = function (s, html)
 
 onFile = function (s, html)
 {
-    var htmls, fileHtml, time, file, div
+    var div, file, fileHtml, htmls, time
 
     post.toMain('showWindow')
     post.toMain('highlight')

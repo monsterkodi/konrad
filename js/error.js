@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.146.0
+// monsterkodi/kode 0.172.0
 
 var _k_
 
-var klog, kolor, kstr, title, pretty, konradError
+var klog, kolor, konradError, kstr, pretty, title
 
 klog = require('kxk').klog
 kolor = require('kxk').kolor
