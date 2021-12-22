@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.172.0
+// monsterkodi/kode 0.181.0
 
 var _k_
 
@@ -13,7 +13,7 @@ render = function (rgs)
 
     result = ''
     plain = ''
-    for (index = 0; index < rgs.length; index++)
+    for (var _16_18_ = index = 0, _16_22_ = rgs.length; (_16_18_ <= _16_22_ ? index < rgs.length : index > rgs.length); (_16_18_ <= _16_22_ ? ++index : --index))
     {
         rng = rgs[index]
         while (plain.length < rng.start)

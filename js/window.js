@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.172.0
+// monsterkodi/kode 0.181.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -196,7 +196,7 @@ onError = function (s, html)
         }
     }
     div = taskDiv({time:time,icon:'😡',message:msg})
-    for (i = 0; i < lines.length; i++)
+    for (var _189_14_ = i = 0, _189_18_ = lines.length; (_189_14_ <= _189_18_ ? i < lines.length : i > lines.length); (_189_14_ <= _189_18_ ? ++i : --i))
     {
         pre = document.createElement('pre')
         pre.classList.add('error')
