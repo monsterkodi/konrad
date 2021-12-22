@@ -57,10 +57,10 @@ post.on 'konradExit' (s) ->
 post.on 'konradError' (s, html) -> onError s, html
 post.on 'konradOutput' (s, html) ->
     
-    if      / 😡 /.test s then onError   s, html
-    if      / 🔺 /.test s then onFile    s, html
-    else if / 👍 /.test s then onTask    s, html
-    else if / 🔧 /.test s then onMessage s, html
+    if      ' 😡 ' in s then onError   s, html
+    if      ' 🔺 ' in s then onFile    s, html
+    else if ' 👍 ' in s then onTask    s, html
+    else if ' 🔧 ' in s then onMessage s, html
     # else log 'konrad' s
 
 post.on 'konradVersion' (s) ->

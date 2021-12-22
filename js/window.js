@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.181.0
+// monsterkodi/kode 0.190.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -54,19 +54,19 @@ post.on('konradError',function (s, html)
 })
 post.on('konradOutput',function (s, html)
 {
-    if (/ 😡 /.test(s))
+    if (_k_.in(' 😡 ',s))
     {
         onError(s,html)
     }
-    if (/ 🔺 /.test(s))
+    if (_k_.in(' 🔺 ',s))
     {
         return onFile(s,html)
     }
-    else if (/ 👍 /.test(s))
+    else if (_k_.in(' 👍 ',s))
     {
         return onTask(s,html)
     }
-    else if (/ 🔧 /.test(s))
+    else if (_k_.in(' 🔧 ',s))
     {
         return onMessage(s,html)
     }

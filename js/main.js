@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.181.0
+// monsterkodi/kode 0.190.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, valid: undefined}
 
@@ -110,7 +110,7 @@ startKonrad = function (rootDir)
         var s, _118_23_
 
         s = kstr.stripAnsi(data.toString())
-        if (/\ 👁\ \ /.test(s))
+        if (_k_.in(' 👁 ',s))
         {
             konradVersion = s.split('👁  ')[1]
             post.toWins('konradVersion',konradVersion)
@@ -118,7 +118,7 @@ startKonrad = function (rootDir)
         }
         else if ((app.win != null))
         {
-            if (/ 😡 /.test(s))
+            if (_k_.in(' 😡 ',s))
             {
                 post.toWins('konradError',s,kstr.ansi2html(data.toString()))
                 konradSend('error',s)
@@ -133,7 +133,7 @@ startKonrad = function (rootDir)
         }
         else
         {
-            if (/ 😡 /.test(s))
+            if (_k_.in(' 😡 ',s))
             {
                 konradSend('error',s)
                 return createWindow('konradError',s,kstr.ansi2html(data.toString()))

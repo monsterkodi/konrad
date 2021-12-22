@@ -111,12 +111,12 @@ startKonrad = (rootDir) ->
         
         s = kstr.stripAnsi data.toString()
         
-        if /\ 👁\ \ /.test s
+        if ' 👁 ' in s
             konradVersion = s.split('👁  ')[1]
             post.toWins 'konradVersion' konradVersion
             konradSend 'version' konradVersion
         else if app.win?
-            if / 😡 /.test s
+            if ' 😡 ' in s
                 post.toWins 'konradError' s, kstr.ansi2html data.toString()
                 konradSend 'error' s
                 app.win.show()
@@ -125,7 +125,7 @@ startKonrad = (rootDir) ->
                 post.toWins 'konradOutput' s, kstr.ansi2html data.toString()
                 konradSend 'output' s
         else
-            if / 😡 /.test s
+            if ' 😡 ' in s
                 konradSend 'error' s
                 createWindow 'konradError' s, kstr.ansi2html data.toString()
             else
