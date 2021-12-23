@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.190.0
+// monsterkodi/kode 0.201.0
 
 var _k_ = {list: function (l) {return (l != null ? typeof l.length === 'number' ? l : [] : [])}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -23,24 +23,25 @@ status = require('./status')
 watch = require('./watch')
 walk = require('./walk')
 pkg = require(`${__dirname}/../package`)
-args = args.init(`arguments  depend on options                            **
-run        build dirty or missing targets in dir        false
-rebuild    rebuild all targets in dir                   false  -R
-watch      watch directory for changes                  false
-info       show build status of dir                     false
-bump       bump package.* version [major|minor|patch]   false
-build      make package                                 false  -m
-diff       show git diff of file/dir                    false
-status     show git status of file/dir                  false
-fetch      fetch and show git status of file/dir        false
-commit     add, commit and push [msg]                   false
-update     update npm packages                          false
-publish    bump, commit & publish to npm [msg]          false
-test       run tests                                    false
-verbose    log more                                     false
-quiet      log nothing                                  false
-debug      log debug                                    false  -D
-logtime    log with time                                true`,{pkg:pkg})
+args = args.init(`konrad
+    arguments  depend on options                            **
+    run        build dirty or missing targets in dir        = false
+    rebuild    rebuild all targets in dir                   = false  -R
+    watch      watch directory for changes                  = false
+    info       show build status of dir                     = false
+    bump       bump package.* version [major|minor|patch]   = false
+    build      make package                                 = false  -m
+    diff       show git diff of file/dir                    = false
+    status     show git status of file/dir                  = false
+    fetch      fetch and show git status of file/dir        = false
+    commit     add, commit and push [msg]                   = false
+    update     update npm packages                          = false
+    publish    bump, commit & publish to npm [msg]          = false
+    test       run tests                                    = false
+    verbose    log more                                     = false
+    quiet      log nothing                                  = false
+    debug      log debug                                    = false  -D
+    logtime    log with time                                = true`,pkg)
 actions = ['bump','build','commit','publish','update','test','watch','run','rebuild','info','status','fetch','diff']
 if (!actions.map(function (a)
     {
@@ -102,7 +103,7 @@ if (args.status || args.fetch)
     gitcount = 0
     walk(wlk,optall,function (sourceFile, targetFile)
     {
-        var i, _144_30_
+        var i, _145_30_
 
         if (!targetFile)
         {
@@ -121,9 +122,9 @@ if (args.status || args.fetch)
             if (slash.dirExists(sourceFile))
             {
                 var list = _k_.list(opt.ignore)
-                for (var _143_22_ = 0; _143_22_ < list.length; _143_22_++)
+                for (var _144_22_ = 0; _144_22_ < list.length; _144_22_++)
                 {
-                    i = list[_143_22_]
+                    i = list[_144_22_]
                     if (((i != null ? i.test : undefined) != null))
                     {
                         if (i.test(sourceFile))
@@ -203,9 +204,9 @@ if (args.run || args.rebuild)
     })
 }
 var list = ['update','bump','build','test','commit','publish']
-for (var _190_8_ = 0; _190_8_ < list.length; _190_8_++)
+for (var _191_8_ = 0; _191_8_ < list.length; _191_8_++)
 {
-    cmd = list[_190_8_]
+    cmd = list[_191_8_]
     if (args[cmd])
     {
         if (!runcmd(cmd,args.arguments.join(' '),process.cwd()))
