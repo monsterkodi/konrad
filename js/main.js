@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.201.0
+// monsterkodi/kode 0.211.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}, valid: undefined}
 
@@ -239,7 +239,7 @@ highlight = function ()
     }
     else
     {
-        (typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('always') : undefined)
+        ;(typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('always') : undefined)
         unhighlight = function ()
         {
             var _229_50_
