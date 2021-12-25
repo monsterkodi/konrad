@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.211.0
+// monsterkodi/kode 0.223.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -129,9 +129,9 @@ onTask = function (s)
     var div, source, sourceTarget, target, time
 
     post.toMain('highlight')
-    var _130_25_ = s.split(' 👍 ') ; time = _130_25_[0]    ; sourceTarget = _130_25_[1]
+    var _130_25_ = s.split(' 👍 '); time = _130_25_[0]; sourceTarget = _130_25_[1]
 
-    var _131_21_ = sourceTarget.split(' ► ') ; source = _131_21_[0]    ; target = _131_21_[1]
+    var _131_21_ = sourceTarget.split(' ► '); source = _131_21_[0]; target = _131_21_[1]
 
     source = slash.tilde(source.trim())
     target = slash.tilde(target.trim())
@@ -159,7 +159,7 @@ onMessage = function (s)
 {
     var div, msg, time
 
-    var _157_16_ = s.split(' 🔧 ') ; time = _157_16_[0]    ; msg = _157_16_[1]
+    var _157_16_ = s.split(' 🔧 '); time = _157_16_[0]; msg = _157_16_[1]
 
     return div = taskDiv({time:time,message:msg,key:'msg',icon:'🔧'})
 }
@@ -185,7 +185,7 @@ onError = function (s, html)
         htmls = html.split('\n')
         fileHtml = htmls.shift().split('</span>').slice(5).join('</span>')
     }
-    var _182_16_ = lines.shift().split(' 😡 ') ; time = _182_16_[0]    ; msg = _182_16_[1]
+    var _182_16_ = lines.shift().split(' 😡 '); time = _182_16_[0]; msg = _182_16_[1]
 
     if (((msg != null ? msg.trim : undefined) != null))
     {
@@ -224,7 +224,7 @@ onFile = function (s, html)
         htmls = html.split('\n')
         fileHtml = htmls.shift().split('</span>').slice(5).join('</span>')
     }
-    var _215_17_ = s.split(' 🔺 ') ; time = _215_17_[0]    ; file = _215_17_[1]
+    var _215_17_ = s.split(' 🔺 '); time = _215_17_[0]; file = _215_17_[1]
 
     file = file.trim()
     div = taskDiv({time:time,file:file,key:file.split(':')[0],icon:'🔺',fileHtml:fileHtml})
