@@ -32,7 +32,10 @@ try
     pkgdir = slash.pkg process.cwd()
     pkgpth = slash.join pkgdir, 'package.json'
     pkg    = require pkgpth
-    bindir = "dist/mac-#{os.arch()}/" # fix needed for windows!
+    if slash.win()
+        bindir = "dist/win-unpacked/"
+    else
+        bindir = "dist/mac-#{os.arch()}/"
     
     exeext = switch os.platform()
         when 'win32'  then '.exe'
@@ -69,6 +72,11 @@ try
         exepth = appDir
         fs.removeSync slash.join exepth, 'Contents/Resources/app/node_modules'
         process.chdir slash.join exepth, 'Contents/Resources/app/'
+        childp.execSync 'pnpm i'
+    if args.install and slash.win()
+        log kolor.y5 'install'
+        fs.removeSync slash.join slash.dir(exepth), 'resources/app/node_modules'
+        process.chdir slash.join slash.dir(exepth), 'resources/app/'
         childp.execSync 'pnpm i'
     if args.prune
         if args.verbose then log kolor.y4('prune')
