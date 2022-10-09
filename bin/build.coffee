@@ -61,7 +61,7 @@ try
     if args.compile then exec 'compile' 'node --trace-warnings ' + slash.join __dirname, 'konrad'
     if args.npminst then exec 'npminst' 'npm install'
     if args.pnpm    then exec 'pnpm -i' 'pnpm install'
-    if args.builder then exec 'builder' "#{slash.resolve('./node_modules/.bin/electron-builder')} --dir"
+    if args.builder then exec 'builder' "#{slash.resolve('./node_modules/.bin/electron-builder')} --dir --config.asar=false"
     if args.install and not slash.win()
         log kolor.y5 'install'
         appDir = "/Applications/#{slash.file exepth}"
