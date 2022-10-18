@@ -74,6 +74,7 @@ opt.ignore = [
 
 wlk =
     ignore: [
+        /dist$/
         /node_modules$/
         /bower_components$/
         /\/img$/

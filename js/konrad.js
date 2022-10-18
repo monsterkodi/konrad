@@ -60,7 +60,7 @@ json    . ext noon . filter  .. package.json$
 styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
 pug     . ext html . replace .. /pug/ /js/`)
 opt.ignore = [/.*\.konrad\.noon$/,/.*menu\.noon$/]
-wlk = {ignore:[/node_modules$/,/bower_components$/,/\/img$/,/\/\..+$/,/\.git$/,/\.app$/,/.*-x64$/,/.*-arm64$/,/.*-ia32$/,/\/?inno$/,/\/?js$/]}
+wlk = {ignore:[/dist$/,/node_modules$/,/bower_components$/,/\/img$/,/\/\..+$/,/\.git$/,/\.app$/,/.*-x64$/,/.*-arm64$/,/.*-ia32$/,/\/?inno$/,/\/?js$/]}
 
 dirty = function (sourceFile, targetFile)
 {
@@ -103,7 +103,7 @@ if (args.status || args.fetch)
     gitcount = 0
     walk(wlk,optall,function (sourceFile, targetFile)
     {
-        var i, _145_30_
+        var i, _146_30_
 
         if (!targetFile)
         {
@@ -122,9 +122,9 @@ if (args.status || args.fetch)
             if (slash.dirExists(sourceFile))
             {
                 var list = _k_.list(opt.ignore)
-                for (var _144_22_ = 0; _144_22_ < list.length; _144_22_++)
+                for (var _145_22_ = 0; _145_22_ < list.length; _145_22_++)
                 {
-                    i = list[_144_22_]
+                    i = list[_145_22_]
                     if (((i != null ? i.test : undefined) != null))
                     {
                         if (i.test(sourceFile))
@@ -204,9 +204,9 @@ if (args.run || args.rebuild)
     })
 }
 var list = ['update','bump','build','test','commit','publish']
-for (var _191_8_ = 0; _191_8_ < list.length; _191_8_++)
+for (var _192_8_ = 0; _192_8_ < list.length; _192_8_++)
 {
-    cmd = list[_191_8_]
+    cmd = list[_192_8_]
     if (args[cmd])
     {
         if (!runcmd(cmd,args.arguments.join(' '),process.cwd()))

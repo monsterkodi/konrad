@@ -23,7 +23,8 @@ app = new app({dir:__dirname,pkg:pkg,shortcut:'CmdOrCtrl+F2',index:'index.html',
 {
     return quit()
 },width:400,height:400,minWidth:300,minHeight:200,args:`show      open window on startup  true
-prefs     show preferences        false`})
+prefs     show preferences        false
+devtools  open developer tools        = false  -D`})
 konrad = null
 konradVersion = null
 konradUdp = new udp({port:9559})
@@ -92,7 +93,7 @@ startKonrad = function (rootDir)
     })
     konrad.stderr.on('data',function (data)
     {
-        var s, _105_19_
+        var s, _106_19_
 
         s = kstr.stripAnsi(data.toString())
         konradSend('error',s)
@@ -107,7 +108,7 @@ startKonrad = function (rootDir)
     })
     return konrad.stdout.on('data',function (data)
     {
-        var s, _118_23_
+        var s, _119_23_
 
         s = kstr.stripAnsi(data.toString())
         if (_k_.in(' 👁 ',s))
@@ -222,7 +223,7 @@ post.on('winReady',function (wID)
 
 highlight = function ()
 {
-    var unhighlight, _220_26_, _228_33_
+    var unhighlight, _221_26_, _229_33_
 
     if (!(app.tray != null))
     {
@@ -242,7 +243,7 @@ highlight = function ()
         ;(typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('always') : undefined)
         unhighlight = function ()
         {
-            var _229_50_
+            var _230_50_
 
             return (typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('never') : undefined)
         }

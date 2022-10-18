@@ -7,3 +7,4 @@ node_modules
 *-arm64
 *-ia32
 *.dmg
+dist

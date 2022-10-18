@@ -28,6 +28,7 @@ app = new app
     args: """
         show      open window on startup  true
         prefs     show preferences        false
+        devtools  open developer tools        = false  -D
         """
 
 konrad         = null
