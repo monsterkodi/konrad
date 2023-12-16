@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.215.0",
+  "version": "0.222.0",
   "keywords": [
     "build",
     "tool"
@@ -33,9 +33,9 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "electron": "^17.0.1",
-    "electron-builder": "^22.14.13",
-    "node-abi": "^3.8.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "node-abi": "^3.52.0",
     "simple-git": "^3.2.6",
     "stylus": "^0.56.0",
     "tree-kill": "^1.2.2"

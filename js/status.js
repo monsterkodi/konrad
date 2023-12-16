@@ -1,17 +1,15 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, k: { f:(r,g,b)=>'\x1b[38;5;'+(16+36*r+6*g+b)+'m', F:(r,g,b)=>'\x1b[48;5;'+(16+36*r+6*g+b)+'m', r:(i)=>(i<6)&&_k_.k.f(i,0,0)||_k_.k.f(5,i-5,i-5), R:(i)=>(i<6)&&_k_.k.F(i,0,0)||_k_.k.F(5,i-5,i-5), g:(i)=>(i<6)&&_k_.k.f(0,i,0)||_k_.k.f(i-5,5,i-5), G:(i)=>(i<6)&&_k_.k.F(0,i,0)||_k_.k.F(i-5,5,i-5), b:(i)=>(i<6)&&_k_.k.f(0,0,i)||_k_.k.f(i-5,i-5,5), B:(i)=>(i<6)&&_k_.k.F(0,0,i)||_k_.k.F(i-5,i-5,5), y:(i)=>(i<6)&&_k_.k.f(i,i,0)||_k_.k.f(5,5,i-5), Y:(i)=>(i<6)&&_k_.k.F(i,i,0)||_k_.k.F(5,5,i-5), m:(i)=>(i<6)&&_k_.k.f(i,0,i)||_k_.k.f(5,i-5,5), M:(i)=>(i<6)&&_k_.k.F(i,0,i)||_k_.k.F(5,i-5,5), c:(i)=>(i<6)&&_k_.k.f(0,i,i)||_k_.k.f(i-5,5,5), C:(i)=>(i<6)&&_k_.k.F(0,i,i)||_k_.k.F(i-5,5,5), w:(i)=>'\x1b[38;5;'+(232+(i-1)*3)+'m', W:(i)=>'\x1b[48;5;'+(232+(i-1)*3+2)+'m', wrap:(open,close,reg)=>(s)=>open+(~(s+='').indexOf(close,4)&&s.replace(reg,open)||s)+close, F256:(open)=>_k_.k.wrap(open,'\x1b[39m',new RegExp('\\x1b\\[39m','g')), B256:(open)=>_k_.k.wrap(open,'\x1b[49m',new RegExp('\\x1b\\[49m','g'))}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}};_k_.r5=_k_.k.F256(_k_.k.r(5));_k_.B5=_k_.k.B256(_k_.k.B(5));_k_.w2=_k_.k.F256(_k_.k.w(2));_k_.w3=_k_.k.F256(_k_.k.w(3));_k_.w8=_k_.k.F256(_k_.k.w(8))
 
-var argDir, args, childp, doFetch, doStatus, gitFetch, gitStatus, kerror, klog, klor, kxk, pretty, render, slash, _
+var argDir, args, childp, doFetch, doStatus, gitFetch, gitStatus, kerror, klor, pretty, render, slash, _
 
-kxk = require('kxk')
-_ = kxk._
-args = kxk.args
-childp = kxk.childp
-kerror = kxk.kerror
-klog = kxk.klog
-klor = kxk.klor
-slash = kxk.slash
+_ = require('kxk')._
+args = require('kxk').args
+childp = require('kxk').childp
+kerror = require('kxk').kerror
+klor = require('kxk').klor
+slash = require('kxk').slash
 
 klor.kolor.globalize()
 render = require('./render')
@@ -52,7 +50,7 @@ doStatus = function (git, gitDir, sourceFile)
 {
     return git.status(function (err, status)
     {
-        var a, aheadBehind, arglist, b, c, change, changes, d, diff, f, fileLists, filtered, gitFile, gitPath, k, l, lame, ls, m, prfx, relPath, res, rgs, split, start, v, _83_35_
+        var a, aheadBehind, arglist, b, c, change, changes, d, diff, f, fileLists, filtered, gitFile, gitPath, k, l, lame, ls, m, prfx, relPath, res, rgs, split, start, v, _82_35_
 
         if (err)
         {
@@ -71,10 +69,10 @@ doStatus = function (git, gitDir, sourceFile)
             b = {not_added:W1,conflicted:Y5,modified:G1,created:M4,deleted:R5}
             if (_k_.in(k,_.keys(m)))
             {
-                var list = ((_83_35_=status[k]) != null ? _83_35_ : [])
-                for (var _83_22_ = 0; _83_22_ < list.length; _83_22_++)
+                var list = ((_82_35_=status[k]) != null ? _82_35_ : [])
+                for (var _82_22_ = 0; _82_22_ < list.length; _82_22_++)
                 {
-                    f = list[_83_22_]
+                    f = list[_82_22_]
                     d = argDir()
                     arglist = _.filter(args.arguments,function (a)
                     {
@@ -84,9 +82,9 @@ doStatus = function (git, gitDir, sourceFile)
                     {
                         filtered = true
                         var list1 = _k_.list(arglist)
-                        for (var _89_30_ = 0; _89_30_ < list1.length; _89_30_++)
+                        for (var _88_30_ = 0; _88_30_ < list1.length; _88_30_++)
                         {
-                            a = list1[_89_30_]
+                            a = list1[_88_30_]
                             if (slash.join(gitDir,f).indexOf(slash.resolve(a)) === 0)
                             {
                                 filtered = false
@@ -97,7 +95,7 @@ doStatus = function (git, gitDir, sourceFile)
                         {
                             if (args.debug)
                             {
-                                klog('filtered',slash.resolve(a),f,slash.join(gitDir,f))
+                                console.log('filtered',slash.resolve(a),f,slash.join(gitDir,f))
                             }
                             continue
                         }
@@ -119,9 +117,9 @@ doStatus = function (git, gitDir, sourceFile)
                         c = _k_.w2('●')
                         start = 0
                         var list2 = _k_.list(res.split(/\r?\n/))
-                        for (var _120_30_ = 0; _120_30_ < list2.length; _120_30_++)
+                        for (var _119_30_ = 0; _119_30_ < list2.length; _119_30_++)
                         {
-                            l = list2[_120_30_]
+                            l = list2[_119_30_]
                             ls = klor.kolor.strip(l)
                             if (_k_.in(ls.substr(0,4),['+++ ','--- ']))
                             {
@@ -193,9 +191,9 @@ doStatus = function (git, gitDir, sourceFile)
         }
         console.log(_k_.B5('    ' + gitPath + ' ') + ' ' + aheadBehind())
         var list3 = _k_.list(changes)
-        for (var _160_14_ = 0; _160_14_ < list3.length; _160_14_++)
+        for (var _159_14_ = 0; _159_14_ < list3.length; _159_14_++)
         {
-            c = list3[_160_14_]
+            c = list3[_159_14_]
             console.log(c)
         }
     })

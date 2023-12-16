@@ -6,18 +6,18 @@
 00000000  000   000  000   000   0000000   000   000
 ###
 
-{ klog, kolor, kstr, title } = require 'kxk'
+{ kolor, kstr, title } = require 'kxk'
 
 pretty = require './pretty'
 
 konradError = (title, msg, srcFile) ->
     
     if title == 'compile error' or 'command error'
-        klog pretty.time(), "😡  #{msg}"
+        log pretty.time(), "😡  #{msg}"
     else
         msgsplit = msg.split '\n'
         stripped = msgsplit.map (s) -> kstr.stripAnsi s
-        klog "#{kolor.bold kolor.yellow title} #{kolor.r5 stripped}"
+        log "#{kolor.bold kolor.yellow title} #{kolor.r5 stripped}"
     false
 
 module.exports = konradError

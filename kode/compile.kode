@@ -6,7 +6,7 @@
  0000000   0000000   000   000  000        000  0000000  00000000  
 ###
 
-{ klog, kolor, noon, slash } = require 'kxk'
+{ kolor, noon, slash } = require 'kxk'
 
 koffee = require 'koffee'
 kode   = require 'kode'
@@ -61,7 +61,7 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
 
     catch e
         pos = e.location? and ':'+(e.location.first_line+1)+':'+e.location.first_column or ''
-        klog pretty.time(), "🔺  #{pretty.filePath slash.tilde sourceFile}#{pos}"
+        log pretty.time(), "🔺  #{pretty.filePath slash.tilde sourceFile}#{pos}"
         konradError 'compile error' e.message, sourceFile
         return null
         

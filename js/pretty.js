@@ -1,15 +1,14 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var args, kolor, kxk, os, pretty, slash, _
+var args, kolor, os, pretty, slash, _
 
-kxk = require('kxk')
-_ = kxk._
-args = kxk.args
-kolor = kxk.kolor
-os = kxk.os
-slash = kxk.slash
+_ = require('kxk')._
+args = require('kxk').args
+kolor = require('kxk').kolor
+os = require('kxk').os
+slash = require('kxk').slash
 
 pretty = {}
 

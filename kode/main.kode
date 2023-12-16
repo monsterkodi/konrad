@@ -6,8 +6,7 @@
 000   000  000   000  000  000   000
 ###
 
-kxk = require 'kxk'
-{ app, args, childp, klog, kolor, kstr, noon, post, prefs, slash, udp } = kxk
+{ app, args, childp, kolor, kstr, noon, os, post, prefs, slash, udp } = require 'kxk'
 
 pkg      = require '../package.json'
 electron = require 'electron'
@@ -37,26 +36,33 @@ konradVersion  = null
 konradUdp = new udp port:9559
 konradSend = (msg, args...) ->
     s = [msg+':'].concat(args).join ' '
-    # klog 'konradSend' s
     konradUdp.send s
 
 if args.verbose
 
-    klog kolor.white kolor.bold "\n#{pkg.name}", kolor.gray "v#{pkg.version}\n"
-    klog kolor.yellow kolor.bold 'process'
+    log kolor.white kolor.bold "\n#{pkg.name}", kolor.gray "v#{pkg.version}\n"
+    log kolor.yellow kolor.bold 'process'
     p = cwd: process.cwd()
-    klog noon.stringify p, colors:true
-    klog kolor.yellow.bold 'args'
-    klog noon.stringify args, colors:true
-    klog ''
+    log noon.stringify p, colors:true
+    log kolor.yellow.bold 'args'
+    log noon.stringify args, colors:true
+    log ''
 
 if args.prefs
 
-    klog kolor.yellow kolor.bold 'prefs'
-    klog kolor.green kolor.bold prefs.store.file
+    log kolor.yellow kolor.bold 'prefs'
+    log kolor.green kolor.bold prefs.store.file
     if slash.fileExists prefs.store.file
-        klog noon.stringify noon.load(prefs.store.file), colors:true
+        log noon.stringify noon.load(prefs.store.file), colors:true
 
+kill = (p, cb) ->
+    
+    if os.platform() == 'win32'
+        tk = require 'tree-kill'
+        tk p, cb
+    else
+        childp.exec "kill #{p}" {}, cb
+        
 # 000   000   0000000   000   000  00000000    0000000   0000000
 # 000  000   000   000  0000  000  000   000  000   000  000   000
 # 0000000    000   000  000 0 000  0000000    000000000  000   000
@@ -71,8 +77,7 @@ startKonrad = (rootDir) ->
 
     if konrad?
         log 'killing konrad' konrad.pid
-        treekill = require 'tree-kill'
-        treekill konrad.pid
+        kill konrad.pid
 
     path = slash.resolve "#{__dirname}/../js/konrad.js"
     
@@ -146,21 +151,21 @@ createWindow = (msg, s, h) ->
 
 quit = ->
 
-    if konrad?
-        klog 'killing konrad' konrad?.pid
-        treekill = require 'tree-kill'
-        treekill konrad.pid, -> app.exitApp()
+    if konrad?.pid
+        log "killing konrad" konrad.pid 
+        post.toWins 'mainLog' "killing konrad" konrad.pid
+
+        kill konrad.pid, -> app.exitApp()
         konrad = null
         'delay'
         
 post.on 'Restart' ->
     
-    klog 'on Restart' konrad.pid
+    log 'on Restart' konrad.pid
 
-    treekill = require 'tree-kill'
-    treekill konrad.pid, -> 
+    kill konrad.pid, -> 
     
-        klog 'spawn' process.argv[0], process.argv.slice(1)
+        log 'spawn' process.argv[0], process.argv.slice(1)
         childp.spawn process.argv[0], process.argv.slice(1),
             cwd:         process.cwd()
             encoding:    'utf8'

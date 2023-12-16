@@ -1,10 +1,9 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var $, elem, fadeOverlay, koSend, onError, onFile, onMessage, onTask, openFile, post, showOverlay, slash, taskDiv, tasks, title, udp, w, win, _
+var $, elem, fadeOverlay, koSend, kxk, onError, onFile, onMessage, onTask, openFile, post, showOverlay, slash, taskDiv, tasks, title, udp, w, win, _
 
-$ = require('kxk').$
 _ = require('kxk')._
 elem = require('kxk').elem
 post = require('kxk').post
@@ -13,6 +12,8 @@ title = require('kxk').title
 udp = require('kxk').udp
 win = require('kxk').win
 
+kxk = require('kxk')
+$ = kxk.$
 w = new win({dir:__dirname,pkg:require('../package.json'),menu:'../kode/menu.noon',icon:'../img/menu@2x.png'})
 koSend = null
 
@@ -28,7 +29,7 @@ tasks = {}
 
 showOverlay = function ()
 {
-    var img, overlay, _39_17_
+    var img, overlay, _42_17_
 
     img = slash.fileUrl(slash.join(__dirname,'..','img','about.png'))
     ;($('#overlay') != null ? $('#overlay').remove() : undefined)
@@ -83,6 +84,10 @@ post.on('konradVersion',function (s)
     }
     return window.titlebar.setTitle({title:title,pkg:{version:split[0],path:slash.tilde(split[2])}})
 })
+post.on('mainLog',function ()
+{
+    console.log('main:',arguments)
+})
 post.on('clearLog',function ()
 {
     $('main').innerHTML = ''
@@ -92,7 +97,7 @@ post.on('clearLog',function ()
 
 taskDiv = function (opt)
 {
-    var div, fil, main, tim, _1_9_, _108_30_, _109_33_
+    var div, fil, main, tim, _1_9_, _112_30_, _113_33_
 
     main = $('main')
     if (_.isEmpty(tasks))
@@ -107,10 +112,10 @@ taskDiv = function (opt)
     tim.classList.add('time')
     tim.innerHTML = opt.time
     fil.classList.add((opt.file != null) && 'file' || 'message')
-    fil.innerHTML = ((_109_33_=opt.fileHtml) != null ? _109_33_ : ` ${opt.icon} ${((_1_9_=opt.file) != null ? _1_9_ : opt.message)}`)
+    fil.innerHTML = ((_113_33_=opt.fileHtml) != null ? _113_33_ : ` ${opt.icon} ${((_1_9_=opt.file) != null ? _1_9_ : opt.message)}`)
     fil.onclick = function ()
     {
-        var _110_50_
+        var _114_50_
 
         if ((opt.file != null))
         {
@@ -129,9 +134,9 @@ onTask = function (s)
     var div, source, sourceTarget, target, time
 
     post.toMain('highlight')
-    var _130_25_ = s.split(' 👍 '); time = _130_25_[0]; sourceTarget = _130_25_[1]
+    var _134_25_ = s.split(' 👍 '); time = _134_25_[0]; sourceTarget = _134_25_[1]
 
-    var _131_21_ = sourceTarget.split(' ► '); source = _131_21_[0]; target = _131_21_[1]
+    var _135_21_ = sourceTarget.split(' ► '); source = _135_21_[0]; target = _135_21_[1]
 
     source = slash.tilde(source.trim())
     target = slash.tilde(target.trim())
@@ -159,14 +164,14 @@ onMessage = function (s)
 {
     var div, msg, time
 
-    var _157_16_ = s.split(' 🔧 '); time = _157_16_[0]; msg = _157_16_[1]
+    var _161_16_ = s.split(' 🔧 '); time = _161_16_[0]; msg = _161_16_[1]
 
     return div = taskDiv({time:time,message:msg,key:'msg',icon:'🔧'})
 }
 
 onError = function (s, html)
 {
-    var div, fileHtml, htmls, i, key, lines, msg, pre, task, time, _183_16_
+    var div, fileHtml, htmls, i, key, lines, msg, pre, task, time, _187_16_
 
     post.toMain('showWindow')
     post.toMain('highlight')
@@ -185,7 +190,7 @@ onError = function (s, html)
         htmls = html.split('\n')
         fileHtml = htmls.shift().split('</span>').slice(5).join('</span>')
     }
-    var _182_16_ = lines.shift().split(' 😡 '); time = _182_16_[0]; msg = _182_16_[1]
+    var _186_16_ = lines.shift().split(' 😡 '); time = _186_16_[0]; msg = _186_16_[1]
 
     if (((msg != null ? msg.trim : undefined) != null))
     {
@@ -196,7 +201,7 @@ onError = function (s, html)
         }
     }
     div = taskDiv({time:time,icon:'😡',message:msg})
-    for (var _189_14_ = i = 0, _189_18_ = lines.length; (_189_14_ <= _189_18_ ? i < lines.length : i > lines.length); (_189_14_ <= _189_18_ ? ++i : --i))
+    for (var _193_14_ = i = 0, _193_18_ = lines.length; (_193_14_ <= _193_18_ ? i < lines.length : i > lines.length); (_193_14_ <= _193_18_ ? ++i : --i))
     {
         pre = document.createElement('pre')
         pre.classList.add('error')
@@ -224,7 +229,7 @@ onFile = function (s, html)
         htmls = html.split('\n')
         fileHtml = htmls.shift().split('</span>').slice(5).join('</span>')
     }
-    var _215_17_ = s.split(' 🔺 '); time = _215_17_[0]; file = _215_17_[1]
+    var _219_17_ = s.split(' 🔺 '); time = _219_17_[0]; file = _219_17_[1]
 
     file = file.trim()
     div = taskDiv({time:time,file:file,key:file.split(':')[0],icon:'🔺',fileHtml:fileHtml})
@@ -232,6 +237,7 @@ onFile = function (s, html)
 }
 post.on('menuAction',function (action)
 {
+    console.log(action)
     switch (action)
     {
         case 'Clear':

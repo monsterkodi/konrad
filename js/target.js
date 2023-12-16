@@ -1,12 +1,11 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var argDir, args, config, klog, kolor, pretty, slash, swapLastDir, target, _
+var argDir, args, config, kolor, pretty, slash, swapLastDir, target, _
 
 _ = require('kxk')._
 args = require('kxk').args
-klog = require('kxk').klog
 kolor = require('kxk').kolor
 slash = require('kxk').slash
 
@@ -48,7 +47,7 @@ target = function (sourceFile, opt)
         {
             if (args.debug)
             {
-                klog(pretty.filePath(slash.relative(sourceFile,argDir()),kolor.blue))
+                console.log(pretty.filePath(slash.relative(sourceFile,argDir()),kolor.blue))
             }
             return
         }

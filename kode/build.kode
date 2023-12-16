@@ -6,7 +6,7 @@
 0000000     0000000   000  0000000  0000000  
 ###
 
-{ _, args, empty, fs, kerror, klog, kolor, slash } = require 'kxk'
+{ _, args, fs, kerror, kolor, slash } = require 'kxk'
 
 pretty  = require './pretty'
 config  = require './config'
@@ -18,7 +18,7 @@ runcmd  = require './runcmd'
 
 build = (sourceFile, opt, cb) ->
 
-    klog gray("source file"), sourceFile if args.debug
+    log gray("source file"), sourceFile if args.debug
 
     ext = slash.ext sourceFile
 
@@ -29,7 +29,7 @@ build = (sourceFile, opt, cb) ->
         out  = cfg.browserify.out
         pwd  = config.path 'browserify', slash.resolve(sourceFile), opt
         if out != slash.relative sourceFile, pwd
-            klog pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), kolor.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), kolor.blue)
+            log pretty.filePath(_.padEnd(slash.relative(main, argDir()), 40), kolor.yellow), "🔧  ", pretty.filePath(slash.relative(out, argDir()), kolor.blue)
             runcmd 'browserify', "#{main} #{out}", pwd
         return
 
@@ -38,7 +38,7 @@ build = (sourceFile, opt, cb) ->
         warn "no targetFile for source: #{sourceFile}", opt
         return
 
-    klog gray("target file"), targetFile if args.debug
+    log gray("target file"), targetFile if args.debug
 
     # 00000000   00000000   0000000   0000000
     # 000   000  000       000   000  000   000
@@ -72,7 +72,7 @@ build = (sourceFile, opt, cb) ->
             writeCompiled sourceFile, targetFile, compiled, cb
         else
             # log 'noWrite?' targetFile, slash.fileExists(targetFile), slash.readText(targetFile)
-            klog kolor.green(kolor.dim('unchanged')), pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
+            log kolor.green(kolor.dim('unchanged')), pretty.filePath(slash.relative(targetFile, argDir()), kolor.gray) if args.debug
             if args.verbose
                 log pretty.time(), "👍  #{pretty.filePath sourceFile} #{kolor.bold(kolor.yellow('►'))} #{pretty.filePath targetFile}"
             stat = fs.statSync sourceFile

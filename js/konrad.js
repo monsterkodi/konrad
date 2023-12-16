@@ -1,13 +1,12 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var actions, argDir, args, build, cmd, config, dirty, dotGit, fs, gitcount, gitup, klog, kolor, opt, optall, pkg, pretty, runcmd, should, slash, status, walk, watch, wlk, _
+var actions, argDir, args, build, cmd, config, dirty, dotGit, fs, gitcount, gitup, kolor, opt, optall, pkg, pretty, runcmd, should, slash, status, walk, watch, wlk, _
 
 _ = require('kxk')._
 args = require('kxk').args
 fs = require('kxk').fs
-klog = require('kxk').klog
 kolor = require('kxk').kolor
 noon = require('kxk').noon
 slash = require('kxk').slash
@@ -134,7 +133,7 @@ if (args.status || args.fetch)
                     }
                     else
                     {
-                        klog('ignore?',i)
+                        console.log('ignore?',i)
                     }
                 }
             }

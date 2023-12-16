@@ -6,7 +6,10 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ $, _, elem, post, slash, title, udp, win } = require 'kxk'
+{ _, elem, post, slash, title, udp, win } = require 'kxk'
+
+kxk = require 'kxk'
+$ = kxk.$
 
 w = new win
     dir:    __dirname
@@ -65,7 +68,7 @@ post.on 'konradOutput' (s, html) ->
 
 post.on 'konradVersion' (s) ->
 
-    # klog process.argv[0]
+    # log process.argv[0]
     split = s.trim().split /\s+/
     title = ['path']
     if process.argv[0].endsWith('Electron Helper') or process.argv[0].endsWith('electron.exe')
@@ -75,7 +78,8 @@ post.on 'konradVersion' (s) ->
         pkg:
             version: split[0]
             path: slash.tilde split[2]
-    
+
+post.on 'mainLog' -> log 'main:' arguments
 post.on 'clearLog' -> 
     
     $('main').innerHTML = '' 
@@ -141,7 +145,7 @@ onTask = (s) ->
         else if slash.file(target) == 'main.js'
             post.toMain 'Restart'
         else
-            # klog "should restart konrad '#{slash.file(target)}'", target, slash.path __filename
+            # log "should restart konrad '#{slash.file(target)}'", target, slash.path __filename
             post.toMain 'Restart konrad'
     
     fadeOverlay()
@@ -227,8 +231,9 @@ onFile = (s, html) ->
 
 post.on 'menuAction' (action) ->
     
+    log action
     switch action
-        when 'Clear'      then post.emit 'clearLog'
-        when 'Set Dir...' then post.toMain 'setRootDir'
+        'Clear'      ➜ post.emit   'clearLog'
+        'Set Dir...' ➜ post.toMain 'setRootDir'
         
 showOverlay()

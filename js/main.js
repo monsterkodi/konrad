@@ -1,21 +1,20 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var app, args, childp, createWindow, electron, highlight, klog, kolor, konrad, konradSend, konradUdp, konradVersion, kstr, kxk, p, pkg, post, prefs, quit, setRootDir, slash, startKonrad, udp
+var app, args, childp, createWindow, electron, highlight, kolor, konrad, konradSend, konradUdp, konradVersion, kstr, os, p, pkg, post, prefs, quit, setRootDir, slash, startKonrad, treekill, udp
 
-kxk = require('kxk')
-app = kxk.app
-args = kxk.args
-childp = kxk.childp
-klog = kxk.klog
-kolor = kxk.kolor
-kstr = kxk.kstr
-noon = kxk.noon
-post = kxk.post
-prefs = kxk.prefs
-slash = kxk.slash
-udp = kxk.udp
+app = require('kxk').app
+args = require('kxk').args
+childp = require('kxk').childp
+kolor = require('kxk').kolor
+kstr = require('kxk').kstr
+noon = require('kxk').noon
+os = require('kxk').os
+post = require('kxk').post
+prefs = require('kxk').prefs
+slash = require('kxk').slash
+udp = require('kxk').udp
 
 pkg = require('../package.json')
 electron = require('electron')
@@ -38,21 +37,36 @@ konradSend = function (msg, ...args)
 }
 if (args.verbose)
 {
-    klog(kolor.white(kolor.bold(`\n${pkg.name}`,kolor.gray(`v${pkg.version}\n`))))
-    klog(kolor.yellow(kolor.bold('process')))
+    console.log(kolor.white(kolor.bold(`\n${pkg.name}`,kolor.gray(`v${pkg.version}\n`))))
+    console.log(kolor.yellow(kolor.bold('process')))
     p = {cwd:process.cwd()}
-    klog(noon.stringify(p,{colors:true}))
-    klog(kolor.yellow.bold('args'))
-    klog(noon.stringify(args,{colors:true}))
-    klog('')
+    console.log(noon.stringify(p,{colors:true}))
+    console.log(kolor.yellow.bold('args'))
+    console.log(noon.stringify(args,{colors:true}))
+    console.log('')
 }
 if (args.prefs)
 {
-    klog(kolor.yellow(kolor.bold('prefs')))
-    klog(kolor.green(kolor.bold(prefs.store.file)))
+    console.log(kolor.yellow(kolor.bold('prefs')))
+    console.log(kolor.green(kolor.bold(prefs.store.file)))
     if (slash.fileExists(prefs.store.file))
     {
-        klog(noon.stringify(noon.load(prefs.store.file),{colors:true}))
+        console.log(noon.stringify(noon.load(prefs.store.file),{colors:true}))
+    }
+}
+
+treekill = function (p, cb)
+{
+    var tk
+
+    if (os.platform() === 'win32')
+    {
+        tk = require('tree-kill')
+        return tk(p,cb)
+    }
+    else
+    {
+        return childp.exec(`kill ${p}`,{},cb)
     }
 }
 post.on('Restart konrad',function ()
@@ -62,13 +76,12 @@ post.on('Restart konrad',function ()
 
 startKonrad = function (rootDir)
 {
-    var path, treekill
+    var path
 
     prefs.set('rootDir',rootDir)
     if ((konrad != null))
     {
         console.log('killing konrad',konrad.pid)
-        treekill = require('tree-kill')
         treekill(konrad.pid)
     }
     path = slash.resolve(`${__dirname}/../js/konrad.js`)
@@ -93,7 +106,7 @@ startKonrad = function (rootDir)
     })
     konrad.stderr.on('data',function (data)
     {
-        var s, _106_19_
+        var s, _112_19_
 
         s = kstr.stripAnsi(data.toString())
         konradSend('error',s)
@@ -108,7 +121,7 @@ startKonrad = function (rootDir)
     })
     return konrad.stdout.on('data',function (data)
     {
-        var s, _119_23_
+        var s, _125_23_
 
         s = kstr.stripAnsi(data.toString())
         if (_k_.in(' 👁 ',s))
@@ -158,14 +171,14 @@ createWindow = function (msg, s, h)
 
 quit = function ()
 {
-    var treekill
-
-    if ((konrad != null))
+    post.toWins('mainLog','quit')
+    if ((konrad != null ? konrad.pid : undefined))
     {
-        klog('killing konrad',(konrad != null ? konrad.pid : undefined))
-        treekill = require('tree-kill')
+        console.log("killing konrad",konrad.pid)
+        post.toWins('mainLog',"killing konrad",konrad.pid)
         treekill(konrad.pid,function ()
         {
+            post.toWins('mainLog','exitApp')
             return app.exitApp()
         })
         konrad = null
@@ -174,13 +187,10 @@ quit = function ()
 }
 post.on('Restart',function ()
 {
-    var treekill
-
-    klog('on Restart',konrad.pid)
-    treekill = require('tree-kill')
+    console.log('on Restart',konrad.pid)
     return treekill(konrad.pid,function ()
     {
-        klog('spawn',process.argv[0],process.argv.slice(1))
+        console.log('spawn',process.argv[0],process.argv.slice(1))
         childp.spawn(process.argv[0],process.argv.slice(1),{cwd:process.cwd(),encoding:'utf8',detached:true,shell:true,windowsHide:true})
         return process.exit(0)
     })
@@ -223,7 +233,7 @@ post.on('winReady',function (wID)
 
 highlight = function ()
 {
-    var unhighlight, _221_26_, _229_33_
+    var unhighlight, _230_26_, _238_33_
 
     if (!(app.tray != null))
     {
@@ -243,7 +253,7 @@ highlight = function ()
         ;(typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('always') : undefined)
         unhighlight = function ()
         {
-            var _230_50_
+            var _239_50_
 
             return (typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('never') : undefined)
         }

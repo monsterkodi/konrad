@@ -1,10 +1,9 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_
 
-var klog, kolor, konradError, kstr, pretty, title
+var kolor, konradError, kstr, pretty, title
 
-klog = require('kxk').klog
 kolor = require('kxk').kolor
 kstr = require('kxk').kstr
 title = require('kxk').title
@@ -17,7 +16,7 @@ konradError = function (title, msg, srcFile)
 
     if (title === 'compile error' || 'command error')
     {
-        klog(pretty.time(),`😡  ${msg}`)
+        console.log(pretty.time(),`😡  ${msg}`)
     }
     else
     {
@@ -26,7 +25,7 @@ konradError = function (title, msg, srcFile)
         {
             return kstr.stripAnsi(s)
         })
-        klog(`${kolor.bold(kolor.yellow(title))} ${kolor.r5(stripped)}`)
+        console.log(`${kolor.bold(kolor.yellow(title))} ${kolor.r5(stripped)}`)
     }
     return false
 }

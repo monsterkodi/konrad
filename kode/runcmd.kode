@@ -6,8 +6,7 @@
 000   000   0000000   000   000   0000000  000   000  0000000  
 ###
 
-kxk = require 'kxk'
-{ args, childp, klog, kolor, slash } = kxk
+{ args, childp, kolor, slash } = require 'kxk'
 
 pretty      = require './pretty'
 konradError = require './error'
@@ -21,7 +20,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             else
                 pkg = require slash.join cwd, 'package.json'
                 if not pkg?.scripts?.test
-                    klog 'no test script'
+                    log 'no test script'
                     return true
                 else
                     cmdpath = 'npm run test'
@@ -34,7 +33,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             command = "#{cmdpath} #{cmdargs}"
                         
         if args.verbose
-            klog " 🔧 " kolor.gray(cmd), pretty.filePath(command)
+            log " 🔧 " kolor.gray(cmd), pretty.filePath(command)
                 
         result = childp.execSync command,
             cwd:      cwd
@@ -42,7 +41,7 @@ runcmd = (cmd, cmdargs, cwd) ->
             stdio:    'inherit'
             shell:    true
             
-        # klog 'result' result
+        # log 'result' result
           
     catch err
         konradError "command error" "command '#{cmd}' (#{command}) #{'failed!'}" err

@@ -1,15 +1,13 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var argDir, args, build, compile, config, fs, kerror, klog, kolor, pretty, runcmd, should, slash, target, writeCompiled, _
+var argDir, args, build, compile, config, fs, kerror, kolor, pretty, runcmd, should, slash, target, writeCompiled, _
 
 _ = require('kxk')._
 args = require('kxk').args
-empty = require('kxk').empty
 fs = require('kxk').fs
 kerror = require('kxk').kerror
-klog = require('kxk').klog
 kolor = require('kxk').kolor
 slash = require('kxk').slash
 
@@ -27,7 +25,7 @@ build = function (sourceFile, opt, cb)
 
     if (args.debug)
     {
-        klog(gray("source file"),sourceFile)
+        console.log(gray("source file"),sourceFile)
     }
     ext = slash.ext(sourceFile)
     cfg = config.obj(sourceFile,opt)
@@ -38,7 +36,7 @@ build = function (sourceFile, opt, cb)
         pwd = config.path('browserify',slash.resolve(sourceFile),opt)
         if (out !== slash.relative(sourceFile,pwd))
         {
-            klog(pretty.filePath(_.padEnd(slash.relative(main,argDir()),40),kolor.yellow),"🔧  ",pretty.filePath(slash.relative(out,argDir()),kolor.blue))
+            console.log(pretty.filePath(_.padEnd(slash.relative(main,argDir()),40),kolor.yellow),"🔧  ",pretty.filePath(slash.relative(out,argDir()),kolor.blue))
             runcmd('browserify',`${main} ${out}`,pwd)
         }
         return
@@ -51,7 +49,7 @@ build = function (sourceFile, opt, cb)
     }
     if (args.debug)
     {
-        klog(gray("target file"),targetFile)
+        console.log(gray("target file"),targetFile)
     }
     return fs.readFile(sourceFile,'utf8',function (err, sourceText)
     {
@@ -78,7 +76,7 @@ build = function (sourceFile, opt, cb)
         {
             if (args.debug)
             {
-                klog(kolor.green(kolor.dim('unchanged')),pretty.filePath(slash.relative(targetFile,argDir()),kolor.gray))
+                console.log(kolor.green(kolor.dim('unchanged')),pretty.filePath(slash.relative(targetFile,argDir()),kolor.gray))
             }
             if (args.verbose)
             {

@@ -6,7 +6,7 @@
 0000000   000   000   0000000    0000000   0000000  0000000  
 ###
 
-{ args, klog, kolor, slash } = require 'kxk'
+{ args, kolor, slash } = require 'kxk'
 
 argDir = require './argdir'
 pretty = require './pretty'
@@ -29,7 +29,7 @@ should = (k, o, p) ->
         r = new RegExp i if i is 'string'
         if p and r and r.test p
             # log r, p
-            klog pretty.filePath(slash.relative(p, argDir()), kolor.gray), kolor.blue('should ') + kolor.bold(kolor.blue(k)) if args.debug
+            log pretty.filePath(slash.relative(p, argDir()), kolor.gray), kolor.blue('should ') + kolor.bold(kolor.blue(k)) if args.debug
             return true
     false
 

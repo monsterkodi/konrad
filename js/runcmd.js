@@ -1,22 +1,20 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_ = {empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var args, childp, klog, kolor, konradError, kxk, pretty, runcmd, slash
+var args, childp, kolor, konradError, pretty, runcmd, slash
 
-kxk = require('kxk')
-args = kxk.args
-childp = kxk.childp
-klog = kxk.klog
-kolor = kxk.kolor
-slash = kxk.slash
+args = require('kxk').args
+childp = require('kxk').childp
+kolor = require('kxk').kolor
+slash = require('kxk').slash
 
 pretty = require('./pretty')
 konradError = require('./error')
 
 runcmd = function (cmd, cmdargs, cwd)
 {
-    var cmdpath, command, pkg, result, _23_35_
+    var cmdpath, command, pkg, result, _22_35_
 
     try
     {
@@ -29,9 +27,9 @@ runcmd = function (cmd, cmdargs, cwd)
             else
             {
                 pkg = require(slash.join(cwd,'package.json'))
-                if (!(pkg != null ? (_23_35_=pkg.scripts) != null ? _23_35_.test : undefined : undefined))
+                if (!(pkg != null ? (_22_35_=pkg.scripts) != null ? _22_35_.test : undefined : undefined))
                 {
-                    klog('no test script')
+                    console.log('no test script')
                     return true
                 }
                 else
@@ -54,7 +52,7 @@ runcmd = function (cmd, cmdargs, cwd)
         }
         if (args.verbose)
         {
-            klog(" 🔧 ",kolor.gray(cmd),pretty.filePath(command))
+            console.log(" 🔧 ",kolor.gray(cmd),pretty.filePath(command))
         }
         result = childp.execSync(command,{cwd:cwd,encoding:'utf8',stdio:'inherit',shell:true})
     }

@@ -6,7 +6,7 @@
 000   000   0000000   000   000  000   000  000   000  0000000
 ###
 
-{ _, args, fs, klog, kolor, noon, slash, watch } = require 'kxk'
+{ _, args, fs, kolor, noon, slash, watch } = require 'kxk'
 
 argDir = require './argdir'
 build  = require './build'
@@ -123,7 +123,7 @@ if args.diff
     
     args.status = true
 
-# klog args
+# log args
     
 if args.status or args.fetch
     
@@ -147,7 +147,7 @@ if args.status or args.fetch
                         if i.test sourceFile
                             return false
                     else
-                        klog 'ignore?' i
+                        log 'ignore?' i
         true
 
     if not gitcount

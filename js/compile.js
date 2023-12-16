@@ -1,10 +1,9 @@
-// monsterkodi/kode 0.243.0
+// monsterkodi/kode 0.245.0
 
 var _k_
 
-var compile, klog, kode, koffee, kolor, konradError, pretty, slash
+var compile, kode, koffee, kolor, konradError, pretty, slash
 
-klog = require('kxk').klog
 kolor = require('kxk').kolor
 noon = require('kxk').noon
 slash = require('kxk').slash
@@ -64,7 +63,7 @@ compile = function (sourceText, ext, sourceFile, targetFile, cfg)
     catch (e)
     {
         pos = (e.location != null) && ':' + (e.location.first_line + 1) + ':' + e.location.first_column || ''
-        klog(pretty.time(),`🔺  ${pretty.filePath(slash.tilde(sourceFile))}${pos}`)
+        console.log(pretty.time(),`🔺  ${pretty.filePath(slash.tilde(sourceFile))}${pos}`)
         konradError('compile error',e.message,sourceFile)
         return null
     }
