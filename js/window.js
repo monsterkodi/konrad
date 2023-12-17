@@ -2,8 +2,9 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
-var $, elem, fadeOverlay, koSend, kxk, onError, onFile, onMessage, onTask, openFile, post, showOverlay, slash, taskDiv, tasks, title, udp, w, win, _
+var $, elem, fadeOverlay, koSend, onError, onFile, onMessage, onTask, openFile, post, showOverlay, slash, taskDiv, tasks, title, udp, w, win, _
 
+$ = require('kxk').$
 _ = require('kxk')._
 elem = require('kxk').elem
 post = require('kxk').post
@@ -12,8 +13,6 @@ title = require('kxk').title
 udp = require('kxk').udp
 win = require('kxk').win
 
-kxk = require('kxk')
-$ = kxk.$
 w = new win({dir:__dirname,pkg:require('../package.json'),menu:'../kode/menu.noon',icon:'../img/menu@2x.png'})
 koSend = null
 
@@ -29,7 +28,7 @@ tasks = {}
 
 showOverlay = function ()
 {
-    var img, overlay, _42_17_
+    var img, overlay, _39_17_
 
     img = slash.fileUrl(slash.join(__dirname,'..','img','about.png'))
     ;($('#overlay') != null ? $('#overlay').remove() : undefined)
@@ -97,7 +96,7 @@ post.on('clearLog',function ()
 
 taskDiv = function (opt)
 {
-    var div, fil, main, tim, _1_9_, _112_30_, _113_33_
+    var div, fil, main, tim, _1_9_, _109_30_, _110_33_
 
     main = $('main')
     if (_.isEmpty(tasks))
@@ -112,10 +111,10 @@ taskDiv = function (opt)
     tim.classList.add('time')
     tim.innerHTML = opt.time
     fil.classList.add((opt.file != null) && 'file' || 'message')
-    fil.innerHTML = ((_113_33_=opt.fileHtml) != null ? _113_33_ : ` ${opt.icon} ${((_1_9_=opt.file) != null ? _1_9_ : opt.message)}`)
+    fil.innerHTML = ((_110_33_=opt.fileHtml) != null ? _110_33_ : ` ${opt.icon} ${((_1_9_=opt.file) != null ? _1_9_ : opt.message)}`)
     fil.onclick = function ()
     {
-        var _114_50_
+        var _111_50_
 
         if ((opt.file != null))
         {
@@ -134,9 +133,9 @@ onTask = function (s)
     var div, source, sourceTarget, target, time
 
     post.toMain('highlight')
-    var _134_25_ = s.split(' 👍 '); time = _134_25_[0]; sourceTarget = _134_25_[1]
+    var _131_25_ = s.split(' 👍 '); time = _131_25_[0]; sourceTarget = _131_25_[1]
 
-    var _135_21_ = sourceTarget.split(' ► '); source = _135_21_[0]; target = _135_21_[1]
+    var _132_21_ = sourceTarget.split(' ► '); source = _132_21_[0]; target = _132_21_[1]
 
     source = slash.tilde(source.trim())
     target = slash.tilde(target.trim())
@@ -164,14 +163,14 @@ onMessage = function (s)
 {
     var div, msg, time
 
-    var _161_16_ = s.split(' 🔧 '); time = _161_16_[0]; msg = _161_16_[1]
+    var _158_16_ = s.split(' 🔧 '); time = _158_16_[0]; msg = _158_16_[1]
 
     return div = taskDiv({time:time,message:msg,key:'msg',icon:'🔧'})
 }
 
 onError = function (s, html)
 {
-    var div, fileHtml, htmls, i, key, lines, msg, pre, task, time, _187_16_
+    var div, fileHtml, htmls, i, key, lines, msg, pre, task, time, _184_16_
 
     post.toMain('showWindow')
     post.toMain('highlight')
@@ -190,7 +189,7 @@ onError = function (s, html)
         htmls = html.split('\n')
         fileHtml = htmls.shift().split('</span>').slice(5).join('</span>')
     }
-    var _186_16_ = lines.shift().split(' 😡 '); time = _186_16_[0]; msg = _186_16_[1]
+    var _183_16_ = lines.shift().split(' 😡 '); time = _183_16_[0]; msg = _183_16_[1]
 
     if (((msg != null ? msg.trim : undefined) != null))
     {
@@ -201,7 +200,7 @@ onError = function (s, html)
         }
     }
     div = taskDiv({time:time,icon:'😡',message:msg})
-    for (var _193_14_ = i = 0, _193_18_ = lines.length; (_193_14_ <= _193_18_ ? i < lines.length : i > lines.length); (_193_14_ <= _193_18_ ? ++i : --i))
+    for (var _190_14_ = i = 0, _190_18_ = lines.length; (_190_14_ <= _190_18_ ? i < lines.length : i > lines.length); (_190_14_ <= _190_18_ ? ++i : --i))
     {
         pre = document.createElement('pre')
         pre.classList.add('error')
@@ -229,7 +228,7 @@ onFile = function (s, html)
         htmls = html.split('\n')
         fileHtml = htmls.shift().split('</span>').slice(5).join('</span>')
     }
-    var _219_17_ = s.split(' 🔺 '); time = _219_17_[0]; file = _219_17_[1]
+    var _216_17_ = s.split(' 🔺 '); time = _216_17_[0]; file = _216_17_[1]
 
     file = file.trim()
     div = taskDiv({time:time,file:file,key:file.split(':')[0],icon:'🔺',fileHtml:fileHtml})

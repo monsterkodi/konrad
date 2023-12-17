@@ -6,10 +6,7 @@
 00     00  000  000   000  0000000     0000000   00     00  
 ###
 
-{ _, elem, post, slash, title, udp, win } = require 'kxk'
-
-kxk = require 'kxk'
-$ = kxk.$
+{ $, _, elem, post, slash, title, udp, win } = require 'kxk'
 
 w = new win
     dir:    __dirname
