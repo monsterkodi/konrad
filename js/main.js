@@ -2,7 +2,7 @@
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}, empty: function (l) {return l==='' || l===null || l===undefined || l!==l || typeof(l) === 'object' && Object.keys(l).length === 0}}
 
-var app, args, childp, createWindow, electron, highlight, kolor, konrad, konradSend, konradUdp, konradVersion, kstr, os, p, pkg, post, prefs, quit, setRootDir, slash, startKonrad, treekill, udp
+var app, args, childp, createWindow, electron, highlight, kill, kolor, konrad, konradSend, konradUdp, konradVersion, kstr, os, p, pkg, post, prefs, quit, setRootDir, slash, startKonrad, udp
 
 app = require('kxk').app
 args = require('kxk').args
@@ -55,7 +55,7 @@ if (args.prefs)
     }
 }
 
-treekill = function (p, cb)
+kill = function (p, cb)
 {
     var tk
 
@@ -82,7 +82,7 @@ startKonrad = function (rootDir)
     if ((konrad != null))
     {
         console.log('killing konrad',konrad.pid)
-        treekill(konrad.pid)
+        kill(konrad.pid)
     }
     path = slash.resolve(`${__dirname}/../js/konrad.js`)
     if (!(_k_.in('/usr/local/bin',process.env.PATH.split(':'))))
@@ -106,7 +106,7 @@ startKonrad = function (rootDir)
     })
     konrad.stderr.on('data',function (data)
     {
-        var s, _112_19_
+        var s, _111_19_
 
         s = kstr.stripAnsi(data.toString())
         konradSend('error',s)
@@ -121,7 +121,7 @@ startKonrad = function (rootDir)
     })
     return konrad.stdout.on('data',function (data)
     {
-        var s, _125_23_
+        var s, _124_23_
 
         s = kstr.stripAnsi(data.toString())
         if (_k_.in(' 👁 ',s))
@@ -171,14 +171,12 @@ createWindow = function (msg, s, h)
 
 quit = function ()
 {
-    post.toWins('mainLog','quit')
     if ((konrad != null ? konrad.pid : undefined))
     {
         console.log("killing konrad",konrad.pid)
         post.toWins('mainLog',"killing konrad",konrad.pid)
-        treekill(konrad.pid,function ()
+        kill(konrad.pid,function ()
         {
-            post.toWins('mainLog','exitApp')
             return app.exitApp()
         })
         konrad = null
@@ -188,7 +186,7 @@ quit = function ()
 post.on('Restart',function ()
 {
     console.log('on Restart',konrad.pid)
-    return treekill(konrad.pid,function ()
+    return kill(konrad.pid,function ()
     {
         console.log('spawn',process.argv[0],process.argv.slice(1))
         childp.spawn(process.argv[0],process.argv.slice(1),{cwd:process.cwd(),encoding:'utf8',detached:true,shell:true,windowsHide:true})
@@ -233,7 +231,7 @@ post.on('winReady',function (wID)
 
 highlight = function ()
 {
-    var unhighlight, _230_26_, _238_33_
+    var unhighlight, _226_26_, _234_33_
 
     if (!(app.tray != null))
     {
@@ -253,7 +251,7 @@ highlight = function ()
         ;(typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('always') : undefined)
         unhighlight = function ()
         {
-            var _239_50_
+            var _235_50_
 
             return (typeof app.tray.setHighlightMode === "function" ? app.tray.setHighlightMode('never') : undefined)
         }
