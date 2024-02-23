@@ -1,7 +1,7 @@
 {
   "name": "konrad",
   "description": "builds my stuff",
-  "version": "0.224.0",
+  "version": "0.226.0",
   "keywords": [
     "build",
     "tool"
@@ -16,21 +16,21 @@
   "bin": {
     "konrad": "./bin/konrad"
   },
-  "build": {
+  "build:": {
     "asar": false,
     "mac": {
       "icon": "img/app.icns"
     }
   },
   "dependencies": {
-    "colorcat": "monsterkodi/colorcat",
+    "colorcat": "github:monsterkodi/colorcat",
     "kode": "github:monsterkodi/kode",
-    "koffee": "monsterkodi/koffee",
-    "kxk": "monsterkodi/kxk",
+    "koffee": "github:monsterkodi/koffee",
+    "kxk": "github:monsterkodi/kxk",
     "mkpath": "^1.0.0",
     "pug": "^3.0.2",
     "stylus": "^0.56.0",
-    "sds": "monsterkodi/sds",
+    "sds": "github:monsterkodi/sds",
     "semver": "^7.3.5",
     "node-abi": "^3.52.0",
     "simple-git": "^3.2.6",

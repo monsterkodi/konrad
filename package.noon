@@ -1,34 +1,34 @@
-name                konrad
-description         builds my stuff
-version             0.224.0
+name            konrad
+description     builds my stuff
+version         0.226.0
 keywords
-                    build
-                    tool
-license             Unlicense
-author              monsterkodi
-repository          github:monsterkodi/konrad.git
-main                js/index.js
+                build
+                tool
+license         Unlicense
+author          monsterkodi
+repository      github:monsterkodi/konrad.git
+main            js/index.js
 scripts
-                    build  ./node_modules/.bin/kode -Ho js kode/*.kode
+                build  ./node_modules/.bin/kode -Ho js kode/*.kode
 bin
-                    konrad  ./bin/konrad
-build
-                    asar    false
-                    mac
-                        icon  img/app.icns
+                konrad  ./bin/konrad
+build:
+                asar  false
+                mac
+                  icon  img/app.icns
 dependencies
-                    colorcat    monsterkodi/colorcat
-                    kode        github:monsterkodi/kode
-                    koffee      monsterkodi/koffee
-                    kxk         monsterkodi/kxk
-                    mkpath      ^1.0.0
-                    pug         ^3.0.2
-                    stylus      ^0.56.0
-                    sds         monsterkodi/sds
-                    semver      ^7.3.5
-                    node-abi    ^3.52.0
-                    simple-git  ^3.2.6
-                    tree-kill   ^1.2.2
+                colorcat    github:monsterkodi/colorcat
+                kode        github:monsterkodi/kode
+                koffee      github:monsterkodi/koffee
+                kxk         github:monsterkodi/kxk
+                mkpath      ^1.0.0
+                pug         ^3.0.2
+                stylus      ^0.56.0
+                sds         github:monsterkodi/sds
+                semver      ^7.3.5
+                node-abi    ^3.52.0
+                simple-git  ^3.2.6
+                tree-kill   ^1.2.2
 devDependencies
-                    electron            ^28.0.0
-                    electron-builder    ^24.9.1
+                electron        ^28.0.0
+                electron-builder  ^24.9.1
