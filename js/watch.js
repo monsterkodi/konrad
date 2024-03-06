@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.245.0
+// monsterkodi/kode 0.257.0
 
 var _k_ = {in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -60,7 +60,6 @@ Watch = function (wlk, opt)
         }
         if (!should('ignore',o,sourceFile))
         {
-            console.log('build?',sourceFile,opt,test)
             return build(sourceFile,opt,test)
         }
         else

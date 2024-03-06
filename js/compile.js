@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.245.0
+// monsterkodi/kode 0.257.0
 
 var _k_
 
@@ -15,7 +15,7 @@ konradError = require('./error')
 
 compile = function (sourceText, ext, sourceFile, targetFile, cfg)
 {
-    var compiled, pos, _63_24_
+    var compiled, pos, _65_24_
 
     try
     {

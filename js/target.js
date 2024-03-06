@@ -1,8 +1,8 @@
-// monsterkodi/kode 0.245.0
+// monsterkodi/kode 0.257.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}}
 
-var argDir, args, config, kolor, pretty, slash, swapLastDir, target, _
+var argDir, args, config, kolor, pretty, slash, swapFirstDir, target, _
 
 _ = require('kxk')._
 args = require('kxk').args
@@ -13,21 +13,21 @@ argDir = require('./argdir')
 config = require('./config')
 pretty = require('./pretty')
 
-swapLastDir = function (path, from, to)
+swapFirstDir = function (path, from, to)
 {
-    var lastIndex
+    var firstIndex
 
-    lastIndex = path.lastIndexOf(`/${from}/`)
-    if (lastIndex >= 0)
+    firstIndex = path.indexOf(`${from}/`)
+    if (firstIndex >= 0)
     {
-        path = path.slice(0, typeof lastIndex === 'number' ? lastIndex+1 : Infinity) + to + path.slice(lastIndex + (`/${from}`).length)
+        path = path.slice(0, typeof firstIndex === 'number' ? firstIndex : -1) + to + path.slice(firstIndex + from.length)
     }
     return path
 }
 
 target = function (sourceFile, opt)
 {
-    var ext, k, matches, o, r, targetFile, v, _27_21_, _38_22_, _42_18_, _45_29_
+    var ext, k, matches, o, r, targetFile, v, _34_21_, _45_22_, _49_23_, _54_29_
 
     ext = slash.ext(sourceFile)
     o = config.obj(sourceFile,opt)
@@ -35,9 +35,9 @@ target = function (sourceFile, opt)
     {
         matches = false
         var list = _k_.list(o[ext].filter)
-        for (var _29_14_ = 0; _29_14_ < list.length; _29_14_++)
+        for (var _36_14_ = 0; _36_14_ < list.length; _36_14_++)
         {
-            r = list[_29_14_]
+            r = list[_36_14_]
             if (new RegExp(r).test(sourceFile))
             {
                 matches = true
@@ -61,14 +61,15 @@ target = function (sourceFile, opt)
             targetFile = targetFile.replace(k,v)
         }
     }
-    if (((o[ext] != null ? o[ext].out : undefined) != null))
+    else if (((o[ext] != null ? o[ext].out : undefined) != null))
     {
-        targetFile = swapLastDir(targetFile,ext,(o[ext] != null ? o[ext].out : undefined))
+        targetFile = slash.join(argDir(),swapFirstDir(slash.relative(targetFile,argDir()),ext,(o[ext] != null ? o[ext].out : undefined)))
     }
     if (!((o[ext] != null ? o[ext].ext : undefined) != null))
     {
         return
     }
-    return targetFile = slash.join(slash.dir(targetFile),slash.base(targetFile) + '.' + o[ext].ext)
+    targetFile = slash.join(slash.dir(targetFile),slash.base(targetFile) + '.' + o[ext].ext)
+    return targetFile
 }
 module.exports = target

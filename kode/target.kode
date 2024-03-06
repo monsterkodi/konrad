@@ -12,13 +12,20 @@ argDir = require './argdir'
 config = require './config'
 pretty = require './pretty'
 
-swapLastDir = (path, from, to) ->
-    
-    lastIndex = path.lastIndexOf "/#{from}/"
-    if lastIndex >= 0
-        path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
-    path
+# swapLastDir = (path, from, to) ->
+#     
+    # lastIndex = path.lastIndexOf "/#{from}/"
+    # if lastIndex >= 0
+        # path = path[..lastIndex] + to + path[lastIndex+("/#{from}").length..]
+    # path
 
+swapFirstDir = (path, from, to) ->
+    
+    firstIndex = path.indexOf "#{from}/"
+    if firstIndex >= 0
+        path = path[...firstIndex] + to + path[firstIndex+from.length..]
+    path
+    
 target = (sourceFile, opt) ->
     
     ext = slash.ext sourceFile
@@ -39,11 +46,15 @@ target = (sourceFile, opt) ->
         for k,v of o[ext].replace
             targetFile = targetFile.replace k, v
             
-    if o[ext]?.out?
-        targetFile = swapLastDir targetFile, ext, o[ext]?.out
+    else if o[ext]?.out?
+        # log sourceFile, argDir(), slash.relative targetFile, argDir()
+        targetFile = slash.join argDir(), swapFirstDir slash.relative(targetFile, argDir()), ext, o[ext]?.out
+        # log targetFile
 
     return if not o[ext]?.ext?
 
     targetFile = slash.join slash.dir(targetFile), slash.base(targetFile) + '.' + o[ext].ext
+    # log targetFile
+    targetFile
     
 module.exports = target

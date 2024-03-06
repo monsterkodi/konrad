@@ -41,10 +41,12 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                 kode.compile sourceText, header:true
 
             when 'styl'
+                
                 stylus = require 'stylus'
                 stylus(sourceText).render()
                     
             when 'pug'
+                
                 pug = require 'pug'
                 pug.render sourceText, pretty: true
                 

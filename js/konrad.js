@@ -1,4 +1,4 @@
-// monsterkodi/kode 0.245.0
+// monsterkodi/kode 0.257.0
 
 var _k_ = {list: function (l) {return l != null ? typeof l.length === 'number' ? l : [] : []}, in: function (a,l) {return (typeof l === 'string' && typeof a === 'string' && a.length ? '' : []).indexOf.call(l,a) >= 0}}
 
@@ -53,7 +53,7 @@ if (!actions.map(function (a)
     args.run = true
 }
 opt = noon.parse(`coffee  . ext js   . map true . replace .. /coffee/ /js/ .. ^coffee/ js/ 
-kode    . ext js   . out js            
+kode    . ext js   . out js
 noon    . ext json
 json    . ext noon . filter  .. package.json$
 styl    . ext css  . replace .. /style/ /css/ .. /styl/ /js/css/
