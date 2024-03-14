@@ -1,5 +1,3 @@
-// monsterkodi/kode 0.257.0
-
 var _k_
 
 var compile, kode, koffee, kolor, konradError, pretty, slash
@@ -15,13 +13,13 @@ konradError = require('./error')
 
 compile = function (sourceText, ext, sourceFile, targetFile, cfg)
 {
-    var compiled, pos, _65_24_
+    var compiled, pos, _68_24_
 
     try
     {
         compiled = ((function ()
         {
-            var jsMap, mapcfg, pug, stylus
+            var jsMap, k0de, mapcfg, pug, stylus
 
             switch (ext)
             {
@@ -38,7 +36,9 @@ compile = function (sourceText, ext, sourceFile, targetFile, cfg)
                     }
                     break
                 case 'kode':
-                    return kode.compile(sourceText,{header:true})
+                    kode.compile(sourceText,{header:false})
+                    k0de = new kode({header:false})
+                    return k0de.compile(sourceText,sourceFile)
 
                 case 'styl':
                     stylus = require('stylus')

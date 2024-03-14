@@ -38,7 +38,10 @@ compile = (sourceText, ext, sourceFile, targetFile, cfg) ->
                     
             when 'kode'
                 
-                kode.compile sourceText, header:true
+                kode.compile sourceText, header:false
+                # k0de = new kode header:true
+                k0de = new kode header:false 
+                k0de.compile sourceText, sourceFile
 
             when 'styl'
                 
